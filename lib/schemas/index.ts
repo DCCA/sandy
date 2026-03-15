@@ -20,3 +20,4 @@ export {
   AccountHeaderSchema,
   type AccountHeaderProps,
 } from "./account-header";
+export { BalanceCardSchema, type BalanceCardProps } from "./balance-card";

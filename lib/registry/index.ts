@@ -14,6 +14,7 @@ import { NavBar } from "@/components/registry/nav-bar";
 import { Footer } from "@/components/registry/footer";
 import { AvatarGroup } from "@/components/registry/avatar-group";
 import { AccountHeader } from "@/components/registry/account-header";
+import { BalanceCard } from "@/components/registry/balance-card";
 import {
   HeroBannerSchema,
   ProductCardSchema,
@@ -30,6 +31,7 @@ import {
   FooterSchema,
   AvatarGroupSchema,
   AccountHeaderSchema,
+  BalanceCardSchema,
 } from "@/lib/schemas";
 
 function section(id: string, component: string, props: Record<string, unknown>): Section {
@@ -277,6 +279,18 @@ export const registry: Record<string, RegistryItem> = {
       ],
     }),
     metadata: { name: "Account Header", description: "User greeting bar with avatar and action icons", supportsTheme: true },
+  },
+  BalanceCard: {
+    component: BalanceCard as RegistryItem["component"],
+    schema: BalanceCardSchema,
+    example: section("sec_1", "BalanceCard", {
+      label: "Available balance",
+      amount: "R$ 4,521.89",
+      visible: true,
+      footnote: "Updated just now",
+      action: { label: "See statement", href: "/statement" },
+    }),
+    metadata: { name: "Balance Card", description: "Account balance display with optional masking and CTA", supportsTheme: true },
   },
 };
 
