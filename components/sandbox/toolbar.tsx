@@ -9,12 +9,8 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Separator } from "@/components/ui/separator";
 import {
-  Smartphone,
-  Tablet,
-  Monitor,
   Check,
   Copy,
   RotateCcw,
@@ -28,7 +24,6 @@ import {
   Undo2,
   Redo2,
 } from "lucide-react";
-import type { Viewport } from "@/lib/registry/types";
 import type { CompositeDefinition } from "@/lib/composite/types";
 import { themePresets } from "@/lib/theme/presets";
 import { getRegistryKeys, getRegistryItem } from "@/lib/registry";
@@ -37,11 +32,9 @@ import { ExportPanel } from "./export-panel";
 
 type ToolbarProps = {
   selectedTheme: string;
-  viewport: Viewport;
   onAddSection: (componentKey: string) => void;
   onLoadTemplate: (templateId: string) => void;
   onThemeChange: (id: string) => void;
-  onViewportChange: (v: Viewport) => void;
   onFormat: () => void;
   onReset: () => void;
   onShare: () => void;
@@ -62,11 +55,9 @@ type ToolbarProps = {
 
 export const Toolbar = memo(function Toolbar({
   selectedTheme,
-  viewport,
   onAddSection,
   onLoadTemplate,
   onThemeChange,
-  onViewportChange,
   onFormat,
   onReset,
   onShare,
@@ -178,23 +169,6 @@ export const Toolbar = memo(function Toolbar({
           ))}
         </SelectContent>
       </Select>
-
-      <Separator orientation="vertical" className="h-5" />
-
-      {/* Viewport toggle with icons */}
-      <Tabs value={viewport} onValueChange={(v) => v && onViewportChange(v as Viewport)}>
-        <TabsList className="h-8">
-          <TabsTrigger value="mobile" className="px-2.5 h-7" title="Mobile (375px)">
-            <Smartphone className="size-3.5" />
-          </TabsTrigger>
-          <TabsTrigger value="tablet" className="px-2.5 h-7" title="Tablet (768px)">
-            <Tablet className="size-3.5" />
-          </TabsTrigger>
-          <TabsTrigger value="desktop" className="px-2.5 h-7" title="Desktop (100%)">
-            <Monitor className="size-3.5" />
-          </TabsTrigger>
-        </TabsList>
-      </Tabs>
 
       {/* Actions */}
       <div className="ml-auto flex items-center gap-1">

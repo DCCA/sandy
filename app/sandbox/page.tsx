@@ -26,7 +26,7 @@ import { mergeTokens } from "@/lib/theme/merge-tokens";
 import { downloadJSON } from "@/lib/export/json";
 import { generateReactCode } from "@/lib/export/react";
 import { generateHTML } from "@/lib/export/html";
-import type { Viewport, SandboxError, Page, Section } from "@/lib/registry/types";
+import type { SandboxError, Page, Section } from "@/lib/registry/types";
 import type { DeepPartial, ThemeTokens } from "@/lib/theme/types";
 
 function createCompositeComponent(def: CompositeDefinition) {
@@ -51,7 +51,6 @@ function SandboxContent() {
         return {
           json: JSON.stringify(restored, null, 2),
           theme: restored.theme?.brand ?? "default",
-          viewport: (restored.meta?.viewport ?? "desktop") as Viewport,
           tokenOverrides: initialTokenOverrides,
         };
       }
@@ -60,7 +59,6 @@ function SandboxContent() {
     return {
       json: JSON.stringify(page, null, 2),
       theme: "default",
-      viewport: "desktop" as Viewport,
       tokenOverrides: initialTokenOverrides,
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -68,7 +66,6 @@ function SandboxContent() {
 
   const { value: jsonText, setValue: setJsonText, undo, redo, canUndo, canRedo } = useHistory(initialState.json);
   const [selectedTheme, setSelectedTheme] = useState(initialState.theme);
-  const [viewport, setViewport] = useState<Viewport>(initialState.viewport);
   const [tokenOverrides, setTokenOverrides] = useState<DeepPartial<ThemeTokens>>(initialState.tokenOverrides);
   const [tokenEditorOpen, setTokenEditorOpen] = useState(false);
   const [selectedSectionId, setSelectedSectionId] = useState<string | null>(null);
@@ -88,12 +85,12 @@ function SandboxContent() {
   }, []);
 
   // Parse, validate, derive state
-  const { errors, validatedSections, parsedSections, parsedTheme, parsedViewport } = useMemo(() => {
+  const { errors, validatedSections, parsedSections, parsedTheme } = useMemo(() => {
     const errs: SandboxError[] = [];
     const parsed = parseJSON(jsonText);
     if (!parsed.success) {
       errs.push({ type: "parse", messages: [parsed.error] });
-      return { errors: errs, validatedSections: [], parsedSections: [], parsedTheme: null, parsedViewport: null };
+      return { errors: errs, validatedSections: [], parsedSections: [], parsedTheme: null };
     }
 
     let data = parsed.data;
@@ -111,7 +108,6 @@ function SandboxContent() {
       validatedSections: pageResult.sections,
       parsedSections: pageData.sections ?? [],
       parsedTheme: pageData.theme?.brand ?? null,
-      parsedViewport: (pageData.meta?.viewport as Viewport) ?? null,
     };
   }, [jsonText]);
 
@@ -134,11 +130,8 @@ function SandboxContent() {
     if (parsedTheme && parsedTheme !== selectedTheme) {
       setSelectedTheme(parsedTheme);
     }
-    if (parsedViewport && parsedViewport !== viewport) {
-      setViewport(parsedViewport);
-    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [parsedTheme, parsedViewport]);
+  }, [parsedTheme]);
 
   // URL sync (debounced)
   useEffect(() => {
@@ -230,10 +223,10 @@ function SandboxContent() {
     const tpl = pageTemplates.find((t) => t.id === templateId);
     if (!tpl) return;
     isToolbarUpdate.current = true;
-    const page = { ...tpl.page, theme: { brand: selectedTheme, mode: "light" as const }, meta: { viewport } };
+    const page = { ...tpl.page, theme: { brand: selectedTheme, mode: "light" as const }, meta: { viewport: "mobile" as const } };
     setJsonText(JSON.stringify(page, null, 2));
     setSelectedSectionId(null);
-  }, [selectedTheme, viewport, setJsonText]);
+  }, [selectedTheme, setJsonText]);
 
   const handleMoveSection = useCallback((id: string, direction: "up" | "down") => {
     setJsonText((prev) => {
@@ -310,20 +303,6 @@ function SandboxContent() {
       try {
         const data = JSON.parse(prev);
         data.theme = { ...data.theme, brand: id };
-        return JSON.stringify(data, null, 2);
-      } catch {
-        return prev;
-      }
-    });
-  }, [setJsonText]);
-
-  const handleViewportChange = useCallback((v: Viewport) => {
-    isToolbarUpdate.current = true;
-    setViewport(v);
-    setJsonText((prev) => {
-      try {
-        const data = JSON.parse(prev);
-        data.meta = { ...data.meta, viewport: v };
         return JSON.stringify(data, null, 2);
       } catch {
         return prev;
@@ -410,11 +389,9 @@ function SandboxContent() {
     <div className="flex flex-col h-screen">
       <Toolbar
         selectedTheme={selectedTheme}
-        viewport={viewport}
         onAddSection={handleAddSection}
         onLoadTemplate={handleLoadTemplate}
         onThemeChange={handleThemeChange}
-        onViewportChange={handleViewportChange}
         onFormat={handleFormat}
         onReset={handleReset}
         onShare={handleShare}
@@ -480,7 +457,6 @@ function SandboxContent() {
             <Preview
               sections={validatedSections}
               themeTokens={mergedTokens}
-              viewport={viewport}
               selectedSectionId={selectedSectionId}
               onSectionClick={setSelectedSectionId}
               onContentRef={(el) => { previewRef.current = el; }}

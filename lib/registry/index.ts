@@ -39,7 +39,7 @@ export function defaultPage(sectionOverride?: Section): Page {
   return {
     version: "2.0",
     theme: { brand: "default", mode: "light" },
-    meta: { viewport: "desktop" },
+    meta: { viewport: "mobile" },
     sections: [sec],
   };
 }

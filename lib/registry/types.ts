@@ -46,7 +46,7 @@ export type Envelope = {
   };
 };
 
-export type Viewport = "mobile" | "tablet" | "desktop";
+export type Viewport = "mobile";
 
 export type SandboxError = {
   type: "parse" | "validation" | "runtime";

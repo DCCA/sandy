@@ -15,7 +15,7 @@ export const pageTemplates: PageTemplate[] = [
     page: {
       version: "2.0",
       theme: { brand: "default", mode: "light" },
-      meta: { viewport: "desktop" },
+      meta: { viewport: "mobile" },
       sections: [
         {
           id: "sec_1",
@@ -61,7 +61,7 @@ export const pageTemplates: PageTemplate[] = [
     page: {
       version: "2.0",
       theme: { brand: "default", mode: "light" },
-      meta: { viewport: "desktop" },
+      meta: { viewport: "mobile" },
       sections: [
         {
           id: "sec_1",
@@ -103,7 +103,7 @@ export const pageTemplates: PageTemplate[] = [
     page: {
       version: "2.0",
       theme: { brand: "default", mode: "light" },
-      meta: { viewport: "desktop" },
+      meta: { viewport: "mobile" },
       sections: [
         {
           id: "sec_1",

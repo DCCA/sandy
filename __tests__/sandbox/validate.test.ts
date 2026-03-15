@@ -45,13 +45,13 @@ describe("migrateEnvelopeToPage", () => {
       version: "1.0",
       props: { title: "Hello" },
       theme: { brand: "default", mode: "light" as const },
-      meta: { viewport: "desktop" as const },
+      meta: { viewport: "mobile" as const },
     };
 
     const page = migrateEnvelopeToPage(envelope);
     expect(page.version).toBe("2.0");
     expect(page.theme).toEqual({ brand: "default", mode: "light" });
-    expect(page.meta).toEqual({ viewport: "desktop" });
+    expect(page.meta).toEqual({ viewport: "mobile" });
     expect(page.sections).toHaveLength(1);
     expect(page.sections[0]).toEqual({
       id: "sec_1",
@@ -78,7 +78,7 @@ describe("validatePage", () => {
     const result = validatePage({
       version: "2.0",
       theme: { brand: "default", mode: "light" },
-      meta: { viewport: "desktop" },
+      meta: { viewport: "mobile" },
       sections: [
         {
           id: "sec_1",

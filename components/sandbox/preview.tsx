@@ -3,20 +3,13 @@
 import { useEffect, useRef } from "react";
 import { ErrorBoundary } from "react-error-boundary";
 import { Layout } from "lucide-react";
-import type { Viewport, ValidatedSection } from "@/lib/registry/types";
+import type { ValidatedSection } from "@/lib/registry/types";
 import type { ThemeTokens } from "@/lib/theme/types";
 import { applyTheme } from "@/lib/theme/css-vars";
-
-const viewportWidths: Record<Viewport, string> = {
-  mobile: "375px",
-  tablet: "768px",
-  desktop: "100%",
-};
 
 type PreviewProps = {
   sections: ValidatedSection[];
   themeTokens: ThemeTokens;
-  viewport: Viewport;
   selectedSectionId?: string | null;
   onSectionClick?: (id: string) => void;
   onContentRef?: (el: HTMLDivElement | null) => void;
@@ -68,7 +61,6 @@ function DeviceFrame({ children }: { children: React.ReactNode }) {
 export function Preview({
   sections,
   themeTokens,
-  viewport,
   selectedSectionId,
   onSectionClick,
   onContentRef,
@@ -96,9 +88,9 @@ export function Preview({
   return (
     <div className="flex justify-center h-full overflow-auto dot-grid p-6">
       <div
-        className="h-fit transition-viewport"
+        className="h-fit"
         style={{
-          width: viewportWidths[viewport],
+          width: "375px",
           maxWidth: "100%",
         }}
       >
