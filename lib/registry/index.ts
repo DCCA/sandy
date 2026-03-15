@@ -7,6 +7,7 @@ import { FeatureList } from "@/components/registry/feature-list";
 import { InputField } from "@/components/registry/input-field";
 import { CTAButtonGroup } from "@/components/registry/cta-button-group";
 import { ModalPreview } from "@/components/registry/modal-preview";
+import { PricingTable } from "@/components/registry/pricing-table";
 import {
   HeroBannerSchema,
   ProductCardSchema,
@@ -16,6 +17,7 @@ import {
   InputFieldSchema,
   CTAButtonGroupSchema,
   ModalPreviewSchema,
+  PricingTableSchema,
 } from "@/lib/schemas";
 
 function section(id: string, component: string, props: Record<string, unknown>): Section {
@@ -128,6 +130,38 @@ export const registry: Record<string, RegistryItem> = {
       ],
     }),
     metadata: { name: "Modal Preview", description: "Modal dialog rendered inline for preview", supportsTheme: true },
+  },
+  PricingTable: {
+    component: PricingTable as RegistryItem["component"],
+    schema: PricingTableSchema,
+    example: section("sec_1", "PricingTable", {
+      heading: "Choose your plan",
+      tiers: [
+        {
+          name: "Starter",
+          price: "$9",
+          period: "mo",
+          features: ["5 projects", "10 GB storage", "Email support"],
+          cta: { label: "Get started", href: "/signup?plan=starter" },
+        },
+        {
+          name: "Pro",
+          price: "$29",
+          period: "mo",
+          features: ["Unlimited projects", "100 GB storage", "Priority support", "API access"],
+          cta: { label: "Go Pro", href: "/signup?plan=pro" },
+          highlighted: true,
+        },
+        {
+          name: "Enterprise",
+          price: "$99",
+          period: "mo",
+          features: ["Unlimited everything", "Dedicated support", "SSO & SAML", "Custom integrations"],
+          cta: { label: "Contact sales", href: "/contact" },
+        },
+      ],
+    }),
+    metadata: { name: "Pricing Table", description: "Tiered pricing comparison with highlighted plan", supportsTheme: true },
   },
 };
 
