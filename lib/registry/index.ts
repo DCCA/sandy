@@ -13,6 +13,7 @@ import { StatsRow } from "@/components/registry/stats-row";
 import { NavBar } from "@/components/registry/nav-bar";
 import { Footer } from "@/components/registry/footer";
 import { AvatarGroup } from "@/components/registry/avatar-group";
+import { AccountHeader } from "@/components/registry/account-header";
 import {
   HeroBannerSchema,
   ProductCardSchema,
@@ -28,6 +29,7 @@ import {
   NavBarSchema,
   FooterSchema,
   AvatarGroupSchema,
+  AccountHeaderSchema,
 } from "@/lib/schemas";
 
 function section(id: string, component: string, props: Record<string, unknown>): Section {
@@ -261,6 +263,20 @@ export const registry: Record<string, RegistryItem> = {
       label: "5 team members",
     }),
     metadata: { name: "Avatar Group", description: "Overlapping avatar stack with overflow count", supportsTheme: true },
+  },
+  AccountHeader: {
+    component: AccountHeader as RegistryItem["component"],
+    schema: AccountHeaderSchema,
+    example: section("sec_1", "AccountHeader", {
+      greeting: "Good morning",
+      userName: "Maria",
+      avatarUrl: "https://i.pravatar.cc/80?u=maria",
+      actions: [
+        { icon: "🔔", label: "Notifications" },
+        { icon: "💬", label: "Messages" },
+      ],
+    }),
+    metadata: { name: "Account Header", description: "User greeting bar with avatar and action icons", supportsTheme: true },
   },
 };
 

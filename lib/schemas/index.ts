@@ -16,3 +16,7 @@ export { StatsRowSchema, type StatsRowProps } from "./stats-row";
 export { NavBarSchema, type NavBarProps } from "./nav-bar";
 export { FooterSchema, type FooterProps } from "./footer";
 export { AvatarGroupSchema, type AvatarGroupProps } from "./avatar-group";
+export {
+  AccountHeaderSchema,
+  type AccountHeaderProps,
+} from "./account-header";
