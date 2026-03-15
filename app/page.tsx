@@ -35,7 +35,7 @@ export default function Home() {
   return (
     <div className="min-h-screen bg-background text-foreground">
       {/* Nav */}
-      <nav className="flex items-center justify-between px-6 py-4 border-b border-border/50 backdrop-blur-md bg-background/80 sticky top-0 z-10">
+      <nav className="flex items-center justify-between px-6 py-4 border-b border-border backdrop-blur-md bg-background/80 sticky top-0 z-10">
         <span className="font-mono text-sm font-semibold tracking-tight">
           <span className="text-accent">S</span>andy
         </span>
@@ -48,19 +48,19 @@ export default function Home() {
       </nav>
 
       {/* Hero */}
-      <section className="dot-grid border-b border-border/50">
+      <section className="dot-grid border-b border-border">
         <div className="max-w-4xl mx-auto px-6 py-24 text-center">
-          <h1 className="text-4xl sm:text-5xl font-semibold tracking-tight mb-4 leading-tight">
+          <h1 className="text-5xl sm:text-6xl font-semibold tracking-tight mb-4 leading-tight">
             Schema-first
             <br />
             <span className="text-accent">component sandbox</span>
           </h1>
-          <p className="text-muted-foreground text-lg max-w-xl mx-auto mb-10 leading-relaxed">
+          <p className="text-muted-foreground text-base max-w-xl mx-auto mb-10 leading-relaxed">
             Compose multi-section pages from validated JSON with multi-brand theming.
             Registry-only rendering, strict contracts, token-driven design.
           </p>
           <div className="max-w-md mx-auto mb-10 text-left">
-            <pre className="bg-card border border-border/50 rounded-lg px-5 py-4 font-mono text-xs text-muted-foreground leading-relaxed overflow-x-auto">
+            <pre className="bg-background ring-1 ring-foreground/10 rounded-lg px-5 py-4 font-mono text-xs text-muted-foreground leading-relaxed overflow-x-auto">
               {EXAMPLE_PAGE}
             </pre>
           </div>
@@ -83,7 +83,7 @@ export default function Home() {
           {themePresets.map((preset) => (
             <div
               key={preset.id}
-              className="rounded-lg border border-border/50 bg-card p-5"
+              className="rounded-lg ring-1 ring-foreground/10 bg-card p-5"
             >
               <h3 className="font-semibold text-sm mb-3">{preset.name}</h3>
               <div className="flex gap-1.5 mb-4">
@@ -107,7 +107,7 @@ export default function Home() {
       </section>
 
       {/* Component Gallery */}
-      <section className="max-w-5xl mx-auto px-6 py-20 border-t border-border/50">
+      <section className="max-w-5xl mx-auto px-6 py-20 border-t border-border">
         <h2 className="text-2xl font-semibold tracking-tight mb-2">Component Registry</h2>
         <p className="text-muted-foreground text-sm mb-8">
           {componentKeys.length} validated components, each with a strict JSON contract.
@@ -127,7 +127,7 @@ export default function Home() {
               <Link
                 key={key}
                 href={`/sandbox?s=${encoded}`}
-                className="group rounded-lg border border-border/50 bg-card p-4 hover:border-accent/40 transition-colors"
+                className="group rounded-lg ring-1 ring-foreground/10 bg-card p-4 hover:ring-accent/40 transition-colors"
               >
                 <h3 className="font-semibold text-sm mb-1">{item.metadata.name}</h3>
                 <p className="text-[11px] text-muted-foreground mb-3 leading-relaxed line-clamp-2">
@@ -146,11 +146,11 @@ export default function Home() {
       </section>
 
       {/* Footer CTA */}
-      <section className="border-t border-border/50 py-16 text-center">
+      <section className="border-t border-border py-16 text-center">
         <p className="text-muted-foreground text-sm mb-4">Ready to start building?</p>
         <Link
           href="/sandbox"
-          className="inline-flex items-center h-10 px-6 text-sm font-medium rounded-md bg-secondary text-secondary-foreground hover:bg-secondary/80 transition-colors"
+          className="inline-flex items-center h-10 px-6 text-sm font-medium rounded-md bg-primary text-primary-foreground hover:bg-primary/90 transition-colors"
         >
           Open Sandbox
         </Link>
