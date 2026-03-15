@@ -25,6 +25,8 @@ import {
   Puzzle,
   Pencil,
   Trash2,
+  Undo2,
+  Redo2,
 } from "lucide-react";
 import type { Viewport } from "@/lib/registry/types";
 import type { CompositeDefinition } from "@/lib/composite/types";
@@ -42,6 +44,10 @@ type ToolbarProps = {
   onFormat: () => void;
   onReset: () => void;
   onShare: () => void;
+  onUndo: () => void;
+  onRedo: () => void;
+  canUndo: boolean;
+  canRedo: boolean;
   tokenEditorOpen: boolean;
   onTokenEditorToggle: () => void;
   composites?: CompositeDefinition[];
@@ -60,6 +66,10 @@ export const Toolbar = memo(function Toolbar({
   onFormat,
   onReset,
   onShare,
+  onUndo,
+  onRedo,
+  canUndo,
+  canRedo,
   tokenEditorOpen,
   onTokenEditorToggle,
   composites = [],
@@ -223,6 +233,29 @@ export const Toolbar = memo(function Toolbar({
             ))}
           </div>
         )}
+
+        <Separator orientation="vertical" className="h-5 mx-0.5" />
+
+        <Button
+          variant="ghost"
+          size="sm"
+          className="h-7 px-2"
+          onClick={onUndo}
+          disabled={!canUndo}
+          title="Undo (Ctrl+Z)"
+        >
+          <Undo2 className="size-3.5" />
+        </Button>
+        <Button
+          variant="ghost"
+          size="sm"
+          className="h-7 px-2"
+          onClick={onRedo}
+          disabled={!canRedo}
+          title="Redo (Ctrl+Shift+Z)"
+        >
+          <Redo2 className="size-3.5" />
+        </Button>
 
         <Separator orientation="vertical" className="h-5 mx-0.5" />
 

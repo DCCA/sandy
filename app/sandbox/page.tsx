@@ -17,6 +17,7 @@ import { pageTemplates } from "@/lib/registry/templates";
 import { loadComposites, saveComposite, deleteComposite as deleteCompositeFromStorage } from "@/lib/composite/storage";
 import { CompositeRenderer } from "@/components/composite/composite-renderer";
 import type { CompositeDefinition } from "@/lib/composite/types";
+import { useHistory } from "@/lib/sandbox/use-history";
 import { parseJSON } from "@/lib/sandbox/parse";
 import { validatePage, isLegacyEnvelope, migrateEnvelopeToPage } from "@/lib/sandbox/validate";
 import { serializeState, deserializeState, serializeTokens, deserializeTokens } from "@/lib/sandbox/serialize";
@@ -62,7 +63,7 @@ function SandboxContent() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const [jsonText, setJsonText] = useState(initialState.json);
+  const { value: jsonText, setValue: setJsonText, undo, redo, canUndo, canRedo } = useHistory(initialState.json);
   const [selectedTheme, setSelectedTheme] = useState(initialState.theme);
   const [viewport, setViewport] = useState<Viewport>(initialState.viewport);
   const [tokenOverrides, setTokenOverrides] = useState<DeepPartial<ThemeTokens>>(initialState.tokenOverrides);
@@ -164,6 +165,25 @@ function SandboxContent() {
     };
   }, [jsonText, tokenOverrides]);
 
+  // Keyboard shortcuts for undo/redo
+  useEffect(() => {
+    const handler = (e: KeyboardEvent) => {
+      const mod = e.metaKey || e.ctrlKey;
+      if (!mod || e.key.toLowerCase() !== "z") return;
+      // Don't intercept when Monaco or other inputs are focused
+      const tag = (e.target as HTMLElement)?.tagName;
+      if (tag === "INPUT" || tag === "TEXTAREA") return;
+      e.preventDefault();
+      if (e.shiftKey) {
+        redo();
+      } else {
+        undo();
+      }
+    };
+    window.addEventListener("keydown", handler);
+    return () => window.removeEventListener("keydown", handler);
+  }, [undo, redo]);
+
   const theme = getThemePreset(selectedTheme) ?? defaultTheme;
   const mergedTokens = useMemo(() => mergeTokens(theme.tokens, tokenOverrides), [theme.tokens, tokenOverrides]);
 
@@ -200,7 +220,7 @@ function SandboxContent() {
         return prev;
       }
     });
-  }, [nextSectionId]);
+  }, [nextSectionId, setJsonText]);
 
   const handleLoadTemplate = useCallback((templateId: string) => {
     const tpl = pageTemplates.find((t) => t.id === templateId);
@@ -209,7 +229,7 @@ function SandboxContent() {
     const page = { ...tpl.page, theme: { brand: selectedTheme, mode: "light" as const }, meta: { viewport } };
     setJsonText(JSON.stringify(page, null, 2));
     setSelectedSectionId(null);
-  }, [selectedTheme, viewport]);
+  }, [selectedTheme, viewport, setJsonText]);
 
   const handleMoveSection = useCallback((id: string, direction: "up" | "down") => {
     setJsonText((prev) => {
@@ -228,7 +248,7 @@ function SandboxContent() {
         return prev;
       }
     });
-  }, []);
+  }, [setJsonText]);
 
   const handleDeleteSection = useCallback((id: string) => {
     setJsonText((prev) => {
@@ -245,7 +265,7 @@ function SandboxContent() {
     if (selectedSectionId === id) {
       setSelectedSectionId(null);
     }
-  }, [selectedSectionId]);
+  }, [selectedSectionId, setJsonText]);
 
   const handleSectionPropsChange = useCallback((sectionId: string, newProps: Record<string, unknown>) => {
     setJsonText((prev) => {
@@ -260,7 +280,7 @@ function SandboxContent() {
         return prev;
       }
     });
-  }, []);
+  }, [setJsonText]);
 
   const handleThemeChange = useCallback((id: string) => {
     isToolbarUpdate.current = true;
@@ -275,7 +295,7 @@ function SandboxContent() {
         return prev;
       }
     });
-  }, []);
+  }, [setJsonText]);
 
   const handleViewportChange = useCallback((v: Viewport) => {
     isToolbarUpdate.current = true;
@@ -289,7 +309,7 @@ function SandboxContent() {
         return prev;
       }
     });
-  }, []);
+  }, [setJsonText]);
 
   const handleFormat = useCallback(() => {
     setJsonText((prev) => {
@@ -300,13 +320,13 @@ function SandboxContent() {
         return prev;
       }
     });
-  }, []);
+  }, [setJsonText]);
 
   const handleReset = useCallback(() => {
     const page = defaultPage();
     setJsonText(JSON.stringify(page, null, 2));
     setSelectedSectionId(null);
-  }, []);
+  }, [setJsonText]);
 
   const handleShare = useCallback(async () => {
     try {
@@ -365,6 +385,10 @@ function SandboxContent() {
         onFormat={handleFormat}
         onReset={handleReset}
         onShare={handleShare}
+        onUndo={undo}
+        onRedo={redo}
+        canUndo={canUndo}
+        canRedo={canRedo}
         tokenEditorOpen={tokenEditorOpen}
         onTokenEditorToggle={handleTokenEditorToggle}
         composites={composites}
