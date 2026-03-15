@@ -53,9 +53,9 @@ function SectionErrorFallback({
 
 function DeviceFrame({ children }: { children: React.ReactNode }) {
   return (
-    <div className="rounded-lg overflow-hidden shadow-2xl shadow-black/20 border border-white/[0.06]">
+    <div className="rounded-lg overflow-hidden shadow-2xl shadow-black/20 border border-white/[0.04]">
       {/* Browser chrome */}
-      <div className="h-7 bg-[#1a1a1c] border-b border-white/[0.06] flex items-center px-3 gap-1.5">
+      <div className="h-7 bg-[#171717] border-b border-white/[0.04] flex items-center px-3 gap-1.5">
         <span className="size-2.5 rounded-full bg-white/10" />
         <span className="size-2.5 rounded-full bg-white/10" />
         <span className="size-2.5 rounded-full bg-white/10" />

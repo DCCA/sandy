@@ -12,7 +12,7 @@ const skeletonWidths = [60, 80, 45, 70, 55, 90, 50, 65, 75, 40, 85, 60];
 
 function EditorSkeleton() {
   return (
-    <div className="h-full w-full bg-[#1e1e1e] p-4">
+    <div className="h-full w-full bg-[#0a0a0a] p-4">
       <div className="flex flex-col gap-2.5">
         {skeletonWidths.map((w, i) => (
           <div
