@@ -37,7 +37,7 @@ export function BuilderNodeTree({
           node={node}
           index={i}
           total={nodes.length}
-          isSelected={selectedNodeId === node.id}
+          selectedNodeId={selectedNodeId}
           onSelect={onSelect}
           onMove={onMove}
           onDelete={onDelete}
@@ -52,7 +52,7 @@ function NodeRow({
   node,
   index,
   total,
-  isSelected,
+  selectedNodeId,
   onSelect,
   onMove,
   onDelete,
@@ -61,7 +61,7 @@ function NodeRow({
   node: PrimitiveNode;
   index: number;
   total: number;
-  isSelected: boolean;
+  selectedNodeId: string | null;
   onSelect: (id: string) => void;
   onMove: (id: string, direction: "up" | "down") => void;
   onDelete: (id: string) => void;
@@ -71,6 +71,8 @@ function NodeRow({
   const preview = node.type === "heading" || node.type === "paragraph" || node.type === "button" || node.type === "badge"
     ? String(node.props.text ?? node.props.label ?? "")
     : "";
+  const isSelected = selectedNodeId === node.id;
+  const isNested = depth > 0;
 
   return (
     <>
@@ -92,46 +94,48 @@ function NodeRow({
             {preview.length > 20 ? preview.slice(0, 20) + "..." : preview}
           </span>
         )}
-        <div className="ml-auto flex items-center gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity">
-          <Button
-            variant="ghost"
-            size="sm"
-            className="h-5 w-5 p-0"
-            onClick={(e) => { e.stopPropagation(); onMove(node.id, "up"); }}
-            disabled={index === 0}
-            title="Move up"
-          >
-            <ChevronUp className="size-3" />
-          </Button>
-          <Button
-            variant="ghost"
-            size="sm"
-            className="h-5 w-5 p-0"
-            onClick={(e) => { e.stopPropagation(); onMove(node.id, "down"); }}
-            disabled={index === total - 1}
-            title="Move down"
-          >
-            <ChevronDown className="size-3" />
-          </Button>
-          <Button
-            variant="ghost"
-            size="sm"
-            className="h-5 w-5 p-0 text-red-400 hover:text-red-300"
-            onClick={(e) => { e.stopPropagation(); onDelete(node.id); }}
-            title="Delete"
-          >
-            <Trash2 className="size-3" />
-          </Button>
-        </div>
+        {!isNested && (
+          <div className="ml-auto flex items-center gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity">
+            <Button
+              variant="ghost"
+              size="sm"
+              className="h-5 w-5 p-0"
+              onClick={(e) => { e.stopPropagation(); onMove(node.id, "up"); }}
+              disabled={index === 0}
+              title="Move up"
+            >
+              <ChevronUp className="size-3" />
+            </Button>
+            <Button
+              variant="ghost"
+              size="sm"
+              className="h-5 w-5 p-0"
+              onClick={(e) => { e.stopPropagation(); onMove(node.id, "down"); }}
+              disabled={index === total - 1}
+              title="Move down"
+            >
+              <ChevronDown className="size-3" />
+            </Button>
+            <Button
+              variant="ghost"
+              size="sm"
+              className="h-5 w-5 p-0 text-red-400 hover:text-red-300"
+              onClick={(e) => { e.stopPropagation(); onDelete(node.id); }}
+              title="Delete"
+            >
+              <Trash2 className="size-3" />
+            </Button>
+          </div>
+        )}
       </div>
-      {/* Render children for containers */}
+      {/* Render children for containers (display only — nested operations not supported) */}
       {node.type === "container" && node.children?.map((child, ci) => (
         <NodeRow
           key={child.id}
           node={child}
           index={ci}
           total={node.children!.length}
-          isSelected={isSelected}
+          selectedNodeId={selectedNodeId}
           onSelect={onSelect}
           onMove={onMove}
           onDelete={onDelete}

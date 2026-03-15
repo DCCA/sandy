@@ -9,6 +9,13 @@ import { BuilderBindings } from "./builder-bindings";
 import { NodeRenderer } from "@/components/composite/primitive-renderers";
 import { getDefaultProps, primitiveSchemas } from "@/lib/composite/primitives";
 import { applyTheme } from "@/lib/theme/css-vars";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { schemaToFields, type FieldDescriptor } from "@/lib/schema-introspect";
 import type { PrimitiveNode, PrimitiveType, PropBinding, CompositeDefinition } from "@/lib/composite/types";
 import type { ThemeTokens } from "@/lib/theme/types";
@@ -20,9 +27,8 @@ type ComponentBuilderProps = {
   onClose: () => void;
 };
 
-let nodeCounter = 0;
 function nextNodeId(): string {
-  return `node_${++nodeCounter}`;
+  return `node_${crypto.randomUUID().slice(0, 8)}`;
 }
 
 function toSlug(name: string): string {
@@ -74,15 +80,19 @@ function InlineField({
     return (
       <div className="flex items-center gap-2">
         <label className="text-[11px] text-muted-foreground w-20 shrink-0">{field.label}</label>
-        <select
+        <Select
           value={typeof value === "string" ? value : (field.default ?? "")}
-          onChange={(e) => onChange(e.target.value)}
-          className="h-6 flex-1 min-w-0 rounded bg-muted/30 border border-border/50 px-1 text-[11px] text-foreground outline-none focus:border-accent/50"
+          onValueChange={(v) => v !== null && onChange(v)}
         >
-          {field.enum.map((opt) => (
-            <option key={opt} value={opt}>{opt}</option>
-          ))}
-        </select>
+          <SelectTrigger className="h-6 flex-1 min-w-0 text-[11px] font-mono">
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            {field.enum.map((opt) => (
+              <SelectItem key={opt} value={opt}>{opt}</SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
       </div>
     );
   }
@@ -193,7 +203,7 @@ export function ComponentBuilder({
 
   const handleSave = useCallback(() => {
     if (!name.trim() || nodes.length === 0) return;
-    const id = editingDefinition?.id ?? `custom_${toSlug(name)}`;
+    const id = editingDefinition?.id ?? `custom_${toSlug(name)}_${Date.now().toString(36)}`;
     const def: CompositeDefinition = {
       id,
       name: name.trim(),

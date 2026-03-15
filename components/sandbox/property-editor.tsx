@@ -21,7 +21,7 @@ type PropertyEditorProps = {
 
 // --- Reusable field components (follows TokenEditor styling) ---
 
-function Section({
+function CollapsibleSection({
   title,
   defaultOpen = true,
   children,
@@ -235,7 +235,7 @@ function ObjectGroup({
   );
 
   return (
-    <Section title={field.label} defaultOpen={field.required}>
+    <CollapsibleSection title={field.label} defaultOpen={field.required}>
       {field.fields.map((child) => (
         <FieldRenderer
           key={child.key}
@@ -244,7 +244,7 @@ function ObjectGroup({
           onChange={(v) => handleFieldChange(child.key, v)}
         />
       ))}
-    </Section>
+    </CollapsibleSection>
   );
 }
 
@@ -294,7 +294,7 @@ function ArrayField({
   );
 
   return (
-    <Section
+    <CollapsibleSection
       title={`${field.label} (${value.length})`}
       defaultOpen={true}
       actions={
@@ -347,7 +347,7 @@ function ArrayField({
           No items. Click + to add one.
         </div>
       )}
-    </Section>
+    </CollapsibleSection>
   );
 }
 

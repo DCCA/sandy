@@ -195,38 +195,33 @@ export const Toolbar = memo(function Toolbar({
           </Button>
         )}
 
-        {/* Custom components dropdown */}
+        {/* Custom components management */}
         {composites.length > 0 && onEditComposite && onDeleteComposite && (
-          <Select value="" onValueChange={() => {}}>
-            <SelectTrigger className="w-auto h-7 text-xs px-2 gap-1">
-              <span className="text-[10px] font-mono">Custom ({composites.length})</span>
-            </SelectTrigger>
-            <SelectContent>
-              {composites.map((def) => (
-                <div key={def.id} className="flex items-center gap-1 px-2 py-1">
-                  <span className="text-xs font-medium flex-1 truncate">{def.name}</span>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    className="h-5 w-5 p-0"
-                    onClick={(e) => { e.stopPropagation(); onEditComposite(def); }}
-                    title="Edit"
-                  >
-                    <Pencil className="size-3" />
-                  </Button>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    className="h-5 w-5 p-0 text-red-400 hover:text-red-300"
-                    onClick={(e) => { e.stopPropagation(); onDeleteComposite(def.id); }}
-                    title="Delete"
-                  >
-                    <Trash2 className="size-3" />
-                  </Button>
-                </div>
-              ))}
-            </SelectContent>
-          </Select>
+          <div className="flex items-center gap-0.5">
+            {composites.map((def) => (
+              <div key={def.id} className="flex items-center gap-0.5 px-1.5 py-0.5 rounded bg-muted/30 text-[10px] font-mono">
+                <span className="truncate max-w-[80px]">{def.name}</span>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="h-4 w-4 p-0"
+                  onClick={() => onEditComposite(def)}
+                  title={`Edit ${def.name}`}
+                >
+                  <Pencil className="size-2.5" />
+                </Button>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="h-4 w-4 p-0 text-red-400 hover:text-red-300"
+                  onClick={() => onDeleteComposite(def.id)}
+                  title={`Delete ${def.name}`}
+                >
+                  <Trash2 className="size-2.5" />
+                </Button>
+              </div>
+            ))}
+          </div>
         )}
 
         <Separator orientation="vertical" className="h-5 mx-0.5" />

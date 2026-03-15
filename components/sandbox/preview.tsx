@@ -115,7 +115,7 @@ export function Preview({
               return (
                 <ErrorBoundary
                   key={section.id}
-                  FallbackComponent={(props) => (
+                  fallbackRender={(props) => (
                     <SectionErrorFallback {...props} sectionLabel={label} />
                   )}
                   resetKeys={[section.id, JSON.stringify(section.props)]}

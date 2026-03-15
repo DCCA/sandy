@@ -80,9 +80,12 @@ function ParagraphRenderer({ props }: { props: Record<string, unknown> }) {
   );
 }
 
+const UNSAFE_HREF_RE = /^\s*(javascript|data|vbscript):/i;
+
 function ButtonRenderer({ props }: { props: Record<string, unknown> }) {
   const label = String(props.label ?? "Button");
-  const href = String(props.href ?? "#");
+  const rawHref = String(props.href ?? "#");
+  const href = UNSAFE_HREF_RE.test(rawHref) ? "#" : rawHref;
   const variant = String(props.variant ?? "primary");
 
   const baseStyle: React.CSSProperties = {

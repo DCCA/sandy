@@ -2,6 +2,18 @@ import type { CompositeDefinition } from "./types";
 
 const STORAGE_KEY = "sandy-composites";
 
+function isValidDefinition(d: unknown): d is CompositeDefinition {
+  if (typeof d !== "object" || d === null) return false;
+  const obj = d as Record<string, unknown>;
+  return (
+    typeof obj.id === "string" &&
+    typeof obj.name === "string" &&
+    Array.isArray(obj.nodes) &&
+    Array.isArray(obj.propBindings) &&
+    obj.version === "1.0"
+  );
+}
+
 export function loadComposites(): CompositeDefinition[] {
   if (typeof window === "undefined") return [];
   try {
@@ -9,7 +21,7 @@ export function loadComposites(): CompositeDefinition[] {
     if (!raw) return [];
     const parsed = JSON.parse(raw);
     if (!Array.isArray(parsed)) return [];
-    return parsed as CompositeDefinition[];
+    return parsed.filter(isValidDefinition);
   } catch {
     return [];
   }
