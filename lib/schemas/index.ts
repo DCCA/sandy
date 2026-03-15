@@ -21,3 +21,4 @@ export {
   type AccountHeaderProps,
 } from "./account-header";
 export { BalanceCardSchema, type BalanceCardProps } from "./balance-card";
+export { QuickActionsSchema, type QuickActionsProps } from "./quick-actions";

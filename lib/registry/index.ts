@@ -15,6 +15,7 @@ import { Footer } from "@/components/registry/footer";
 import { AvatarGroup } from "@/components/registry/avatar-group";
 import { AccountHeader } from "@/components/registry/account-header";
 import { BalanceCard } from "@/components/registry/balance-card";
+import { QuickActions } from "@/components/registry/quick-actions";
 import {
   HeroBannerSchema,
   ProductCardSchema,
@@ -32,6 +33,7 @@ import {
   AvatarGroupSchema,
   AccountHeaderSchema,
   BalanceCardSchema,
+  QuickActionsSchema,
 } from "@/lib/schemas";
 
 function section(id: string, component: string, props: Record<string, unknown>): Section {
@@ -291,6 +293,20 @@ export const registry: Record<string, RegistryItem> = {
       action: { label: "See statement", href: "/statement" },
     }),
     metadata: { name: "Balance Card", description: "Account balance display with optional masking and CTA", supportsTheme: true },
+  },
+  QuickActions: {
+    component: QuickActions as RegistryItem["component"],
+    schema: QuickActionsSchema,
+    example: section("sec_1", "QuickActions", {
+      actions: [
+        { icon: "💸", label: "Send", href: "/send" },
+        { icon: "📱", label: "Pay", href: "/pay" },
+        { icon: "🔄", label: "Transfer", href: "/transfer" },
+        { icon: "📊", label: "Invest", href: "/invest", badge: "New" },
+        { icon: "💳", label: "Cards", href: "/cards" },
+      ],
+    }),
+    metadata: { name: "Quick Actions", description: "Horizontal row of icon action buttons with labels", supportsTheme: true },
   },
 };
 
