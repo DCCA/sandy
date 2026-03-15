@@ -13,7 +13,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "JSON Component Sandbox",
+  title: "Sandy — JSON Component Sandbox",
   description: "Schema-first sandbox for rendering branded UI components from validated JSON",
 };
 
