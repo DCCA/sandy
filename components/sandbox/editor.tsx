@@ -29,10 +29,10 @@ function EditorSkeleton() {
 type EditorProps = {
   value: string;
   onChange: (value: string) => void;
-  componentName?: string;
+  sectionCount?: number;
 };
 
-export function Editor({ value, onChange, componentName }: EditorProps) {
+export function Editor({ value, onChange, sectionCount }: EditorProps) {
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const handleChange = useCallback(
@@ -49,9 +49,9 @@ export function Editor({ value, onChange, componentName }: EditorProps) {
     <div className="flex flex-col h-full">
       <div className="flex items-center justify-between px-3 py-1.5 border-b border-border/50 text-xs text-muted-foreground font-mono shrink-0">
         <span>Editor</span>
-        {componentName && (
+        {sectionCount != null && (
           <span className="px-1.5 py-0.5 rounded bg-muted/50 text-[10px]">
-            {componentName}
+            {sectionCount} {sectionCount === 1 ? "section" : "sections"}
           </span>
         )}
       </div>

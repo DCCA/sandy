@@ -20,3 +20,26 @@ export const EnvelopeSchema = z.object({
 });
 
 export type EnvelopeInput = z.input<typeof EnvelopeSchema>;
+
+export const SectionSchema = z.object({
+  id: z.string().min(1, "Section id is required"),
+  component: z.string().min(1, "Component name is required"),
+  props: z.record(z.string(), z.unknown()),
+});
+
+export const PageSchema = z.object({
+  version: z.string().default("2.0"),
+  theme: z
+    .object({
+      brand: z.string(),
+      mode: z.enum(["light", "dark"]),
+    })
+    .optional(),
+  meta: z
+    .object({
+      viewport: z.enum(["mobile", "tablet", "desktop"]).optional(),
+      locale: z.string().optional(),
+    })
+    .optional(),
+  sections: z.array(SectionSchema).min(1, "At least one section is required"),
+});

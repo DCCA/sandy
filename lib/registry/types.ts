@@ -1,15 +1,33 @@
 import type { ComponentType } from "react";
 import type { z } from "zod";
 
+export type Section = {
+  id: string;
+  component: string;
+  props: Record<string, unknown>;
+};
+
+export type Page = {
+  version: string;
+  theme?: {
+    brand: string;
+    mode: "light" | "dark";
+  };
+  meta?: {
+    viewport?: Viewport;
+    locale?: string;
+  };
+  sections: Section[];
+};
+
 export type RegistryItem = {
   component: ComponentType<Record<string, unknown>>;
   schema: z.ZodType;
-  example: Envelope;
+  example: Section;
   metadata: {
     name: string;
     description?: string;
     supportsTheme?: boolean;
-    supportsSlots?: boolean;
   };
 };
 
@@ -33,8 +51,17 @@ export type Viewport = "mobile" | "tablet" | "desktop";
 export type SandboxError = {
   type: "parse" | "validation" | "runtime";
   messages: string[];
+  sectionId?: string;
+  sectionLabel?: string;
 };
 
-export type ValidationResult =
-  | { success: true; data: Envelope }
-  | { success: false; errors: SandboxError[] };
+export type ValidatedSection = {
+  id: string;
+  component: ComponentType<Record<string, unknown>>;
+  componentName: string;
+  props: Record<string, unknown>;
+};
+
+export type PageValidationResult =
+  | { success: true; sections: ValidatedSection[]; errors: SandboxError[] }
+  | { success: false; sections: ValidatedSection[]; errors: SandboxError[] };

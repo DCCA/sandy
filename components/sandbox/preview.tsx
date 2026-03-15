@@ -1,9 +1,9 @@
 "use client";
 
-import { useEffect, useRef, type ComponentType } from "react";
+import { useEffect, useRef } from "react";
 import { ErrorBoundary } from "react-error-boundary";
 import { Layout } from "lucide-react";
-import type { Viewport } from "@/lib/registry/types";
+import type { Viewport, ValidatedSection } from "@/lib/registry/types";
 import type { ThemeTokens } from "@/lib/theme/types";
 import { applyTheme } from "@/lib/theme/css-vars";
 
@@ -14,21 +14,29 @@ const viewportWidths: Record<Viewport, string> = {
 };
 
 type PreviewProps = {
-  component: ComponentType<Record<string, unknown>> | null;
-  props: Record<string, unknown>;
+  sections: ValidatedSection[];
   themeTokens: ThemeTokens;
   viewport: Viewport;
-  resetKey: string;
+  selectedSectionId?: string | null;
+  onSectionClick?: (id: string) => void;
 };
 
-function ErrorFallback({ error, resetErrorBoundary }: { error: unknown; resetErrorBoundary: () => void }) {
+function SectionErrorFallback({
+  error,
+  resetErrorBoundary,
+  sectionLabel,
+}: {
+  error: unknown;
+  resetErrorBoundary: () => void;
+  sectionLabel: string;
+}) {
   const message = error instanceof Error ? error.message : String(error);
   return (
-    <div className="flex flex-col items-center justify-center h-full p-8 text-center">
+    <div className="flex flex-col items-center justify-center p-8 text-center">
       <div className="size-10 rounded-full bg-red-500/10 flex items-center justify-center mb-3">
         <span className="text-red-400 text-lg">!</span>
       </div>
-      <div className="text-red-400 text-sm font-semibold mb-1">Component Error</div>
+      <div className="text-red-400 text-sm font-semibold mb-1">{sectionLabel}</div>
       <p className="text-xs text-muted-foreground mb-4 max-w-md font-mono">
         {message}
       </p>
@@ -56,7 +64,13 @@ function DeviceFrame({ children }: { children: React.ReactNode }) {
   );
 }
 
-export function Preview({ component: Component, props, themeTokens, viewport, resetKey }: PreviewProps) {
+export function Preview({
+  sections,
+  themeTokens,
+  viewport,
+  selectedSectionId,
+  onSectionClick,
+}: PreviewProps) {
   const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -65,13 +79,13 @@ export function Preview({ component: Component, props, themeTokens, viewport, re
     }
   }, [themeTokens]);
 
-  if (!Component) {
+  if (sections.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center h-full gap-3 text-muted-foreground">
         <Layout className="size-10 opacity-20" />
         <div className="text-center">
-          <p className="text-sm font-medium">No component selected</p>
-          <p className="text-xs opacity-60 mt-1">Choose a component from the toolbar to preview</p>
+          <p className="text-sm font-medium">Empty page</p>
+          <p className="text-xs opacity-60 mt-1">Add a section from the toolbar to get started</p>
         </div>
       </div>
     );
@@ -91,16 +105,36 @@ export function Preview({ component: Component, props, themeTokens, viewport, re
             ref={containerRef}
             style={{
               backgroundColor: "var(--sandy-color-background, #fff)",
-              padding: "var(--sandy-spacing-lg, 24px)",
               color: "var(--sandy-color-foreground, #111)",
             }}
           >
-            <ErrorBoundary
-              FallbackComponent={ErrorFallback}
-              resetKeys={[resetKey]}
-            >
-              <Component {...props} />
-            </ErrorBoundary>
+            {sections.map((section, i) => {
+              const Component = section.component;
+              const label = `Section ${i + 1} (${section.componentName})`;
+              const isSelected = selectedSectionId === section.id;
+              return (
+                <ErrorBoundary
+                  key={section.id}
+                  FallbackComponent={(props) => (
+                    <SectionErrorFallback {...props} sectionLabel={label} />
+                  )}
+                  resetKeys={[section.id, JSON.stringify(section.props)]}
+                >
+                  <div
+                    style={{
+                      padding: "var(--sandy-spacing-lg, 24px)",
+                      outline: isSelected ? "2px solid var(--sandy-color-primary, #3b82f6)" : "none",
+                      outlineOffset: "-2px",
+                      cursor: onSectionClick ? "pointer" : undefined,
+                      position: "relative",
+                    }}
+                    onClick={onSectionClick ? () => onSectionClick(section.id) : undefined}
+                  >
+                    <Component {...section.props} />
+                  </div>
+                </ErrorBoundary>
+              );
+            })}
           </div>
         </DeviceFrame>
       </div>

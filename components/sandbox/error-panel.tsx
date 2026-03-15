@@ -53,16 +53,21 @@ export function ErrorPanel({ errors }: ErrorPanelProps) {
   return (
     <div className="border-t border-border/50 overflow-auto max-h-[220px] transition-all duration-200 shrink-0">
       <div className="p-2 space-y-1.5">
-        {errors.map((err) => {
-          const isCollapsed = collapsed.has(err.type);
+        {errors.map((err, i) => {
+          const key = err.sectionId ? `${err.type}-${err.sectionId}` : `${err.type}-${i}`;
+          const isCollapsed = collapsed.has(key);
+          const label = err.sectionLabel
+            ? `${errorLabels[err.type]} — ${err.sectionLabel}`
+            : errorLabels[err.type];
+
           return (
             <div
-              key={err.type}
+              key={key}
               className={`border-l-4 ${errorBorderColors[err.type]} bg-muted/20 rounded-r-md overflow-hidden`}
             >
               <button
                 type="button"
-                onClick={() => toggleCollapse(err.type)}
+                onClick={() => toggleCollapse(key)}
                 className="flex items-center gap-2 w-full px-3 py-1.5 text-left hover:bg-muted/30 transition-colors"
               >
                 {isCollapsed ? (
@@ -71,10 +76,10 @@ export function ErrorPanel({ errors }: ErrorPanelProps) {
                   <ChevronDown className="size-3 text-muted-foreground shrink-0" />
                 )}
                 <span className={`size-1.5 rounded-full ${errorDotColors[err.type]} shrink-0`} />
-                <span className="text-xs font-semibold text-muted-foreground">
-                  {errorLabels[err.type]}
+                <span className="text-xs font-semibold text-muted-foreground truncate">
+                  {label}
                 </span>
-                <span className="text-[10px] text-muted-foreground/60 ml-auto">
+                <span className="text-[10px] text-muted-foreground/60 ml-auto shrink-0">
                   {err.messages.length} {err.messages.length === 1 ? "issue" : "issues"}
                 </span>
               </button>

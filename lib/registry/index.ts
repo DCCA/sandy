@@ -1,4 +1,4 @@
-import type { RegistryItem, Envelope } from "./types";
+import type { RegistryItem, Section, Page } from "./types";
 import { HeroBanner } from "@/components/registry/hero-banner";
 import { ProductCard } from "@/components/registry/product-card";
 import { PromoBanner } from "@/components/registry/promo-banner";
@@ -18,15 +18,25 @@ import {
   ModalPreviewSchema,
 } from "@/lib/schemas";
 
-function envelope(component: string, props: Record<string, unknown>): Envelope {
-  return { component, version: "1.0", props, theme: { brand: "default", mode: "light" } };
+function section(id: string, component: string, props: Record<string, unknown>): Section {
+  return { id, component, props };
+}
+
+export function defaultPage(sectionOverride?: Section): Page {
+  const sec = sectionOverride ?? registry.HeroBanner.example;
+  return {
+    version: "2.0",
+    theme: { brand: "default", mode: "light" },
+    meta: { viewport: "desktop" },
+    sections: [sec],
+  };
 }
 
 export const registry: Record<string, RegistryItem> = {
   HeroBanner: {
     component: HeroBanner as RegistryItem["component"],
     schema: HeroBannerSchema,
-    example: envelope("HeroBanner", {
+    example: section("sec_1", "HeroBanner", {
       title: "Welcome back",
       subtitle: "Your credit options in one place",
       cta: { label: "See offers", href: "/offers" },
@@ -37,7 +47,7 @@ export const registry: Record<string, RegistryItem> = {
   ProductCard: {
     component: ProductCard as RegistryItem["component"],
     schema: ProductCardSchema,
-    example: envelope("ProductCard", {
+    example: section("sec_1", "ProductCard", {
       title: "Premium Plan",
       description: "Unlock all features with our premium subscription.",
       badge: "Popular",
@@ -48,7 +58,7 @@ export const registry: Record<string, RegistryItem> = {
   PromoBanner: {
     component: PromoBanner as RegistryItem["component"],
     schema: PromoBannerSchema,
-    example: envelope("PromoBanner", {
+    example: section("sec_1", "PromoBanner", {
       title: "Spring Sale — 20% off",
       description: "Use code SPRING20 at checkout. Ends March 31.",
       href: "/sale",
@@ -59,7 +69,7 @@ export const registry: Record<string, RegistryItem> = {
   NoticeBox: {
     component: NoticeBox as RegistryItem["component"],
     schema: NoticeBoxSchema,
-    example: envelope("NoticeBox", {
+    example: section("sec_1", "NoticeBox", {
       title: "Account verified",
       message: "Your email has been successfully verified. You can now access all features.",
       type: "success",
@@ -69,7 +79,7 @@ export const registry: Record<string, RegistryItem> = {
   FeatureList: {
     component: FeatureList as RegistryItem["component"],
     schema: FeatureListSchema,
-    example: envelope("FeatureList", {
+    example: section("sec_1", "FeatureList", {
       heading: "Why choose us",
       columns: "3",
       features: [
@@ -83,7 +93,7 @@ export const registry: Record<string, RegistryItem> = {
   InputField: {
     component: InputField as RegistryItem["component"],
     schema: InputFieldSchema,
-    example: envelope("InputField", {
+    example: section("sec_1", "InputField", {
       label: "Email address",
       placeholder: "you@example.com",
       type: "email",
@@ -95,7 +105,7 @@ export const registry: Record<string, RegistryItem> = {
   CTAButtonGroup: {
     component: CTAButtonGroup as RegistryItem["component"],
     schema: CTAButtonGroupSchema,
-    example: envelope("CTAButtonGroup", {
+    example: section("sec_1", "CTAButtonGroup", {
       alignment: "left",
       buttons: [
         { label: "Get started", href: "/signup", variant: "primary" },
@@ -107,7 +117,7 @@ export const registry: Record<string, RegistryItem> = {
   ModalPreview: {
     component: ModalPreview as RegistryItem["component"],
     schema: ModalPreviewSchema,
-    example: envelope("ModalPreview", {
+    example: section("sec_1", "ModalPreview", {
       title: "Confirm your action",
       body: "Are you sure you want to proceed? This action cannot be undone.",
       open: true,

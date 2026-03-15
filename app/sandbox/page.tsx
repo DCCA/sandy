@@ -2,28 +2,29 @@
 
 import { useState, useCallback, useMemo, useEffect, useRef, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Editor } from "@/components/sandbox/editor";
 import { Toolbar } from "@/components/sandbox/toolbar";
 import { Preview } from "@/components/sandbox/preview";
 import { ErrorPanel } from "@/components/sandbox/error-panel";
 import { TokenEditor } from "@/components/sandbox/token-editor";
-import { registry, getRegistryItem } from "@/lib/registry";
+import { SectionList } from "@/components/sandbox/section-list";
+import { PropertyEditor } from "@/components/sandbox/property-editor";
+import { getRegistryItem, defaultPage } from "@/lib/registry";
+import { pageTemplates } from "@/lib/registry/templates";
 import { parseJSON } from "@/lib/sandbox/parse";
-import { validateEnvelope, validateComponentProps } from "@/lib/sandbox/validate";
+import { validatePage, isLegacyEnvelope, migrateEnvelopeToPage } from "@/lib/sandbox/validate";
 import { serializeState, deserializeState, serializeTokens, deserializeTokens } from "@/lib/sandbox/serialize";
 import { getThemePreset, defaultTheme } from "@/lib/theme/presets";
 import { mergeTokens } from "@/lib/theme/merge-tokens";
-import type { Viewport, SandboxError, Envelope } from "@/lib/registry/types";
+import type { Viewport, SandboxError, Page, Section } from "@/lib/registry/types";
 import type { DeepPartial, ThemeTokens } from "@/lib/theme/types";
-
-const DEFAULT_COMPONENT = "HeroBanner";
 
 function SandboxContent() {
   const searchParams = useSearchParams();
   const isToolbarUpdate = useRef(false);
   const urlSyncTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  // Determine initial state from URL or defaults
   const initialState = useMemo(() => {
     const encoded = searchParams.get("s");
     const tokenParam = searchParams.get("t");
@@ -34,17 +35,15 @@ function SandboxContent() {
       if (restored) {
         return {
           json: JSON.stringify(restored, null, 2),
-          component: restored.component,
           theme: restored.theme?.brand ?? "default",
           viewport: (restored.meta?.viewport ?? "desktop") as Viewport,
           tokenOverrides: initialTokenOverrides,
         };
       }
     }
-    const item = getRegistryItem(DEFAULT_COMPONENT)!;
+    const page = defaultPage();
     return {
-      json: JSON.stringify(item.example, null, 2),
-      component: DEFAULT_COMPONENT,
+      json: JSON.stringify(page, null, 2),
       theme: "default",
       viewport: "desktop" as Viewport,
       tokenOverrides: initialTokenOverrides,
@@ -53,58 +52,55 @@ function SandboxContent() {
   }, []);
 
   const [jsonText, setJsonText] = useState(initialState.json);
-  const [selectedComponent, setSelectedComponent] = useState(initialState.component);
   const [selectedTheme, setSelectedTheme] = useState(initialState.theme);
   const [viewport, setViewport] = useState<Viewport>(initialState.viewport);
   const [tokenOverrides, setTokenOverrides] = useState<DeepPartial<ThemeTokens>>(initialState.tokenOverrides);
   const [tokenEditorOpen, setTokenEditorOpen] = useState(false);
+  const [selectedSectionId, setSelectedSectionId] = useState<string | null>(null);
 
-  // Parse, validate, and derive toolbar state in one pass
-  const { errors, validatedProps, resolvedComponent, parsedComponent, parsedTheme, parsedViewport } = useMemo(() => {
+  // Parse, validate, derive state
+  const { errors, validatedSections, parsedSections, parsedTheme, parsedViewport } = useMemo(() => {
     const errs: SandboxError[] = [];
     const parsed = parseJSON(jsonText);
     if (!parsed.success) {
       errs.push({ type: "parse", messages: [parsed.error] });
-      return { errors: errs, validatedProps: null, resolvedComponent: null, parsedComponent: null, parsedTheme: null, parsedViewport: null };
+      return { errors: errs, validatedSections: [], parsedSections: [], parsedTheme: null, parsedViewport: null };
     }
 
-    const envelopeResult = validateEnvelope(parsed.data);
-    if (!envelopeResult.success) {
-      errs.push({ type: "validation", messages: envelopeResult.errors });
-      return { errors: errs, validatedProps: null, resolvedComponent: null, parsedComponent: null, parsedTheme: null, parsedViewport: null };
+    let data = parsed.data;
+
+    // Auto-migrate legacy envelope
+    if (isLegacyEnvelope(data)) {
+      data = migrateEnvelopeToPage(data);
     }
 
-    const envelope = envelopeResult.data;
-    const item = getRegistryItem(envelope.component);
-    if (!item) {
-      errs.push({ type: "validation", messages: [`Unknown component: "${envelope.component}"`] });
-      return { errors: errs, validatedProps: null, resolvedComponent: null, parsedComponent: envelope.component, parsedTheme: envelope.theme?.brand ?? null, parsedViewport: (envelope.meta?.viewport as Viewport) ?? null };
-    }
-
-    const propsResult = validateComponentProps(item.schema, envelope.props);
-    if (!propsResult.success) {
-      errs.push({ type: "validation", messages: propsResult.errors });
-      return { errors: errs, validatedProps: null, resolvedComponent: null, parsedComponent: envelope.component, parsedTheme: envelope.theme?.brand ?? null, parsedViewport: (envelope.meta?.viewport as Viewport) ?? null };
-    }
+    const pageResult = validatePage(data);
+    const pageData = data as Page;
 
     return {
-      errors: errs,
-      validatedProps: propsResult.data as Record<string, unknown>,
-      resolvedComponent: item.component,
-      parsedComponent: envelope.component,
-      parsedTheme: envelope.theme?.brand ?? null,
-      parsedViewport: (envelope.meta?.viewport as Viewport) ?? null,
+      errors: pageResult.errors,
+      validatedSections: pageResult.sections,
+      parsedSections: pageData.sections ?? [],
+      parsedTheme: pageData.theme?.brand ?? null,
+      parsedViewport: (pageData.meta?.viewport as Viewport) ?? null,
     };
   }, [jsonText]);
 
-  // Sync toolbar state from parsed JSON (when edits come from the editor, not toolbar)
+  // Derive selected section + registry item
+  const selectedSection = useMemo(() => {
+    if (!selectedSectionId) return null;
+    const section = parsedSections.find((s) => s.id === selectedSectionId);
+    if (!section) return null;
+    const item = getRegistryItem(section.component);
+    if (!item) return null;
+    return { section, registryItem: item };
+  }, [selectedSectionId, parsedSections]);
+
+  // Sync toolbar state from parsed JSON
   useEffect(() => {
     if (isToolbarUpdate.current) {
       isToolbarUpdate.current = false;
       return;
-    }
-    if (parsedComponent && parsedComponent !== selectedComponent && registry[parsedComponent]) {
-      setSelectedComponent(parsedComponent);
     }
     if (parsedTheme && parsedTheme !== selectedTheme) {
       setSelectedTheme(parsedTheme);
@@ -113,15 +109,19 @@ function SandboxContent() {
       setViewport(parsedViewport);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [parsedComponent, parsedTheme, parsedViewport]);
+  }, [parsedTheme, parsedViewport]);
 
-  // URL sync (debounced) — includes token overrides
+  // URL sync (debounced)
   useEffect(() => {
     if (urlSyncTimer.current) clearTimeout(urlSyncTimer.current);
     urlSyncTimer.current = setTimeout(() => {
       const parsed = parseJSON(jsonText);
       if (parsed.success) {
-        const encoded = serializeState(parsed.data as Envelope);
+        let data = parsed.data;
+        if (isLegacyEnvelope(data)) {
+          data = migrateEnvelopeToPage(data);
+        }
+        const encoded = serializeState(data as Page);
         if (encoded) {
           const url = new URL(window.location.href);
           url.searchParams.set("s", encoded);
@@ -143,12 +143,99 @@ function SandboxContent() {
   const theme = getThemePreset(selectedTheme) ?? defaultTheme;
   const mergedTokens = useMemo(() => mergeTokens(theme.tokens, tokenOverrides), [theme.tokens, tokenOverrides]);
 
-  const handleComponentChange = useCallback((key: string) => {
-    isToolbarUpdate.current = true;
-    const item = getRegistryItem(key);
+  // Generate next section ID based on existing sections
+  const nextSectionId = useCallback((sections: Section[]): string => {
+    const nums = sections
+      .map((s) => {
+        const m = s.id.match(/^sec_(\d+)$/);
+        return m ? parseInt(m[1], 10) : 0;
+      });
+    const max = nums.length > 0 ? Math.max(...nums) : 0;
+    return `sec_${max + 1}`;
+  }, []);
+
+  const handleAddSection = useCallback((componentKey: string) => {
+    const item = getRegistryItem(componentKey);
     if (!item) return;
-    setSelectedComponent(key);
-    setJsonText(JSON.stringify(item.example, null, 2));
+    isToolbarUpdate.current = true;
+    setJsonText((prev) => {
+      try {
+        let data = JSON.parse(prev);
+        if (isLegacyEnvelope(data)) {
+          data = migrateEnvelopeToPage(data);
+        }
+        const sections: Section[] = data.sections ?? [];
+        const newSection: Section = {
+          id: nextSectionId(sections),
+          component: componentKey,
+          props: { ...item.example.props },
+        };
+        data.sections = [...sections, newSection];
+        return JSON.stringify(data, null, 2);
+      } catch {
+        return prev;
+      }
+    });
+  }, [nextSectionId]);
+
+  const handleLoadTemplate = useCallback((templateId: string) => {
+    const tpl = pageTemplates.find((t) => t.id === templateId);
+    if (!tpl) return;
+    isToolbarUpdate.current = true;
+    const page = { ...tpl.page, theme: { brand: selectedTheme, mode: "light" as const }, meta: { viewport } };
+    setJsonText(JSON.stringify(page, null, 2));
+    setSelectedSectionId(null);
+  }, [selectedTheme, viewport]);
+
+  const handleMoveSection = useCallback((id: string, direction: "up" | "down") => {
+    setJsonText((prev) => {
+      try {
+        const data = JSON.parse(prev);
+        const sections: Section[] = data.sections ?? [];
+        const idx = sections.findIndex((s: Section) => s.id === id);
+        if (idx < 0) return prev;
+        const swapIdx = direction === "up" ? idx - 1 : idx + 1;
+        if (swapIdx < 0 || swapIdx >= sections.length) return prev;
+        const next = [...sections];
+        [next[idx], next[swapIdx]] = [next[swapIdx], next[idx]];
+        data.sections = next;
+        return JSON.stringify(data, null, 2);
+      } catch {
+        return prev;
+      }
+    });
+  }, []);
+
+  const handleDeleteSection = useCallback((id: string) => {
+    setJsonText((prev) => {
+      try {
+        const data = JSON.parse(prev);
+        const sections: Section[] = data.sections ?? [];
+        if (sections.length <= 1) return prev;
+        data.sections = sections.filter((s: Section) => s.id !== id);
+        return JSON.stringify(data, null, 2);
+      } catch {
+        return prev;
+      }
+    });
+    if (selectedSectionId === id) {
+      setSelectedSectionId(null);
+    }
+  }, [selectedSectionId]);
+
+  const handleSectionPropsChange = useCallback((sectionId: string, newProps: Record<string, unknown>) => {
+    setJsonText((prev) => {
+      try {
+        const data = JSON.parse(prev);
+        const sections: Section[] = data.sections ?? [];
+        const idx = sections.findIndex((s: Section) => s.id === sectionId);
+        if (idx < 0) return prev;
+        data.sections[idx] = { ...data.sections[idx], props: newProps };
+        return JSON.stringify(data, null, 2);
+      } catch {
+        return prev;
+      }
+    });
   }, []);
 
   const handleThemeChange = useCallback((id: string) => {
@@ -192,11 +279,10 @@ function SandboxContent() {
   }, []);
 
   const handleReset = useCallback(() => {
-    const item = getRegistryItem(selectedComponent);
-    if (item) {
-      setJsonText(JSON.stringify(item.example, null, 2));
-    }
-  }, [selectedComponent]);
+    const page = defaultPage();
+    setJsonText(JSON.stringify(page, null, 2));
+    setSelectedSectionId(null);
+  }, []);
 
   const handleShare = useCallback(async () => {
     try {
@@ -213,10 +299,10 @@ function SandboxContent() {
   return (
     <div className="flex flex-col h-screen">
       <Toolbar
-        selectedComponent={selectedComponent}
         selectedTheme={selectedTheme}
         viewport={viewport}
-        onComponentChange={handleComponentChange}
+        onAddSection={handleAddSection}
+        onLoadTemplate={handleLoadTemplate}
         onThemeChange={handleThemeChange}
         onViewportChange={handleViewportChange}
         onFormat={handleFormat}
@@ -226,11 +312,43 @@ function SandboxContent() {
         onTokenEditorToggle={handleTokenEditorToggle}
       />
       <div className="grid grid-cols-[2fr_3fr] flex-1 overflow-hidden">
-        {/* Left panel: Editor + Errors */}
+        {/* Left panel: Section List + Tabs (Editor/Properties) + Errors */}
         <div className="flex flex-col border-r border-border/50 overflow-hidden">
-          <div className="flex-1 overflow-hidden">
-            <Editor value={jsonText} onChange={setJsonText} componentName={selectedComponent} />
-          </div>
+          <SectionList
+            sections={parsedSections}
+            selectedId={selectedSectionId}
+            onSelect={setSelectedSectionId}
+            onMove={handleMoveSection}
+            onDelete={handleDeleteSection}
+          />
+          <Tabs defaultValue="editor" className="flex flex-col flex-1 overflow-hidden">
+            <div className="border-b border-border/50 px-3 shrink-0">
+              <TabsList className="h-8" variant="line">
+                <TabsTrigger value="editor" className="text-xs px-3 h-7">
+                  Editor
+                </TabsTrigger>
+                <TabsTrigger value="properties" className="text-xs px-3 h-7">
+                  Properties
+                </TabsTrigger>
+              </TabsList>
+            </div>
+            <TabsContent value="editor" className="flex-1 overflow-hidden m-0">
+              <Editor value={jsonText} onChange={setJsonText} sectionCount={parsedSections.length} />
+            </TabsContent>
+            <TabsContent value="properties" className="flex-1 overflow-hidden m-0">
+              {selectedSection ? (
+                <PropertyEditor
+                  section={selectedSection.section}
+                  registryItem={selectedSection.registryItem}
+                  onChange={handleSectionPropsChange}
+                />
+              ) : (
+                <div className="flex flex-col items-center justify-center h-full gap-2 text-muted-foreground px-4">
+                  <p className="text-xs text-center">Select a section to edit its properties</p>
+                </div>
+              )}
+            </TabsContent>
+          </Tabs>
           <ErrorPanel errors={errors} />
         </div>
 
@@ -238,11 +356,11 @@ function SandboxContent() {
         <div className="flex overflow-hidden">
           <div className="flex-1 overflow-hidden">
             <Preview
-              component={resolvedComponent}
-              props={validatedProps ?? {}}
+              sections={validatedSections}
               themeTokens={mergedTokens}
               viewport={viewport}
-              resetKey={selectedComponent}
+              selectedSectionId={selectedSectionId}
+              onSectionClick={setSelectedSectionId}
             />
           </div>
           <TokenEditor

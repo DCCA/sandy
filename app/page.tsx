@@ -1,18 +1,22 @@
 import Link from "next/link";
-import { getRegistryKeys, getRegistryItem } from "@/lib/registry";
+import { getRegistryKeys, getRegistryItem, defaultPage } from "@/lib/registry";
 import { themePresets } from "@/lib/theme/presets";
 import { serializeState } from "@/lib/sandbox/serialize";
-// Using plain links styled as buttons since base-ui Button doesn't support asChild
 
-const EXAMPLE_ENVELOPE = `{
-  "component": "HeroBanner",
-  "version": "1.0",
-  "props": {
-    "title": "Welcome back",
-    "subtitle": "Your options in one place",
-    "cta": { "label": "See offers", "href": "/offers" }
-  },
-  "theme": { "brand": "default", "mode": "light" }
+const EXAMPLE_PAGE = `{
+  "version": "2.0",
+  "theme": { "brand": "default", "mode": "light" },
+  "sections": [
+    {
+      "id": "sec_1",
+      "component": "HeroBanner",
+      "props": {
+        "title": "Welcome back",
+        "subtitle": "Your options in one place",
+        "cta": { "label": "See offers", "href": "/offers" }
+      }
+    }
+  ]
 }`;
 
 const COLOR_KEYS = [
@@ -52,12 +56,12 @@ export default function Home() {
             <span className="text-accent">component sandbox</span>
           </h1>
           <p className="text-muted-foreground text-lg max-w-xl mx-auto mb-10 leading-relaxed">
-            Input validated JSON, see live rendered UI components with multi-brand theming.
+            Compose multi-section pages from validated JSON with multi-brand theming.
             Registry-only rendering, strict contracts, token-driven design.
           </p>
           <div className="max-w-md mx-auto mb-10 text-left">
             <pre className="bg-card border border-border/50 rounded-lg px-5 py-4 font-mono text-xs text-muted-foreground leading-relaxed overflow-x-auto">
-              {EXAMPLE_ENVELOPE}
+              {EXAMPLE_PAGE}
             </pre>
           </div>
           <Link
@@ -112,7 +116,8 @@ export default function Home() {
           {componentKeys.map((key) => {
             const item = getRegistryItem(key);
             if (!item) return null;
-            const encoded = serializeState(item.example);
+            const page = defaultPage(item.example);
+            const encoded = serializeState(page);
             const propsPreview = JSON.stringify(item.example.props, null, 2)
               .split("\n")
               .slice(0, 5)

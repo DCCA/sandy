@@ -1,4 +1,4 @@
-export { EnvelopeSchema, type EnvelopeInput } from "./envelope";
+export { EnvelopeSchema, type EnvelopeInput, SectionSchema, PageSchema } from "./envelope";
 export { HeroBannerSchema, type HeroBannerProps } from "./hero-banner";
 export { ProductCardSchema, type ProductCardProps } from "./product-card";
 export { PromoBannerSchema, type PromoBannerProps } from "./promo-banner";

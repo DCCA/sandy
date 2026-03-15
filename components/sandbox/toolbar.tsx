@@ -20,16 +20,19 @@ import {
   RotateCcw,
   AlignLeft,
   Paintbrush,
+  Plus,
+  FileText,
 } from "lucide-react";
 import type { Viewport } from "@/lib/registry/types";
 import { themePresets } from "@/lib/theme/presets";
 import { getRegistryKeys, getRegistryItem } from "@/lib/registry";
+import { pageTemplates } from "@/lib/registry/templates";
 
 type ToolbarProps = {
-  selectedComponent: string;
   selectedTheme: string;
   viewport: Viewport;
-  onComponentChange: (key: string) => void;
+  onAddSection: (componentKey: string) => void;
+  onLoadTemplate: (templateId: string) => void;
   onThemeChange: (id: string) => void;
   onViewportChange: (v: Viewport) => void;
   onFormat: () => void;
@@ -40,10 +43,10 @@ type ToolbarProps = {
 };
 
 export const Toolbar = memo(function Toolbar({
-  selectedComponent,
   selectedTheme,
   viewport,
-  onComponentChange,
+  onAddSection,
+  onLoadTemplate,
   onThemeChange,
   onViewportChange,
   onFormat,
@@ -78,10 +81,13 @@ export const Toolbar = memo(function Toolbar({
 
       <Separator orientation="vertical" className="h-5" />
 
-      {/* Component selector */}
-      <Select value={selectedComponent} onValueChange={(v) => v && onComponentChange(v)}>
-        <SelectTrigger className="w-[180px] h-8 text-xs">
-          <SelectValue placeholder="Component" />
+      {/* Add Section */}
+      <Select value="" onValueChange={(v) => v && onAddSection(v)}>
+        <SelectTrigger className="w-[160px] h-8 text-xs">
+          <div className="flex items-center gap-1.5">
+            <Plus className="size-3.5" />
+            <span>Add Section</span>
+          </div>
         </SelectTrigger>
         <SelectContent>
           {componentKeys.map((key) => {
@@ -99,6 +105,28 @@ export const Toolbar = memo(function Toolbar({
               </SelectItem>
             );
           })}
+        </SelectContent>
+      </Select>
+
+      {/* Templates */}
+      <Select value="" onValueChange={(v) => v && onLoadTemplate(v)}>
+        <SelectTrigger className="w-[140px] h-8 text-xs">
+          <div className="flex items-center gap-1.5">
+            <FileText className="size-3.5" />
+            <span>Templates</span>
+          </div>
+        </SelectTrigger>
+        <SelectContent>
+          {pageTemplates.map((tpl) => (
+            <SelectItem key={tpl.id} value={tpl.id}>
+              <div className="flex flex-col py-0.5">
+                <span className="font-medium">{tpl.name}</span>
+                <span className="text-[10px] text-muted-foreground leading-tight">
+                  {tpl.description}
+                </span>
+              </div>
+            </SelectItem>
+          ))}
         </SelectContent>
       </Select>
 

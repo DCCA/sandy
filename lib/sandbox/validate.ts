@@ -1,5 +1,12 @@
-import { EnvelopeSchema } from "@/lib/schemas/envelope";
-import type { Envelope, SandboxError, ValidationResult } from "@/lib/registry/types";
+import { EnvelopeSchema, PageSchema } from "@/lib/schemas/envelope";
+import { getRegistryItem } from "@/lib/registry";
+import type {
+  Envelope,
+  Page,
+  SandboxError,
+  ValidatedSection,
+  PageValidationResult,
+} from "@/lib/registry/types";
 import type { z } from "zod";
 
 function formatZodErrors(error: z.ZodError): string[] {
@@ -33,33 +40,83 @@ export function validateComponentProps(
   };
 }
 
-export function validateFull(
-  data: unknown,
-  getSchema: (key: string) => z.ZodType | undefined
-): ValidationResult {
+export function isLegacyEnvelope(data: unknown): data is Envelope {
+  return (
+    typeof data === "object" &&
+    data !== null &&
+    "component" in data &&
+    typeof (data as Record<string, unknown>).component === "string" &&
+    !("sections" in data)
+  );
+}
+
+export function migrateEnvelopeToPage(envelope: Envelope): Page {
+  return {
+    version: "2.0",
+    theme: envelope.theme,
+    meta: envelope.meta,
+    sections: [
+      {
+        id: "sec_1",
+        component: envelope.component,
+        props: envelope.props,
+      },
+    ],
+  };
+}
+
+export function validatePage(data: unknown): PageValidationResult {
   const errors: SandboxError[] = [];
+  const validSections: ValidatedSection[] = [];
 
-  const envelopeResult = validateEnvelope(data);
-  if (!envelopeResult.success) {
-    errors.push({ type: "validation", messages: envelopeResult.errors });
-    return { success: false, errors };
+  const pageResult = PageSchema.safeParse(data);
+  if (!pageResult.success) {
+    errors.push({ type: "validation", messages: formatZodErrors(pageResult.error) });
+    return { success: false, sections: [], errors };
   }
 
-  const envelope = envelopeResult.data;
-  const schema = getSchema(envelope.component);
-  if (!schema) {
-    errors.push({
-      type: "validation",
-      messages: [`Unknown component: "${envelope.component}"`],
+  const page = pageResult.data as Page;
+  let hasErrors = false;
+
+  for (let i = 0; i < page.sections.length; i++) {
+    const section = page.sections[i];
+    const sectionLabel = `Section ${i + 1} (${section.component})`;
+
+    const item = getRegistryItem(section.component);
+    if (!item) {
+      errors.push({
+        type: "validation",
+        messages: [`Unknown component: "${section.component}"`],
+        sectionId: section.id,
+        sectionLabel,
+      });
+      hasErrors = true;
+      continue;
+    }
+
+    const propsResult = validateComponentProps(item.schema, section.props);
+    if (!propsResult.success) {
+      errors.push({
+        type: "validation",
+        messages: propsResult.errors,
+        sectionId: section.id,
+        sectionLabel,
+      });
+      hasErrors = true;
+      continue;
+    }
+
+    validSections.push({
+      id: section.id,
+      component: item.component,
+      componentName: section.component,
+      props: propsResult.data as Record<string, unknown>,
     });
-    return { success: false, errors };
   }
 
-  const propsResult = validateComponentProps(schema, envelope.props);
-  if (!propsResult.success) {
-    errors.push({ type: "validation", messages: propsResult.errors });
-    return { success: false, errors };
-  }
-
-  return { success: true, data: { ...envelope, props: propsResult.data as Record<string, unknown> } };
+  return {
+    success: !hasErrors,
+    sections: validSections,
+    errors,
+  };
 }

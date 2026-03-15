@@ -1,19 +1,24 @@
-import type { Envelope } from "@/lib/registry/types";
+import type { Page } from "@/lib/registry/types";
 import type { ThemeTokens, DeepPartial } from "@/lib/theme/types";
+import { isLegacyEnvelope, migrateEnvelopeToPage } from "./validate";
 
-export function serializeState(envelope: Envelope): string {
+export function serializeState(page: Page): string {
   try {
-    const json = JSON.stringify(envelope);
+    const json = JSON.stringify(page);
     return btoa(encodeURIComponent(json));
   } catch {
     return "";
   }
 }
 
-export function deserializeState(encoded: string): Envelope | null {
+export function deserializeState(encoded: string): Page | null {
   try {
     const json = decodeURIComponent(atob(encoded));
-    return JSON.parse(json) as Envelope;
+    const data = JSON.parse(json);
+    if (isLegacyEnvelope(data)) {
+      return migrateEnvelopeToPage(data);
+    }
+    return data as Page;
   } catch {
     return null;
   }
