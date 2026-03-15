@@ -139,4 +139,88 @@ export const pageTemplates: PageTemplate[] = [
       ],
     },
   },
+  {
+    id: "banking-home",
+    name: "Banking Home",
+    description: "Mobile banking home screen with balance, actions, and transactions",
+    page: {
+      version: "2.0",
+      theme: { brand: "default", mode: "light" },
+      meta: { viewport: "mobile" },
+      sections: [
+        {
+          id: "sec_1",
+          component: "AccountHeader",
+          props: {
+            greeting: "Good morning",
+            userName: "Maria",
+            actions: [
+              { icon: "🔔", label: "Notifications" },
+              { icon: "⚙️", label: "Settings" },
+            ],
+          },
+        },
+        {
+          id: "sec_2",
+          component: "BalanceCard",
+          props: {
+            label: "Available balance",
+            amount: "R$ 4,521.89",
+            visible: true,
+            action: { label: "See statement", href: "/statement" },
+          },
+        },
+        {
+          id: "sec_3",
+          component: "QuickActions",
+          props: {
+            actions: [
+              { icon: "💸", label: "Send", href: "/send" },
+              { icon: "📱", label: "Pay", href: "/pay", badge: "12x" },
+              { icon: "🔄", label: "Transfer", href: "/transfer" },
+              { icon: "💳", label: "Cards", href: "/cards" },
+            ],
+          },
+        },
+        {
+          id: "sec_4",
+          component: "InfoCardGrid",
+          props: {
+            cards: [
+              { title: "Credit card", value: "R$ 2,500.00", footnote: "Available limit", action: { label: "Details", href: "/card" } },
+              { title: "Invoice", value: "R$ 189.50", footnote: "Due Apr 06", action: { label: "Pay now", href: "/invoice" } },
+              { title: "Loans", description: "Best rates available", action: { label: "Simulate", href: "/loans" } },
+              { title: "Investments", value: "R$ 12,350.00", footnote: "Total invested", action: { label: "Simulate", href: "/invest" } },
+            ],
+          },
+        },
+        {
+          id: "sec_5",
+          component: "TransactionList",
+          props: {
+            heading: "Recent activity",
+            transactions: [
+              { title: "Coffee Shop", subtitle: "Debit card", amount: "- R$ 12.50", timestamp: "Today", type: "payment" },
+              { title: "Salary deposit", subtitle: "TED received", amount: "+ R$ 5,200.00", timestamp: "Yesterday", type: "received" },
+              { title: "Transfer to Ana", subtitle: "Pix", amount: "- R$ 150.00", timestamp: "Mar 9", type: "sent" },
+            ],
+            showAllLabel: "View all transactions",
+            showAllHref: "/transactions",
+          },
+        },
+        {
+          id: "sec_6",
+          component: "BottomTabBar",
+          props: {
+            tabs: [
+              { icon: "🏠", label: "Home", href: "/home", active: true },
+              { icon: "💳", label: "Cards", href: "/cards" },
+              { icon: "📊", label: "Invest", href: "/invest" },
+              { icon: "👤", label: "Profile", href: "/profile" },
+            ],
+          },
+        },
+      ],
+    },
+  },
 ];
