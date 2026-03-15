@@ -104,6 +104,10 @@ export function Preview({
               backgroundColor: "var(--sandy-color-background, #fff)",
               color: "var(--sandy-color-foreground, #111)",
             }}
+            onClick={(e) => {
+              const anchor = (e.target as HTMLElement).closest("a");
+              if (anchor) e.preventDefault();
+            }}
           >
             {sections.map((section, i) => {
               const Component = section.component;
