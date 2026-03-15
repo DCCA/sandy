@@ -9,6 +9,7 @@ import { CTAButtonGroup } from "@/components/registry/cta-button-group";
 import { ModalPreview } from "@/components/registry/modal-preview";
 import { PricingTable } from "@/components/registry/pricing-table";
 import { Testimonial } from "@/components/registry/testimonial";
+import { StatsRow } from "@/components/registry/stats-row";
 import {
   HeroBannerSchema,
   ProductCardSchema,
@@ -20,6 +21,7 @@ import {
   ModalPreviewSchema,
   PricingTableSchema,
   TestimonialSchema,
+  StatsRowSchema,
 } from "@/lib/schemas";
 
 function section(id: string, component: string, props: Record<string, unknown>): Section {
@@ -175,6 +177,19 @@ export const registry: Record<string, RegistryItem> = {
       rating: 5,
     }),
     metadata: { name: "Testimonial", description: "Customer quote with author, role, avatar, and star rating", supportsTheme: true },
+  },
+  StatsRow: {
+    component: StatsRow as RegistryItem["component"],
+    schema: StatsRowSchema,
+    example: section("sec_1", "StatsRow", {
+      columns: "3",
+      stats: [
+        { value: "10K+", label: "Active users", description: "Across 40 countries" },
+        { value: "99.9%", label: "Uptime", description: "Over the last 12 months" },
+        { value: "4.8/5", label: "Rating", description: "From 2,000+ reviews" },
+      ],
+    }),
+    metadata: { name: "Stats Row", description: "Grid of key metrics with values and labels", supportsTheme: true },
   },
 };
 

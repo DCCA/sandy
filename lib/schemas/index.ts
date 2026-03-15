@@ -12,3 +12,4 @@ export {
 export { ModalPreviewSchema, type ModalPreviewProps } from "./modal-preview";
 export { PricingTableSchema, type PricingTableProps } from "./pricing-table";
 export { TestimonialSchema, type TestimonialProps } from "./testimonial";
+export { StatsRowSchema, type StatsRowProps } from "./stats-row";
