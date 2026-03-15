@@ -254,6 +254,22 @@ function SandboxContent() {
     });
   }, [setJsonText]);
 
+  const handleReorderSections = useCallback((orderedIds: string[]) => {
+    setJsonText((prev) => {
+      try {
+        const data = JSON.parse(prev);
+        const sections: Section[] = data.sections ?? [];
+        const byId = new Map(sections.map((s) => [s.id, s]));
+        const reordered = orderedIds.map((id) => byId.get(id)).filter(Boolean) as Section[];
+        if (reordered.length !== sections.length) return prev;
+        data.sections = reordered;
+        return JSON.stringify(data, null, 2);
+      } catch {
+        return prev;
+      }
+    });
+  }, [setJsonText]);
+
   const handleDeleteSection = useCallback((id: string) => {
     setJsonText((prev) => {
       try {
@@ -424,6 +440,7 @@ function SandboxContent() {
             selectedId={selectedSectionId}
             onSelect={setSelectedSectionId}
             onMove={handleMoveSection}
+            onReorder={handleReorderSections}
             onDelete={handleDeleteSection}
           />
           <Tabs defaultValue="editor" className="flex flex-col flex-1 overflow-hidden">
