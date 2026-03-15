@@ -29,6 +29,7 @@ import { themePresets } from "@/lib/theme/presets";
 import { getRegistryKeys, getRegistryItem } from "@/lib/registry";
 import { pageTemplates } from "@/lib/registry/templates";
 import { ExportPanel } from "./export-panel";
+import { SandyLogo } from "@/components/sandy-logo";
 
 type ToolbarProps = {
   selectedTheme: string;
@@ -95,9 +96,7 @@ export const Toolbar = memo(function Toolbar({
   return (
     <div className="flex items-center gap-2 px-3 py-1.5 border-b border-border/50 backdrop-blur-md bg-background/80 shrink-0">
       {/* Branding */}
-      <span className="font-mono text-sm font-semibold tracking-tight text-accent-foreground mr-1">
-        <span className="text-accent">S</span>andy
-      </span>
+      <SandyLogo className="mr-1" />
 
       <Separator orientation="vertical" className="h-5" />
 

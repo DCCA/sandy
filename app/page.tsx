@@ -2,6 +2,7 @@ import Link from "next/link";
 import { getRegistryKeys, getRegistryItem, defaultPage } from "@/lib/registry";
 import { themePresets } from "@/lib/theme/presets";
 import { serializeState } from "@/lib/sandbox/serialize";
+import { SandyLogo } from "@/components/sandy-logo";
 
 const EXAMPLE_PAGE = `{
   "version": "2.0",
@@ -36,9 +37,7 @@ export default function Home() {
     <div className="min-h-screen bg-background text-foreground">
       {/* Nav */}
       <nav className="flex items-center justify-between px-6 py-4 border-b border-border backdrop-blur-md bg-background/80 sticky top-0 z-10">
-        <span className="font-mono text-sm font-semibold tracking-tight">
-          <span className="text-accent">S</span>andy
-        </span>
+        <SandyLogo />
         <Link
           href="/sandbox"
           className="inline-flex items-center h-7 px-3 text-xs font-medium rounded-md bg-secondary text-secondary-foreground hover:bg-secondary/80 transition-colors"
