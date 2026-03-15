@@ -23,7 +23,50 @@ JSON Component Sandbox — a Next.js web app where users input validated JSON on
 npm run dev          # Start dev server
 npm run build        # Production build (includes type checking)
 npm run lint         # Run ESLint
+npm run typecheck    # TypeScript type check (no emit)
+npm run validate     # Typecheck + lint (fast pre-flight)
 ```
+
+## Development Workflow
+
+### The Loop
+
+Every change follows this loop. Do not skip steps.
+
+1. **Implement** — Write the code for one logical unit of work
+2. **Build** — Run `npm run build`. Fix any errors before proceeding
+3. **Lint** — Run `npm run lint`. Fix any errors before proceeding
+4. **Review** — Re-read changed files for correctness, patterns, edge cases
+5. **Fix** — Address review findings. If non-trivial, go back to step 2
+6. **Commit** — Conventional commit. Pre-commit hooks run automatically
+
+### Logical Units
+
+A logical unit is the smallest coherent set of changes:
+- One new component + its schema + registry entry
+- One bug fix (however many files)
+- One refactor or config change
+
+Do NOT accumulate multiple units into one commit.
+
+### Commit Rules
+
+- **Always commit after completing a logical unit.** Do not accumulate uncommitted work.
+- **Never wait to be asked to commit.** When a unit is done and verified, commit immediately.
+- **Commit before starting the next unit.** Do not begin new work with uncommitted changes.
+- **Run `npm run build && npm run lint` before committing.** Hooks enforce lint + typecheck, but run build manually too.
+- **Do not bypass hooks** with `--no-verify`.
+
+### Pre-commit Hooks
+
+These run automatically on `git commit`:
+- **lint-staged**: ESLint `--fix` on staged `.ts`/`.tsx`/`.js`/`.mjs` files
+- **tsc --noEmit**: Full project type check
+- **commitlint**: Validates conventional commit format
+
+### Commit Message Format
+
+`<type>: <description>` — types: feat, fix, refactor, docs, chore, style, perf, build, ci, test
 
 ## Architecture
 
