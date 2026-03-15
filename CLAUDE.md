@@ -8,22 +8,21 @@ JSON Component Sandbox — a Next.js web app where users input validated JSON on
 
 ## Tech Stack
 
-- **Framework:** Next.js App Router + TypeScript
-- **Validation:** Zod (envelope + per-component schemas)
-- **Editor:** Monaco Editor
-- **Styling:** Tailwind CSS + CSS variables for theming
-- **UI primitives:** shadcn/ui
+- **Framework:** Next.js 16 App Router + TypeScript
+- **Validation:** Zod 4 (envelope + per-component schemas)
+- **Editor:** Monaco Editor (`@monaco-editor/react`)
+- **Styling:** Tailwind CSS 4 (CSS-based config in `globals.css`, not `tailwind.config.ts`) + CSS variables for theming
+- **UI primitives:** shadcn/ui (base-ui based, not Radix — Select `onValueChange` passes `string | null`)
 - **State:** URL state + local component state
-- **Error isolation:** React Error Boundary
+- **Error isolation:** react-error-boundary v6 (error type is `unknown`, not `Error`)
 - **Deployment:** Vercel
 
 ## Common Commands
 
 ```bash
 npm run dev          # Start dev server
-npm run build        # Production build
+npm run build        # Production build (includes type checking)
 npm run lint         # Run ESLint
-npm run test         # Run tests
 ```
 
 ## Architecture
@@ -57,7 +56,11 @@ Components are keyed by stable IDs. Each registry entry contains: React componen
 
 ### Theming
 
-Token-based theming via CSS variables. Theme presets provide colors, typography, radius, spacing, and shadows. At least 3 presets: Default, Acme Bank, Enterprise Dark.
+Token-based theming via `--sandy-*` CSS variables scoped to the preview container (not `document.documentElement`). Theme presets provide colors, typography, radius, spacing, and shadows. 3 presets: Default, Acme Bank, Enterprise Dark. Registry components use inline styles referencing CSS vars (e.g., `var(--sandy-color-primary)`) rather than Tailwind theme classes.
+
+### App Shell
+
+Dark mode permanently on (`<html className="dark">`). The app shell (toolbar, editor, error panel) uses shadcn dark theme. The preview pane is independently themed via scoped `--sandy-*` CSS vars. Monaco Editor is loaded via `next/dynamic` with `ssr: false` for bundle optimization.
 
 ### Key Directories
 
