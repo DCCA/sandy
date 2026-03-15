@@ -8,6 +8,7 @@ import { InputField } from "@/components/registry/input-field";
 import { CTAButtonGroup } from "@/components/registry/cta-button-group";
 import { ModalPreview } from "@/components/registry/modal-preview";
 import { PricingTable } from "@/components/registry/pricing-table";
+import { Testimonial } from "@/components/registry/testimonial";
 import {
   HeroBannerSchema,
   ProductCardSchema,
@@ -18,6 +19,7 @@ import {
   CTAButtonGroupSchema,
   ModalPreviewSchema,
   PricingTableSchema,
+  TestimonialSchema,
 } from "@/lib/schemas";
 
 function section(id: string, component: string, props: Record<string, unknown>): Section {
@@ -162,6 +164,17 @@ export const registry: Record<string, RegistryItem> = {
       ],
     }),
     metadata: { name: "Pricing Table", description: "Tiered pricing comparison with highlighted plan", supportsTheme: true },
+  },
+  Testimonial: {
+    component: Testimonial as RegistryItem["component"],
+    schema: TestimonialSchema,
+    example: section("sec_1", "Testimonial", {
+      quote: "This product completely transformed how our team collaborates. The results speak for themselves.",
+      author: "Sarah Chen",
+      role: "VP of Engineering, Acme Corp",
+      rating: 5,
+    }),
+    metadata: { name: "Testimonial", description: "Customer quote with author, role, avatar, and star rating", supportsTheme: true },
   },
 };
 
