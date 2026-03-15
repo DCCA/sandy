@@ -30,3 +30,7 @@ export {
   TransactionListSchema,
   type TransactionListProps,
 } from "./transaction-list";
+export {
+  BottomTabBarSchema,
+  type BottomTabBarProps,
+} from "./bottom-tab-bar";

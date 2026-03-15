@@ -18,6 +18,7 @@ import { BalanceCard } from "@/components/registry/balance-card";
 import { QuickActions } from "@/components/registry/quick-actions";
 import { InfoCardGrid } from "@/components/registry/info-card-grid";
 import { TransactionList } from "@/components/registry/transaction-list";
+import { BottomTabBar } from "@/components/registry/bottom-tab-bar";
 import {
   HeroBannerSchema,
   ProductCardSchema,
@@ -38,6 +39,7 @@ import {
   QuickActionsSchema,
   InfoCardGridSchema,
   TransactionListSchema,
+  BottomTabBarSchema,
 } from "@/lib/schemas";
 
 function section(id: string, component: string, props: Record<string, unknown>): Section {
@@ -340,6 +342,19 @@ export const registry: Record<string, RegistryItem> = {
       showAllHref: "/transactions",
     }),
     metadata: { name: "Transaction List", description: "List of transactions with icons, amounts, and timestamps", supportsTheme: true },
+  },
+  BottomTabBar: {
+    component: BottomTabBar as RegistryItem["component"],
+    schema: BottomTabBarSchema,
+    example: section("sec_1", "BottomTabBar", {
+      tabs: [
+        { icon: "🏠", label: "Home", href: "/home", active: true },
+        { icon: "💳", label: "Cards", href: "/cards" },
+        { icon: "📊", label: "Invest", href: "/invest" },
+        { icon: "👤", label: "Profile", href: "/profile" },
+      ],
+    }),
+    metadata: { name: "Bottom Tab Bar", description: "Bottom navigation bar with icon tabs", supportsTheme: true },
   },
 };
 
