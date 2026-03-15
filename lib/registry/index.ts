@@ -10,6 +10,7 @@ import { ModalPreview } from "@/components/registry/modal-preview";
 import { PricingTable } from "@/components/registry/pricing-table";
 import { Testimonial } from "@/components/registry/testimonial";
 import { StatsRow } from "@/components/registry/stats-row";
+import { NavBar } from "@/components/registry/nav-bar";
 import {
   HeroBannerSchema,
   ProductCardSchema,
@@ -22,6 +23,7 @@ import {
   PricingTableSchema,
   TestimonialSchema,
   StatsRowSchema,
+  NavBarSchema,
 } from "@/lib/schemas";
 
 function section(id: string, component: string, props: Record<string, unknown>): Section {
@@ -190,6 +192,21 @@ export const registry: Record<string, RegistryItem> = {
       ],
     }),
     metadata: { name: "Stats Row", description: "Grid of key metrics with values and labels", supportsTheme: true },
+  },
+  NavBar: {
+    component: NavBar as RegistryItem["component"],
+    schema: NavBarSchema,
+    example: section("sec_1", "NavBar", {
+      logo: { text: "Acme" },
+      links: [
+        { label: "Products", href: "/products" },
+        { label: "Pricing", href: "/pricing" },
+        { label: "Docs", href: "/docs" },
+        { label: "Blog", href: "/blog" },
+      ],
+      cta: { label: "Sign up", href: "/signup" },
+    }),
+    metadata: { name: "Nav Bar", description: "Navigation bar with logo, links, and optional CTA", supportsTheme: true },
   },
 };
 
