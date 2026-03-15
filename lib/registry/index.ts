@@ -16,6 +16,7 @@ import { AvatarGroup } from "@/components/registry/avatar-group";
 import { AccountHeader } from "@/components/registry/account-header";
 import { BalanceCard } from "@/components/registry/balance-card";
 import { QuickActions } from "@/components/registry/quick-actions";
+import { InfoCardGrid } from "@/components/registry/info-card-grid";
 import {
   HeroBannerSchema,
   ProductCardSchema,
@@ -34,6 +35,7 @@ import {
   AccountHeaderSchema,
   BalanceCardSchema,
   QuickActionsSchema,
+  InfoCardGridSchema,
 } from "@/lib/schemas";
 
 function section(id: string, component: string, props: Record<string, unknown>): Section {
@@ -307,6 +309,19 @@ export const registry: Record<string, RegistryItem> = {
       ],
     }),
     metadata: { name: "Quick Actions", description: "Horizontal row of icon action buttons with labels", supportsTheme: true },
+  },
+  InfoCardGrid: {
+    component: InfoCardGrid as RegistryItem["component"],
+    schema: InfoCardGridSchema,
+    example: section("sec_1", "InfoCardGrid", {
+      cards: [
+        { title: "Credit card", value: "R$ 2,500.00", footnote: "Available limit", action: { label: "Details", href: "/card" } },
+        { title: "Invoice", value: "R$ 189.50", footnote: "Due Mar 15", action: { label: "Pay now", href: "/invoice" } },
+        { title: "Loans", description: "Pre-approved offer", action: { label: "Check rates", href: "/loans" } },
+        { title: "Insurance", description: "Protect what matters", action: { label: "Learn more", href: "/insurance" } },
+      ],
+    }),
+    metadata: { name: "Info Card Grid", description: "Two-column grid of summary cards with optional values and actions", supportsTheme: true },
   },
 };
 

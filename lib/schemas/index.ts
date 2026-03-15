@@ -22,3 +22,7 @@ export {
 } from "./account-header";
 export { BalanceCardSchema, type BalanceCardProps } from "./balance-card";
 export { QuickActionsSchema, type QuickActionsProps } from "./quick-actions";
+export {
+  InfoCardGridSchema,
+  type InfoCardGridProps,
+} from "./info-card-grid";
