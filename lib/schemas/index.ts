@@ -26,3 +26,7 @@ export {
   InfoCardGridSchema,
   type InfoCardGridProps,
 } from "./info-card-grid";
+export {
+  TransactionListSchema,
+  type TransactionListProps,
+} from "./transaction-list";

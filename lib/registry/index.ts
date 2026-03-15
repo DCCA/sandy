@@ -17,6 +17,7 @@ import { AccountHeader } from "@/components/registry/account-header";
 import { BalanceCard } from "@/components/registry/balance-card";
 import { QuickActions } from "@/components/registry/quick-actions";
 import { InfoCardGrid } from "@/components/registry/info-card-grid";
+import { TransactionList } from "@/components/registry/transaction-list";
 import {
   HeroBannerSchema,
   ProductCardSchema,
@@ -36,6 +37,7 @@ import {
   BalanceCardSchema,
   QuickActionsSchema,
   InfoCardGridSchema,
+  TransactionListSchema,
 } from "@/lib/schemas";
 
 function section(id: string, component: string, props: Record<string, unknown>): Section {
@@ -322,6 +324,22 @@ export const registry: Record<string, RegistryItem> = {
       ],
     }),
     metadata: { name: "Info Card Grid", description: "Two-column grid of summary cards with optional values and actions", supportsTheme: true },
+  },
+  TransactionList: {
+    component: TransactionList as RegistryItem["component"],
+    schema: TransactionListSchema,
+    example: section("sec_1", "TransactionList", {
+      heading: "Recent activity",
+      transactions: [
+        { title: "Coffee Shop", subtitle: "Debit card", amount: "- R$ 12.50", timestamp: "Today", type: "payment" },
+        { title: "Salary deposit", subtitle: "TED received", amount: "+ R$ 5,200.00", timestamp: "Mar 10", type: "received" },
+        { title: "Transfer to Ana", subtitle: "Pix", amount: "- R$ 150.00", timestamp: "Mar 9", type: "sent" },
+        { title: "Investment fund", subtitle: "CDB 120%", amount: "- R$ 500.00", timestamp: "Mar 8", type: "investment" },
+      ],
+      showAllLabel: "View all transactions",
+      showAllHref: "/transactions",
+    }),
+    metadata: { name: "Transaction List", description: "List of transactions with icons, amounts, and timestamps", supportsTheme: true },
   },
 };
 
