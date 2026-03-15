@@ -23,6 +23,7 @@ import { validatePage, isLegacyEnvelope, migrateEnvelopeToPage } from "@/lib/san
 import { serializeState, deserializeState, serializeTokens, deserializeTokens } from "@/lib/sandbox/serialize";
 import { getThemePreset, defaultTheme } from "@/lib/theme/presets";
 import { mergeTokens } from "@/lib/theme/merge-tokens";
+import { downloadJSON } from "@/lib/export/json";
 import type { Viewport, SandboxError, Page, Section } from "@/lib/registry/types";
 import type { DeepPartial, ThemeTokens } from "@/lib/theme/types";
 
@@ -336,6 +337,10 @@ function SandboxContent() {
     }
   }, []);
 
+  const handleDownload = useCallback(() => {
+    downloadJSON(jsonText);
+  }, [jsonText]);
+
   const handleTokenEditorToggle = useCallback(() => {
     setTokenEditorOpen((prev) => !prev);
   }, []);
@@ -389,6 +394,7 @@ function SandboxContent() {
         onRedo={redo}
         canUndo={canUndo}
         canRedo={canRedo}
+        onDownload={handleDownload}
         tokenEditorOpen={tokenEditorOpen}
         onTokenEditorToggle={handleTokenEditorToggle}
         composites={composites}

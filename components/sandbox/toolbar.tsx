@@ -27,6 +27,7 @@ import {
   Trash2,
   Undo2,
   Redo2,
+  Download,
 } from "lucide-react";
 import type { Viewport } from "@/lib/registry/types";
 import type { CompositeDefinition } from "@/lib/composite/types";
@@ -48,6 +49,7 @@ type ToolbarProps = {
   onRedo: () => void;
   canUndo: boolean;
   canRedo: boolean;
+  onDownload: () => void;
   tokenEditorOpen: boolean;
   onTokenEditorToggle: () => void;
   composites?: CompositeDefinition[];
@@ -70,6 +72,7 @@ export const Toolbar = memo(function Toolbar({
   onRedo,
   canUndo,
   canRedo,
+  onDownload,
   tokenEditorOpen,
   onTokenEditorToggle,
   composites = [],
@@ -276,6 +279,17 @@ export const Toolbar = memo(function Toolbar({
         </Button>
 
         <Separator orientation="vertical" className="h-5 mx-1" />
+
+        <Button
+          variant="ghost"
+          size="sm"
+          className="h-7 px-2 gap-1.5 text-xs"
+          onClick={onDownload}
+          title="Download JSON"
+        >
+          <Download className="size-3.5" />
+          <span className="hidden xl:inline">Download</span>
+        </Button>
 
         <Button
           variant="secondary"
