@@ -112,8 +112,8 @@ export const SectionList = memo(function SectionList({
                   : "bg-muted/20 hover:bg-muted/30"
               }`}
               style={{
-                borderTop: isDropTarget && dragOverPosition === "above" ? "2px solid hsl(var(--accent))" : "2px solid transparent",
-                borderBottom: isDropTarget && dragOverPosition === "below" ? "2px solid hsl(var(--accent))" : "2px solid transparent",
+                borderTop: isDropTarget && dragOverPosition === "above" ? "2px solid var(--accent)" : "2px solid transparent",
+                borderBottom: isDropTarget && dragOverPosition === "below" ? "2px solid var(--accent)" : "2px solid transparent",
               }}
               onClick={() => onSelect(section.id)}
             >
