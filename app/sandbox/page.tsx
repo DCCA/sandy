@@ -10,8 +10,13 @@ import { ErrorPanel } from "@/components/sandbox/error-panel";
 import { TokenEditor } from "@/components/sandbox/token-editor";
 import { SectionList } from "@/components/sandbox/section-list";
 import { PropertyEditor } from "@/components/sandbox/property-editor";
+import { ComponentBuilder } from "@/components/sandbox/component-builder";
 import { getRegistryItem, defaultPage } from "@/lib/registry";
+import { registerComposite, unregisterComposite } from "@/lib/registry/composite-registry";
 import { pageTemplates } from "@/lib/registry/templates";
+import { loadComposites, saveComposite, deleteComposite as deleteCompositeFromStorage } from "@/lib/composite/storage";
+import { CompositeRenderer } from "@/components/composite/composite-renderer";
+import type { CompositeDefinition } from "@/lib/composite/types";
 import { parseJSON } from "@/lib/sandbox/parse";
 import { validatePage, isLegacyEnvelope, migrateEnvelopeToPage } from "@/lib/sandbox/validate";
 import { serializeState, deserializeState, serializeTokens, deserializeTokens } from "@/lib/sandbox/serialize";
@@ -19,6 +24,12 @@ import { getThemePreset, defaultTheme } from "@/lib/theme/presets";
 import { mergeTokens } from "@/lib/theme/merge-tokens";
 import type { Viewport, SandboxError, Page, Section } from "@/lib/registry/types";
 import type { DeepPartial, ThemeTokens } from "@/lib/theme/types";
+
+function createCompositeComponent(def: CompositeDefinition) {
+  return function CompositeComp(props: Record<string, unknown>) {
+    return <CompositeRenderer definition={def} props={props} />;
+  };
+}
 
 function SandboxContent() {
   const searchParams = useSearchParams();
@@ -57,6 +68,19 @@ function SandboxContent() {
   const [tokenOverrides, setTokenOverrides] = useState<DeepPartial<ThemeTokens>>(initialState.tokenOverrides);
   const [tokenEditorOpen, setTokenEditorOpen] = useState(false);
   const [selectedSectionId, setSelectedSectionId] = useState<string | null>(null);
+  const [composites, setComposites] = useState<CompositeDefinition[]>([]);
+  const [builderOpen, setBuilderOpen] = useState(false);
+  const [editingComposite, setEditingComposite] = useState<CompositeDefinition | null>(null);
+
+  // Load composites from localStorage on mount
+  useEffect(() => {
+    const defs = loadComposites();
+    for (const def of defs) {
+      const comp = createCompositeComponent(def);
+      registerComposite(def, comp);
+    }
+    setComposites(defs);
+  }, []);
 
   // Parse, validate, derive state
   const { errors, validatedSections, parsedSections, parsedTheme, parsedViewport } = useMemo(() => {
@@ -296,6 +320,39 @@ function SandboxContent() {
     setTokenEditorOpen((prev) => !prev);
   }, []);
 
+  const handleSaveComposite = useCallback((def: CompositeDefinition) => {
+    const comp = createCompositeComponent(def);
+    registerComposite(def, comp);
+    saveComposite(def);
+    setComposites((prev) => {
+      const idx = prev.findIndex((d) => d.id === def.id);
+      if (idx >= 0) {
+        const next = [...prev];
+        next[idx] = def;
+        return next;
+      }
+      return [...prev, def];
+    });
+    setBuilderOpen(false);
+    setEditingComposite(null);
+  }, []);
+
+  const handleEditComposite = useCallback((def: CompositeDefinition) => {
+    setEditingComposite(def);
+    setBuilderOpen(true);
+  }, []);
+
+  const handleDeleteComposite = useCallback((id: string) => {
+    unregisterComposite(id);
+    deleteCompositeFromStorage(id);
+    setComposites((prev) => prev.filter((d) => d.id !== id));
+  }, []);
+
+  const handleOpenBuilder = useCallback(() => {
+    setEditingComposite(null);
+    setBuilderOpen(true);
+  }, []);
+
   return (
     <div className="flex flex-col h-screen">
       <Toolbar
@@ -310,6 +367,10 @@ function SandboxContent() {
         onShare={handleShare}
         tokenEditorOpen={tokenEditorOpen}
         onTokenEditorToggle={handleTokenEditorToggle}
+        composites={composites}
+        onCreateComponent={handleOpenBuilder}
+        onEditComposite={handleEditComposite}
+        onDeleteComposite={handleDeleteComposite}
       />
       <div className="grid grid-cols-[2fr_3fr] flex-1 overflow-hidden">
         {/* Left panel: Section List + Tabs (Editor/Properties) + Errors */}
@@ -373,6 +434,14 @@ function SandboxContent() {
           />
         </div>
       </div>
+      {builderOpen && (
+        <ComponentBuilder
+          themeTokens={mergedTokens}
+          editingDefinition={editingComposite}
+          onSave={handleSaveComposite}
+          onClose={() => { setBuilderOpen(false); setEditingComposite(null); }}
+        />
+      )}
     </div>
   );
 }

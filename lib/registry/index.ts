@@ -131,12 +131,14 @@ export const registry: Record<string, RegistryItem> = {
   },
 };
 
-const registryKeys = Object.keys(registry);
+import { getCompositeItem, getCompositeKeys } from "./composite-registry";
+
+const builtinKeys = Object.keys(registry);
 
 export function getRegistryKeys(): string[] {
-  return registryKeys;
+  return [...builtinKeys, ...getCompositeKeys()];
 }
 
 export function getRegistryItem(key: string): RegistryItem | undefined {
-  return registry[key];
+  return registry[key] ?? getCompositeItem(key);
 }

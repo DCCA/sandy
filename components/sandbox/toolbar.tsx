@@ -22,8 +22,12 @@ import {
   Paintbrush,
   Plus,
   FileText,
+  Puzzle,
+  Pencil,
+  Trash2,
 } from "lucide-react";
 import type { Viewport } from "@/lib/registry/types";
+import type { CompositeDefinition } from "@/lib/composite/types";
 import { themePresets } from "@/lib/theme/presets";
 import { getRegistryKeys, getRegistryItem } from "@/lib/registry";
 import { pageTemplates } from "@/lib/registry/templates";
@@ -40,6 +44,10 @@ type ToolbarProps = {
   onShare: () => void;
   tokenEditorOpen: boolean;
   onTokenEditorToggle: () => void;
+  composites?: CompositeDefinition[];
+  onCreateComponent?: () => void;
+  onEditComposite?: (def: CompositeDefinition) => void;
+  onDeleteComposite?: (id: string) => void;
 };
 
 export const Toolbar = memo(function Toolbar({
@@ -54,6 +62,10 @@ export const Toolbar = memo(function Toolbar({
   onShare,
   tokenEditorOpen,
   onTokenEditorToggle,
+  composites = [],
+  onCreateComponent,
+  onEditComposite,
+  onDeleteComposite,
 }: ToolbarProps) {
   const componentKeys = getRegistryKeys();
   const [copied, setCopied] = useState(false);
@@ -169,6 +181,56 @@ export const Toolbar = memo(function Toolbar({
 
       {/* Actions */}
       <div className="ml-auto flex items-center gap-1">
+        {/* Create Component button */}
+        {onCreateComponent && (
+          <Button
+            variant="ghost"
+            size="sm"
+            className="h-7 px-2 gap-1.5 text-xs"
+            onClick={onCreateComponent}
+            title="Create custom component"
+          >
+            <Puzzle className="size-3.5" />
+            <span className="hidden xl:inline">Create</span>
+          </Button>
+        )}
+
+        {/* Custom components dropdown */}
+        {composites.length > 0 && onEditComposite && onDeleteComposite && (
+          <Select value="" onValueChange={() => {}}>
+            <SelectTrigger className="w-auto h-7 text-xs px-2 gap-1">
+              <span className="text-[10px] font-mono">Custom ({composites.length})</span>
+            </SelectTrigger>
+            <SelectContent>
+              {composites.map((def) => (
+                <div key={def.id} className="flex items-center gap-1 px-2 py-1">
+                  <span className="text-xs font-medium flex-1 truncate">{def.name}</span>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="h-5 w-5 p-0"
+                    onClick={(e) => { e.stopPropagation(); onEditComposite(def); }}
+                    title="Edit"
+                  >
+                    <Pencil className="size-3" />
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="h-5 w-5 p-0 text-red-400 hover:text-red-300"
+                    onClick={(e) => { e.stopPropagation(); onDeleteComposite(def.id); }}
+                    title="Delete"
+                  >
+                    <Trash2 className="size-3" />
+                  </Button>
+                </div>
+              ))}
+            </SelectContent>
+          </Select>
+        )}
+
+        <Separator orientation="vertical" className="h-5 mx-0.5" />
+
         <Button
           variant="ghost"
           size="sm"
