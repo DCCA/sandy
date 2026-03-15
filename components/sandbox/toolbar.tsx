@@ -27,13 +27,13 @@ import {
   Trash2,
   Undo2,
   Redo2,
-  Download,
 } from "lucide-react";
 import type { Viewport } from "@/lib/registry/types";
 import type { CompositeDefinition } from "@/lib/composite/types";
 import { themePresets } from "@/lib/theme/presets";
 import { getRegistryKeys, getRegistryItem } from "@/lib/registry";
 import { pageTemplates } from "@/lib/registry/templates";
+import { ExportPanel } from "./export-panel";
 
 type ToolbarProps = {
   selectedTheme: string;
@@ -49,7 +49,9 @@ type ToolbarProps = {
   onRedo: () => void;
   canUndo: boolean;
   canRedo: boolean;
-  onDownload: () => void;
+  onExportJSON: () => void;
+  onExportReact: () => string;
+  onExportHTML: () => string;
   tokenEditorOpen: boolean;
   onTokenEditorToggle: () => void;
   composites?: CompositeDefinition[];
@@ -72,7 +74,9 @@ export const Toolbar = memo(function Toolbar({
   onRedo,
   canUndo,
   canRedo,
-  onDownload,
+  onExportJSON,
+  onExportReact,
+  onExportHTML,
   tokenEditorOpen,
   onTokenEditorToggle,
   composites = [],
@@ -280,16 +284,11 @@ export const Toolbar = memo(function Toolbar({
 
         <Separator orientation="vertical" className="h-5 mx-1" />
 
-        <Button
-          variant="ghost"
-          size="sm"
-          className="h-7 px-2 gap-1.5 text-xs"
-          onClick={onDownload}
-          title="Download JSON"
-        >
-          <Download className="size-3.5" />
-          <span className="hidden xl:inline">Download</span>
-        </Button>
+        <ExportPanel
+          onExportJSON={onExportJSON}
+          onExportReact={onExportReact}
+          onExportHTML={onExportHTML}
+        />
 
         <Button
           variant="secondary"

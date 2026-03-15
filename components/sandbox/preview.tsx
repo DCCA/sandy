@@ -19,6 +19,7 @@ type PreviewProps = {
   viewport: Viewport;
   selectedSectionId?: string | null;
   onSectionClick?: (id: string) => void;
+  onContentRef?: (el: HTMLDivElement | null) => void;
 };
 
 function SectionErrorFallback({
@@ -70,6 +71,7 @@ export function Preview({
   viewport,
   selectedSectionId,
   onSectionClick,
+  onContentRef,
 }: PreviewProps) {
   const containerRef = useRef<HTMLDivElement>(null);
 
@@ -102,7 +104,10 @@ export function Preview({
       >
         <DeviceFrame>
           <div
-            ref={containerRef}
+            ref={(node) => {
+              containerRef.current = node;
+              onContentRef?.(node);
+            }}
             style={{
               backgroundColor: "var(--sandy-color-background, #fff)",
               color: "var(--sandy-color-foreground, #111)",

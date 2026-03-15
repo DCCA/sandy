@@ -24,6 +24,8 @@ import { serializeState, deserializeState, serializeTokens, deserializeTokens } 
 import { getThemePreset, defaultTheme } from "@/lib/theme/presets";
 import { mergeTokens } from "@/lib/theme/merge-tokens";
 import { downloadJSON } from "@/lib/export/json";
+import { generateReactCode } from "@/lib/export/react";
+import { generateHTML } from "@/lib/export/html";
 import type { Viewport, SandboxError, Page, Section } from "@/lib/registry/types";
 import type { DeepPartial, ThemeTokens } from "@/lib/theme/types";
 
@@ -73,6 +75,7 @@ function SandboxContent() {
   const [composites, setComposites] = useState<CompositeDefinition[]>([]);
   const [builderOpen, setBuilderOpen] = useState(false);
   const [editingComposite, setEditingComposite] = useState<CompositeDefinition | null>(null);
+  const previewRef = useRef<HTMLDivElement>(null);
 
   // Load composites from localStorage on mount
   useEffect(() => {
@@ -337,9 +340,18 @@ function SandboxContent() {
     }
   }, []);
 
-  const handleDownload = useCallback(() => {
+  const handleExportJSON = useCallback(() => {
     downloadJSON(jsonText);
   }, [jsonText]);
+
+  const handleExportReact = useCallback((): string => {
+    return generateReactCode(validatedSections);
+  }, [validatedSections]);
+
+  const handleExportHTML = useCallback((): string => {
+    const html = previewRef.current?.innerHTML ?? "";
+    return generateHTML(html, mergedTokens);
+  }, [mergedTokens]);
 
   const handleTokenEditorToggle = useCallback(() => {
     setTokenEditorOpen((prev) => !prev);
@@ -394,7 +406,9 @@ function SandboxContent() {
         onRedo={redo}
         canUndo={canUndo}
         canRedo={canRedo}
-        onDownload={handleDownload}
+        onExportJSON={handleExportJSON}
+        onExportReact={handleExportReact}
+        onExportHTML={handleExportHTML}
         tokenEditorOpen={tokenEditorOpen}
         onTokenEditorToggle={handleTokenEditorToggle}
         composites={composites}
@@ -452,6 +466,7 @@ function SandboxContent() {
               viewport={viewport}
               selectedSectionId={selectedSectionId}
               onSectionClick={setSelectedSectionId}
+              onContentRef={(el) => { previewRef.current = el; }}
             />
           </div>
           <TokenEditor
