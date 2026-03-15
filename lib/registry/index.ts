@@ -11,6 +11,7 @@ import { PricingTable } from "@/components/registry/pricing-table";
 import { Testimonial } from "@/components/registry/testimonial";
 import { StatsRow } from "@/components/registry/stats-row";
 import { NavBar } from "@/components/registry/nav-bar";
+import { Footer } from "@/components/registry/footer";
 import {
   HeroBannerSchema,
   ProductCardSchema,
@@ -24,6 +25,7 @@ import {
   TestimonialSchema,
   StatsRowSchema,
   NavBarSchema,
+  FooterSchema,
 } from "@/lib/schemas";
 
 function section(id: string, component: string, props: Record<string, unknown>): Section {
@@ -207,6 +209,40 @@ export const registry: Record<string, RegistryItem> = {
       cta: { label: "Sign up", href: "/signup" },
     }),
     metadata: { name: "Nav Bar", description: "Navigation bar with logo, links, and optional CTA", supportsTheme: true },
+  },
+  Footer: {
+    component: Footer as RegistryItem["component"],
+    schema: FooterSchema,
+    example: section("sec_1", "Footer", {
+      columns: [
+        {
+          heading: "Product",
+          links: [
+            { label: "Features", href: "/features" },
+            { label: "Pricing", href: "/pricing" },
+            { label: "Changelog", href: "/changelog" },
+          ],
+        },
+        {
+          heading: "Company",
+          links: [
+            { label: "About", href: "/about" },
+            { label: "Blog", href: "/blog" },
+            { label: "Careers", href: "/careers" },
+          ],
+        },
+        {
+          heading: "Support",
+          links: [
+            { label: "Help Center", href: "/help" },
+            { label: "Contact", href: "/contact" },
+            { label: "Status", href: "/status" },
+          ],
+        },
+      ],
+      bottomText: "\u00a9 2026 Acme Inc. All rights reserved.",
+    }),
+    metadata: { name: "Footer", description: "Multi-column footer with links and bottom text", supportsTheme: true },
   },
 };
 
