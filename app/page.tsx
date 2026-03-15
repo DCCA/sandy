@@ -1,65 +1,155 @@
-import Image from "next/image";
+import Link from "next/link";
+import { getRegistryKeys, getRegistryItem } from "@/lib/registry";
+import { themePresets } from "@/lib/theme/presets";
+import { serializeState } from "@/lib/sandbox/serialize";
+// Using plain links styled as buttons since base-ui Button doesn't support asChild
+
+const EXAMPLE_ENVELOPE = `{
+  "component": "HeroBanner",
+  "version": "1.0",
+  "props": {
+    "title": "Welcome back",
+    "subtitle": "Your options in one place",
+    "cta": { "label": "See offers", "href": "/offers" }
+  },
+  "theme": { "brand": "default", "mode": "light" }
+}`;
+
+const COLOR_KEYS = [
+  "primary",
+  "accent",
+  "background",
+  "foreground",
+  "secondary",
+  "border",
+  "muted",
+] as const;
 
 export default function Home() {
+  const componentKeys = getRegistryKeys();
+
   return (
-    <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex min-h-screen w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
+    <div className="min-h-screen bg-background text-foreground">
+      {/* Nav */}
+      <nav className="flex items-center justify-between px-6 py-4 border-b border-border/50 backdrop-blur-md bg-background/80 sticky top-0 z-10">
+        <span className="font-mono text-sm font-semibold tracking-tight">
+          <span className="text-accent">S</span>andy
+        </span>
+        <Link
+          href="/sandbox"
+          className="inline-flex items-center h-7 px-3 text-xs font-medium rounded-md bg-secondary text-secondary-foreground hover:bg-secondary/80 transition-colors"
+        >
+          Open Sandbox
+        </Link>
+      </nav>
+
+      {/* Hero */}
+      <section className="dot-grid border-b border-border/50">
+        <div className="max-w-4xl mx-auto px-6 py-24 text-center">
+          <h1 className="text-4xl sm:text-5xl font-semibold tracking-tight mb-4 leading-tight">
+            Schema-first
+            <br />
+            <span className="text-accent">component sandbox</span>
           </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
+          <p className="text-muted-foreground text-lg max-w-xl mx-auto mb-10 leading-relaxed">
+            Input validated JSON, see live rendered UI components with multi-brand theming.
+            Registry-only rendering, strict contracts, token-driven design.
           </p>
-        </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+          <div className="max-w-md mx-auto mb-10 text-left">
+            <pre className="bg-card border border-border/50 rounded-lg px-5 py-4 font-mono text-xs text-muted-foreground leading-relaxed overflow-x-auto">
+              {EXAMPLE_ENVELOPE}
+            </pre>
+          </div>
+          <Link
+            href="/sandbox"
+            className="inline-flex items-center h-10 px-6 text-sm font-medium rounded-md bg-primary text-primary-foreground hover:bg-primary/90 transition-colors"
           >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
+            Open Sandbox
+          </Link>
         </div>
-      </main>
+      </section>
+
+      {/* Theme Showcase */}
+      <section className="max-w-5xl mx-auto px-6 py-20">
+        <h2 className="text-2xl font-semibold tracking-tight mb-2">Theme Presets</h2>
+        <p className="text-muted-foreground text-sm mb-8">
+          Token-based theming with colors, typography, radius, and spacing.
+        </p>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          {themePresets.map((preset) => (
+            <div
+              key={preset.id}
+              className="rounded-lg border border-border/50 bg-card p-5"
+            >
+              <h3 className="font-semibold text-sm mb-3">{preset.name}</h3>
+              <div className="flex gap-1.5 mb-4">
+                {COLOR_KEYS.map((key) => (
+                  <span
+                    key={key}
+                    className="size-6 rounded-full ring-1 ring-white/10"
+                    style={{ backgroundColor: preset.tokens.color[key] }}
+                    title={key}
+                  />
+                ))}
+              </div>
+              <div className="space-y-1 text-xs text-muted-foreground font-mono">
+                <div>font: {preset.tokens.typography.fontFamily.split(",")[0].replace(/'/g, "")}</div>
+                <div>radius: {preset.tokens.radius.sm}/{preset.tokens.radius.md}/{preset.tokens.radius.lg}px</div>
+                <div>weights: {preset.tokens.typography.headingWeight}/{preset.tokens.typography.bodyWeight}</div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* Component Gallery */}
+      <section className="max-w-5xl mx-auto px-6 py-20 border-t border-border/50">
+        <h2 className="text-2xl font-semibold tracking-tight mb-2">Component Registry</h2>
+        <p className="text-muted-foreground text-sm mb-8">
+          {componentKeys.length} validated components, each with a strict JSON contract.
+        </p>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+          {componentKeys.map((key) => {
+            const item = getRegistryItem(key);
+            if (!item) return null;
+            const encoded = serializeState(item.example);
+            const propsPreview = JSON.stringify(item.example.props, null, 2)
+              .split("\n")
+              .slice(0, 5)
+              .join("\n");
+
+            return (
+              <Link
+                key={key}
+                href={`/sandbox?s=${encoded}`}
+                className="group rounded-lg border border-border/50 bg-card p-4 hover:border-accent/40 transition-colors"
+              >
+                <h3 className="font-semibold text-sm mb-1">{item.metadata.name}</h3>
+                <p className="text-[11px] text-muted-foreground mb-3 leading-relaxed line-clamp-2">
+                  {item.metadata.description}
+                </p>
+                <pre className="bg-muted/30 rounded px-2.5 py-2 font-mono text-[10px] text-muted-foreground leading-relaxed overflow-hidden max-h-[72px]">
+                  {propsPreview}
+                </pre>
+                <span className="block mt-3 text-[11px] text-accent opacity-0 group-hover:opacity-100 transition-opacity">
+                  Try in sandbox &rarr;
+                </span>
+              </Link>
+            );
+          })}
+        </div>
+      </section>
+
+      {/* Footer CTA */}
+      <section className="border-t border-border/50 py-16 text-center">
+        <p className="text-muted-foreground text-sm mb-4">Ready to start building?</p>
+        <Link
+          href="/sandbox"
+          className="inline-flex items-center h-10 px-6 text-sm font-medium rounded-md bg-secondary text-secondary-foreground hover:bg-secondary/80 transition-colors"
+        >
+          Open Sandbox
+        </Link>
+      </section>
     </div>
   );
 }
