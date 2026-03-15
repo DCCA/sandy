@@ -12,6 +12,7 @@ import { Testimonial } from "@/components/registry/testimonial";
 import { StatsRow } from "@/components/registry/stats-row";
 import { NavBar } from "@/components/registry/nav-bar";
 import { Footer } from "@/components/registry/footer";
+import { AvatarGroup } from "@/components/registry/avatar-group";
 import {
   HeroBannerSchema,
   ProductCardSchema,
@@ -26,6 +27,7 @@ import {
   StatsRowSchema,
   NavBarSchema,
   FooterSchema,
+  AvatarGroupSchema,
 } from "@/lib/schemas";
 
 function section(id: string, component: string, props: Record<string, unknown>): Section {
@@ -243,6 +245,22 @@ export const registry: Record<string, RegistryItem> = {
       bottomText: "\u00a9 2026 Acme Inc. All rights reserved.",
     }),
     metadata: { name: "Footer", description: "Multi-column footer with links and bottom text", supportsTheme: true },
+  },
+  AvatarGroup: {
+    component: AvatarGroup as RegistryItem["component"],
+    schema: AvatarGroupSchema,
+    example: section("sec_1", "AvatarGroup", {
+      avatars: [
+        { imageUrl: "https://i.pravatar.cc/80?u=1", name: "Alice" },
+        { imageUrl: "https://i.pravatar.cc/80?u=2", name: "Bob" },
+        { imageUrl: "https://i.pravatar.cc/80?u=3", name: "Carol" },
+        { imageUrl: "https://i.pravatar.cc/80?u=4", name: "Dave" },
+        { imageUrl: "https://i.pravatar.cc/80?u=5", name: "Eve" },
+      ],
+      maxVisible: 3,
+      label: "5 team members",
+    }),
+    metadata: { name: "Avatar Group", description: "Overlapping avatar stack with overflow count", supportsTheme: true },
   },
 };
 

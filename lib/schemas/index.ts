@@ -15,3 +15,4 @@ export { TestimonialSchema, type TestimonialProps } from "./testimonial";
 export { StatsRowSchema, type StatsRowProps } from "./stats-row";
 export { NavBarSchema, type NavBarProps } from "./nav-bar";
 export { FooterSchema, type FooterProps } from "./footer";
+export { AvatarGroupSchema, type AvatarGroupProps } from "./avatar-group";
