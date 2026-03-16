@@ -20,14 +20,20 @@ const COLOR_LABELS: { key: keyof ThemeTokens["color"]; label: string }[] = [
   { key: "background", label: "Background" },
   { key: "foreground", label: "Foreground" },
   { key: "secondary", label: "Secondary" },
+  { key: "surface", label: "Surface" },
   { key: "border", label: "Border" },
   { key: "muted", label: "Muted" },
+  { key: "success", label: "Success" },
+  { key: "warning", label: "Warning" },
+  { key: "error", label: "Error" },
+  { key: "info", label: "Info" },
 ];
 
 const RADIUS_LABELS: { key: keyof ThemeTokens["radius"]; label: string }[] = [
   { key: "sm", label: "Small" },
   { key: "md", label: "Medium" },
   { key: "lg", label: "Large" },
+  { key: "full", label: "Full" },
 ];
 
 const SPACING_LABELS: { key: keyof ThemeTokens["spacing"]; label: string }[] = [
@@ -35,6 +41,35 @@ const SPACING_LABELS: { key: keyof ThemeTokens["spacing"]; label: string }[] = [
   { key: "sm", label: "SM" },
   { key: "md", label: "MD" },
   { key: "lg", label: "LG" },
+  { key: "xl", label: "XL" },
+  { key: "2xl", label: "2XL" },
+];
+
+const FONT_SIZE_LABELS: { key: keyof ThemeTokens["typography"]["fontSize"]; label: string }[] = [
+  { key: "xs", label: "XS" },
+  { key: "sm", label: "SM" },
+  { key: "md", label: "MD" },
+  { key: "lg", label: "LG" },
+  { key: "xl", label: "XL" },
+  { key: "2xl", label: "2XL" },
+];
+
+const LINE_HEIGHT_LABELS: { key: keyof ThemeTokens["typography"]["lineHeight"]; label: string }[] = [
+  { key: "tight", label: "Tight" },
+  { key: "normal", label: "Normal" },
+  { key: "relaxed", label: "Relaxed" },
+];
+
+const LETTER_SPACING_LABELS: { key: keyof ThemeTokens["typography"]["letterSpacing"]; label: string }[] = [
+  { key: "tight", label: "Tight" },
+  { key: "normal", label: "Normal" },
+  { key: "wide", label: "Wide" },
+];
+
+const OPACITY_LABELS: { key: keyof ThemeTokens["opacity"]; label: string }[] = [
+  { key: "disabled", label: "Disabled" },
+  { key: "hover", label: "Hover" },
+  { key: "overlay", label: "Overlay" },
 ];
 
 function Section({
@@ -69,6 +104,15 @@ function Section({
   );
 }
 
+function Subsection({ title, children }: { title: string; children: React.ReactNode }) {
+  return (
+    <div className="space-y-2">
+      <span className="text-[10px] font-medium text-muted-foreground/70 uppercase tracking-wider">{title}</span>
+      {children}
+    </div>
+  );
+}
+
 function ColorInput({
   label,
   value,
@@ -78,16 +122,24 @@ function ColorInput({
   value: string;
   onChange: (v: string) => void;
 }) {
+  const isHex = value.startsWith("#");
   return (
     <div className="flex items-center gap-2">
       <label className="text-[11px] text-muted-foreground w-20 shrink-0">{label}</label>
-      <input
-        type="color"
-        value={value}
-        onChange={(e) => onChange(e.target.value)}
-        className="size-6 rounded cursor-pointer border-0 bg-transparent p-0 [&::-webkit-color-swatch-wrapper]:p-0 [&::-webkit-color-swatch]:rounded [&::-webkit-color-swatch]:border-0"
-      />
-      <span className="font-mono text-[10px] text-muted-foreground">{value}</span>
+      {isHex ? (
+        <input
+          type="color"
+          value={value}
+          onChange={(e) => onChange(e.target.value)}
+          className="size-6 rounded cursor-pointer border-0 bg-transparent p-0 [&::-webkit-color-swatch-wrapper]:p-0 [&::-webkit-color-swatch]:rounded [&::-webkit-color-swatch]:border-0"
+        />
+      ) : (
+        <div
+          className="size-6 rounded border border-border/50"
+          style={{ background: value }}
+        />
+      )}
+      <span className="font-mono text-[10px] text-muted-foreground truncate">{value}</span>
     </div>
   );
 }
@@ -178,8 +230,41 @@ export function TokenEditor({
   );
 
   const handleTypography = useCallback(
-    (key: keyof ThemeTokens["typography"], value: string | number) => {
+    (key: "fontFamily" | "headingWeight" | "bodyWeight", value: string | number) => {
       onOverrideChange({ ...overrides, typography: { ...overrides.typography, [key]: value } });
+    },
+    [overrides, onOverrideChange]
+  );
+
+  const handleFontSize = useCallback(
+    (key: keyof ThemeTokens["typography"]["fontSize"], value: number) => {
+      const existing = overrides.typography?.fontSize ?? {};
+      onOverrideChange({
+        ...overrides,
+        typography: { ...overrides.typography, fontSize: { ...existing, [key]: value } },
+      });
+    },
+    [overrides, onOverrideChange]
+  );
+
+  const handleLineHeight = useCallback(
+    (key: keyof ThemeTokens["typography"]["lineHeight"], value: number) => {
+      const existing = overrides.typography?.lineHeight ?? {};
+      onOverrideChange({
+        ...overrides,
+        typography: { ...overrides.typography, lineHeight: { ...existing, [key]: value } },
+      });
+    },
+    [overrides, onOverrideChange]
+  );
+
+  const handleLetterSpacing = useCallback(
+    (key: keyof ThemeTokens["typography"]["letterSpacing"], value: string) => {
+      const existing = overrides.typography?.letterSpacing ?? {};
+      onOverrideChange({
+        ...overrides,
+        typography: { ...overrides.typography, letterSpacing: { ...existing, [key]: value } },
+      });
     },
     [overrides, onOverrideChange]
   );
@@ -187,6 +272,20 @@ export function TokenEditor({
   const handleShadow = useCallback(
     (key: keyof ThemeTokens["shadow"], value: string) => {
       onOverrideChange({ ...overrides, shadow: { ...overrides.shadow, [key]: value } });
+    },
+    [overrides, onOverrideChange]
+  );
+
+  const handleOpacity = useCallback(
+    (key: keyof ThemeTokens["opacity"], value: number) => {
+      onOverrideChange({ ...overrides, opacity: { ...overrides.opacity, [key]: value } });
+    },
+    [overrides, onOverrideChange]
+  );
+
+  const handleBorder = useCallback(
+    (key: keyof ThemeTokens["border"], value: string) => {
+      onOverrideChange({ ...overrides, border: { ...overrides.border, [key]: value } });
     },
     [overrides, onOverrideChange]
   );
@@ -236,6 +335,75 @@ export function TokenEditor({
                 onChange={(v) => handleColor(key, v)}
               />
             ))}
+            <ColorInput
+              label="Overlay"
+              value={tokens.color.overlay}
+              onChange={(v) => handleColor("overlay", v)}
+            />
+          </Section>
+
+          <Section title="Typography" defaultOpen={false}>
+            <Subsection title="Base">
+              <TextInput
+                label="Font"
+                value={tokens.typography.fontFamily}
+                onChange={(v) => handleTypography("fontFamily", v)}
+              />
+              <NumberInput
+                label="Heading wt"
+                value={tokens.typography.headingWeight}
+                onChange={(v) => handleTypography("headingWeight", v)}
+                min={100}
+                max={900}
+                step={100}
+                suffix=""
+              />
+              <NumberInput
+                label="Body wt"
+                value={tokens.typography.bodyWeight}
+                onChange={(v) => handleTypography("bodyWeight", v)}
+                min={100}
+                max={900}
+                step={100}
+                suffix=""
+              />
+            </Subsection>
+            <Subsection title="Font Sizes">
+              {FONT_SIZE_LABELS.map(({ key, label }) => (
+                <NumberInput
+                  key={key}
+                  label={label}
+                  value={tokens.typography.fontSize[key]}
+                  onChange={(v) => handleFontSize(key, v)}
+                  min={8}
+                  max={72}
+                />
+              ))}
+            </Subsection>
+            <Subsection title="Line Heights">
+              {LINE_HEIGHT_LABELS.map(({ key, label }) => (
+                <NumberInput
+                  key={key}
+                  label={label}
+                  value={tokens.typography.lineHeight[key]}
+                  onChange={(v) => handleLineHeight(key, v)}
+                  min={0.8}
+                  max={3}
+                  step={0.1}
+                  suffix=""
+                />
+              ))}
+            </Subsection>
+            <Subsection title="Letter Spacing">
+              {LETTER_SPACING_LABELS.map(({ key, label }) => (
+                <TextInput
+                  key={key}
+                  label={label}
+                  value={tokens.typography.letterSpacing[key]}
+                  onChange={(v) => handleLetterSpacing(key, v)}
+                />
+              ))}
+            </Subsection>
           </Section>
 
           <Section title="Radius">
@@ -245,7 +413,7 @@ export function TokenEditor({
                 label={label}
                 value={tokens.radius[key]}
                 onChange={(v) => handleRadius(key, v)}
-                max={48}
+                max={key === "full" ? 999 : 48}
               />
             ))}
           </Section>
@@ -257,48 +425,35 @@ export function TokenEditor({
                 label={label}
                 value={tokens.spacing[key]}
                 onChange={(v) => handleSpacing(key, v)}
-                max={64}
+                max={96}
               />
             ))}
           </Section>
 
-          <Section title="Typography" defaultOpen={false}>
-            <TextInput
-              label="Font"
-              value={tokens.typography.fontFamily}
-              onChange={(v) => handleTypography("fontFamily", v)}
-            />
-            <NumberInput
-              label="Heading wt"
-              value={tokens.typography.headingWeight}
-              onChange={(v) => handleTypography("headingWeight", v)}
-              min={100}
-              max={900}
-              step={100}
-              suffix=""
-            />
-            <NumberInput
-              label="Body wt"
-              value={tokens.typography.bodyWeight}
-              onChange={(v) => handleTypography("bodyWeight", v)}
-              min={100}
-              max={900}
-              step={100}
-              suffix=""
-            />
+          <Section title="Shadows" defaultOpen={false}>
+            <TextInput label="Small" value={tokens.shadow.sm} onChange={(v) => handleShadow("sm", v)} />
+            <TextInput label="Medium" value={tokens.shadow.md} onChange={(v) => handleShadow("md", v)} />
+            <TextInput label="Large" value={tokens.shadow.lg} onChange={(v) => handleShadow("lg", v)} />
           </Section>
 
-          <Section title="Shadows" defaultOpen={false}>
-            <TextInput
-              label="Small"
-              value={tokens.shadow.sm}
-              onChange={(v) => handleShadow("sm", v)}
-            />
-            <TextInput
-              label="Medium"
-              value={tokens.shadow.md}
-              onChange={(v) => handleShadow("md", v)}
-            />
+          <Section title="Opacity" defaultOpen={false}>
+            {OPACITY_LABELS.map(({ key, label }) => (
+              <NumberInput
+                key={key}
+                label={label}
+                value={tokens.opacity[key]}
+                onChange={(v) => handleOpacity(key, v)}
+                min={0}
+                max={1}
+                step={0.05}
+                suffix=""
+              />
+            ))}
+          </Section>
+
+          <Section title="Borders" defaultOpen={false}>
+            <TextInput label="Thin" value={tokens.border.thin} onChange={(v) => handleBorder("thin", v)} />
+            <TextInput label="Thick" value={tokens.border.thick} onChange={(v) => handleBorder("thick", v)} />
           </Section>
         </div>
       )}
