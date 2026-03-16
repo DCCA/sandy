@@ -20,16 +20,17 @@ export function StatsRow({ stats, columns = "3" }: StatsRowProps) {
       {stats.map((stat, i) => (
         <div
           key={i}
-          className="text-center"
           style={{
+            textAlign: "center",
             backgroundColor: "var(--sandy-color-secondary)",
             borderRadius: "var(--sandy-radius-md)",
             padding: "var(--sandy-spacing-lg)",
           }}
         >
           <div
-            className="text-3xl mb-1"
             style={{
+              fontSize: "var(--sandy-font-size-2xl)",
+              marginBottom: 4,
               fontWeight: "var(--sandy-font-heading-weight)",
               color: "var(--sandy-color-primary)",
             } as React.CSSProperties}
@@ -37,13 +38,15 @@ export function StatsRow({ stats, columns = "3" }: StatsRowProps) {
             {stat.value}
           </div>
           <div
-            className="text-sm"
-            style={{ fontWeight: "var(--sandy-font-heading-weight)" } as React.CSSProperties}
+            style={{
+              fontSize: "var(--sandy-font-size-sm)",
+              fontWeight: "var(--sandy-font-heading-weight)",
+            } as React.CSSProperties}
           >
             {stat.label}
           </div>
           {stat.description && (
-            <div className="text-xs mt-1" style={{ color: "var(--sandy-color-muted)" }}>
+            <div style={{ fontSize: "var(--sandy-font-size-xs)", marginTop: 4, color: "var(--sandy-color-muted)" }}>
               {stat.description}
             </div>
           )}

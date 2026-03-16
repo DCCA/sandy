@@ -335,7 +335,7 @@ export function TokenEditor({
                 onChange={(v) => handleColor(key, v)}
               />
             ))}
-            <ColorInput
+            <TextInput
               label="Overlay"
               value={tokens.color.overlay}
               onChange={(v) => handleColor("overlay", v)}

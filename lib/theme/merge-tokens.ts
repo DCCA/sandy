@@ -19,7 +19,8 @@ export function mergeTokens(
         if (key in baseCategory) {
           const baseValue = (baseCategory as Record<string, unknown>)[key];
           const overrideValue = (partial as Record<string, unknown>)[key];
-          // Handle nested objects (e.g., typography.fontSize, typography.lineHeight)
+          // Handle nested objects up to 2 levels deep (e.g., typography.fontSize, typography.lineHeight).
+          // Deeper nesting is not supported — token structure should stay flat within sub-objects.
           if (baseValue && typeof baseValue === "object" && overrideValue && typeof overrideValue === "object") {
             for (const subKey of Object.keys(overrideValue as Record<string, unknown>)) {
               if (subKey in (baseValue as Record<string, unknown>)) {

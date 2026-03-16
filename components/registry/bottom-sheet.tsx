@@ -94,7 +94,6 @@ export function BottomSheet({
             {items.map((item, i) => {
               const row = (
                 <div
-                  key={i}
                   style={{
                     display: "flex",
                     alignItems: "center",

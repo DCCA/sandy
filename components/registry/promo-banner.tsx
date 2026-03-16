@@ -12,8 +12,10 @@ export function PromoBanner({ title, description, href, variant = "info" }: Prom
   return (
     <a
       href={href}
-      className="block w-full no-underline"
       style={{
+        display: "block",
+        width: "100%",
+        textDecoration: "none",
         backgroundColor: styles.bg,
         borderLeft: `4px solid ${styles.border}`,
         borderRadius: "var(--sandy-radius-md)",
@@ -23,13 +25,17 @@ export function PromoBanner({ title, description, href, variant = "info" }: Prom
       }}
     >
       <h3
-        className="text-base mb-1"
-        style={{ fontWeight: "var(--sandy-font-heading-weight)" } as React.CSSProperties}
+        style={{
+          margin: 0,
+          marginBottom: 4,
+          fontSize: "var(--sandy-font-size-md)",
+          fontWeight: "var(--sandy-font-heading-weight)",
+        } as React.CSSProperties}
       >
         {title}
       </h3>
       {description && (
-        <p className="text-sm m-0" style={{ color: "var(--sandy-color-muted)" }}>
+        <p style={{ margin: 0, fontSize: "var(--sandy-font-size-sm)", color: "var(--sandy-color-muted)" }}>
           {description}
         </p>
       )}
