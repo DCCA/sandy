@@ -47,12 +47,26 @@ function section(id: string, component: string, props: Record<string, unknown>):
 }
 
 export function defaultPage(sectionOverride?: Section): Page {
-  const sec = sectionOverride ?? registry.HeroBanner.example;
+  if (sectionOverride) {
+    return {
+      version: "2.0",
+      theme: { brand: "default", mode: "light" },
+      meta: { viewport: "mobile" },
+      sections: [sectionOverride],
+    };
+  }
   return {
     version: "2.0",
     theme: { brand: "default", mode: "light" },
     meta: { viewport: "mobile" },
-    sections: [sec],
+    sections: [
+      { id: "sec_1", component: "AccountHeader", props: { greeting: "Olá", userName: "Daniel", actions: [{ icon: "eye-off", label: "Hide balance" }, { icon: "help-circle", label: "Help" }] } },
+      { id: "sec_2", component: "BalanceCard", props: { label: "Saldo", amount: "R$ 4,521.89", visible: false, action: { label: "See statement", href: "/statement" } } },
+      { id: "sec_3", component: "QuickActions", props: { actions: [{ icon: "camera", label: "Scan", href: "/scan" }, { icon: "arrow-up-right", label: "Send Pix", href: "/send", badge: "12x" }, { icon: "barcode", label: "Pay", href: "/pay" }, { icon: "phone", label: "Top up", href: "/topup" }] } },
+      { id: "sec_4", component: "InfoCardGrid", props: { cards: [{ title: "Credit card", value: "R$ 2,500.00", footnote: "Available limit", action: { label: "Details", href: "/card" } }, { title: "Invoice", value: "R$ 189.50", footnote: "Due Apr 06", action: { label: "Pay now", href: "/invoice" } }, { title: "Loans", description: "Best rates available", action: { label: "Simulate", href: "/loans" } }, { title: "Investments", value: "R$ 12,350.00", footnote: "Total invested", action: { label: "Simulate", href: "/invest" } }] } },
+      { id: "sec_5", component: "TransactionList", props: { heading: "Recent activity", transactions: [{ title: "Coffee Shop", subtitle: "Debit card", amount: "- R$ 12.50", timestamp: "Today", type: "payment" }, { title: "Salary deposit", subtitle: "TED received", amount: "+ R$ 5,200.00", timestamp: "Yesterday", type: "received" }, { title: "Transfer to Ana", subtitle: "Pix", amount: "- R$ 150.00", timestamp: "Mar 9", type: "sent" }], showAllLabel: "View all transactions", showAllHref: "/transactions" } },
+      { id: "sec_6", component: "BottomTabBar", props: { tabs: [{ icon: "home", label: "Home", href: "/home", active: true }, { icon: "card", label: "Cards", href: "/cards" }, { icon: "diamond", label: "Pix", href: "/pix" }, { icon: "chart", label: "Invest", href: "/invest" }, { icon: "grid", label: "Products", href: "/products" }] } },
+    ],
   };
 }
 
