@@ -1,4 +1,5 @@
 import type { QuickActionsProps } from "@/lib/schemas/quick-actions";
+import { renderIcon } from "@/lib/icons";
 
 export function QuickActions({ actions }: QuickActionsProps) {
   return (
@@ -7,9 +8,7 @@ export function QuickActions({ actions }: QuickActionsProps) {
         fontFamily: "var(--sandy-font-family)",
         color: "var(--sandy-color-foreground)",
         display: "flex",
-        gap: "var(--sandy-spacing-md)",
-        overflowX: "auto",
-        padding: "var(--sandy-spacing-sm) 0",
+        justifyContent: "space-between",
       }}
     >
       {actions.map((action, i) => {
@@ -19,39 +18,41 @@ export function QuickActions({ actions }: QuickActionsProps) {
               display: "flex",
               flexDirection: "column",
               alignItems: "center",
-              gap: "var(--sandy-spacing-xs)",
-              minWidth: 64,
+              gap: 6,
+              flex: 1,
             }}
           >
-            {/* Icon circle with optional badge */}
+            {/* Icon button with optional badge */}
             <div style={{ position: "relative" }}>
               <div
                 style={{
-                  width: 48,
-                  height: 48,
-                  borderRadius: "50%",
+                  width: 72,
+                  height: 72,
+                  borderRadius: "var(--sandy-radius-lg)",
                   backgroundColor: "var(--sandy-color-secondary)",
                   display: "flex",
                   alignItems: "center",
                   justifyContent: "center",
-                  fontSize: 20,
+                  boxShadow: "var(--sandy-shadow-sm)",
+                  color: "var(--sandy-color-primary)",
                 }}
               >
-                {action.icon}
+                {renderIcon(action.icon, { size: 28, color: "var(--sandy-color-primary)" })}
               </div>
               {action.badge && (
                 <span
                   style={{
                     position: "absolute",
-                    top: -4,
-                    right: -4,
-                    backgroundColor: "var(--sandy-color-primary)",
+                    bottom: -6,
+                    left: "50%",
+                    transform: "translateX(-50%)",
+                    backgroundColor: "var(--sandy-color-accent)",
                     color: "#fff",
                     fontSize: 10,
-                    fontWeight: 600,
+                    fontWeight: 700,
                     borderRadius: 999,
-                    padding: "1px 6px",
-                    lineHeight: "16px",
+                    padding: "2px 8px",
+                    lineHeight: "14px",
                     whiteSpace: "nowrap",
                   }}
                 >
@@ -63,7 +64,10 @@ export function QuickActions({ actions }: QuickActionsProps) {
             {/* Label */}
             <span
               className="text-xs text-center"
-              style={{ color: "var(--sandy-color-muted)" }}
+              style={{
+                color: "var(--sandy-color-foreground)",
+                marginTop: action.badge ? 4 : 0,
+              }}
             >
               {action.label}
             </span>
@@ -74,12 +78,14 @@ export function QuickActions({ actions }: QuickActionsProps) {
           <a
             key={i}
             href={action.href}
-            style={{ textDecoration: "none", color: "inherit" }}
+            style={{ textDecoration: "none", color: "inherit", flex: 1 }}
           >
             {content}
           </a>
         ) : (
-          <div key={i}>{content}</div>
+          <div key={i} style={{ flex: 1 }}>
+            {content}
+          </div>
         );
       })}
     </div>

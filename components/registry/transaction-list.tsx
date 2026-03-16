@@ -1,10 +1,11 @@
 import type { TransactionListProps } from "@/lib/schemas/transaction-list";
+import { renderIcon } from "@/lib/icons";
 
-const typeIcons: Record<string, string> = {
-  sent: "↗",
-  received: "↙",
-  payment: "→",
-  investment: "↗",
+const typeConfig: Record<string, { icon: string; bg: string }> = {
+  sent: { icon: "arrow-up-right", bg: "rgba(0,102,204,0.08)" },
+  received: { icon: "arrow-down-left", bg: "rgba(0,168,107,0.10)" },
+  payment: { icon: "arrow-right", bg: "rgba(0,102,204,0.08)" },
+  investment: { icon: "trending-up", bg: "rgba(0,168,107,0.10)" },
 };
 
 export function TransactionList({
@@ -18,14 +19,21 @@ export function TransactionList({
       style={{
         fontFamily: "var(--sandy-font-family)",
         color: "var(--sandy-color-foreground)",
+        backgroundColor: "var(--sandy-color-secondary)",
+        borderRadius: "var(--sandy-radius-lg)",
+        padding: "var(--sandy-spacing-lg)",
+        boxShadow: "var(--sandy-shadow-sm)",
       }}
     >
       {heading && (
         <h2
-          className="text-base mb-3 m-0"
+          className="text-base m-0"
           style={
             {
               fontWeight: "var(--sandy-font-heading-weight)",
+              color: "var(--sandy-color-primary)",
+              fontStyle: "italic",
+              marginBottom: "var(--sandy-spacing-md)",
             } as React.CSSProperties
           }
         >
@@ -33,108 +41,109 @@ export function TransactionList({
         </h2>
       )}
 
-      <div>
-        {transactions.map((tx, i) => (
-          <div
-            key={i}
-            style={{
-              display: "flex",
-              alignItems: "center",
-              gap: "var(--sandy-spacing-sm)",
-              padding: "var(--sandy-spacing-sm) 0",
-              borderBottom:
-                i < transactions.length - 1
-                  ? "1px solid var(--sandy-color-border)"
-                  : "none",
-            }}
-          >
-            {/* Icon */}
+      <div style={{ display: "flex", flexDirection: "column", gap: "var(--sandy-spacing-md)" }}>
+        {transactions.map((tx, i) => {
+          const config = typeConfig[tx.type ?? "payment"] ?? typeConfig.payment;
+          const isReceived = tx.type === "received";
+
+          return (
             <div
+              key={i}
               style={{
-                width: 36,
-                height: 36,
-                borderRadius: "50%",
-                backgroundColor: "var(--sandy-color-secondary)",
                 display: "flex",
                 alignItems: "center",
-                justifyContent: "center",
-                fontSize: 16,
-                flexShrink: 0,
-                color: "var(--sandy-color-primary)",
-                fontWeight: 700,
+                gap: "var(--sandy-spacing-sm)",
               }}
             >
-              {typeIcons[tx.type ?? "payment"]}
-            </div>
-
-            {/* Title + Subtitle */}
-            <div style={{ flex: 1, minWidth: 0 }}>
-              <p
-                className="text-sm m-0"
-                style={
-                  {
-                    fontWeight: "var(--sandy-font-heading-weight)",
-                    whiteSpace: "nowrap",
-                    overflow: "hidden",
-                    textOverflow: "ellipsis",
-                  } as React.CSSProperties
-                }
+              {/* Icon circle */}
+              <div
+                style={{
+                  width: 48,
+                  height: 48,
+                  borderRadius: "50%",
+                  backgroundColor: config.bg,
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  flexShrink: 0,
+                  color: isReceived ? "var(--sandy-color-accent)" : "var(--sandy-color-primary)",
+                }}
               >
-                {tx.title}
-              </p>
-              {tx.subtitle && (
-                <p
-                  className="text-xs m-0"
-                  style={{ color: "var(--sandy-color-muted)" }}
-                >
-                  {tx.subtitle}
-                </p>
-              )}
-            </div>
+                {renderIcon(config.icon, {
+                  size: 22,
+                  color: isReceived ? "var(--sandy-color-accent)" : "var(--sandy-color-primary)",
+                })}
+              </div>
 
-            {/* Amount + Timestamp */}
-            <div style={{ textAlign: "right", flexShrink: 0 }}>
-              <p
-                className="text-sm m-0"
-                style={
-                  {
-                    fontWeight: "var(--sandy-font-heading-weight)",
-                    color:
-                      tx.type === "received"
-                        ? "var(--sandy-color-primary)"
+              {/* Title + Subtitle */}
+              <div style={{ flex: 1, minWidth: 0 }}>
+                <p
+                  className="text-sm m-0"
+                  style={
+                    {
+                      fontWeight: "var(--sandy-font-heading-weight)",
+                    } as React.CSSProperties
+                  }
+                >
+                  {tx.title}
+                </p>
+                {tx.subtitle && (
+                  <p
+                    className="text-xs m-0 mt-0.5"
+                    style={{ color: "var(--sandy-color-muted)" }}
+                  >
+                    {tx.subtitle}
+                  </p>
+                )}
+              </div>
+
+              {/* Amount + Timestamp */}
+              <div style={{ textAlign: "right", flexShrink: 0 }}>
+                <p
+                  className="text-sm m-0"
+                  style={
+                    {
+                      fontWeight: "var(--sandy-font-heading-weight)",
+                      color: isReceived
+                        ? "var(--sandy-color-accent)"
                         : "var(--sandy-color-foreground)",
-                  } as React.CSSProperties
-                }
-              >
-                {tx.amount}
-              </p>
-              {tx.timestamp && (
-                <p
-                  className="text-xs m-0"
-                  style={{ color: "var(--sandy-color-muted)" }}
+                    } as React.CSSProperties
+                  }
                 >
-                  {tx.timestamp}
+                  {tx.amount}
                 </p>
-              )}
+                {tx.timestamp && (
+                  <p
+                    className="text-xs m-0 mt-0.5"
+                    style={{ color: "var(--sandy-color-muted)" }}
+                  >
+                    {tx.timestamp}
+                  </p>
+                )}
+              </div>
             </div>
-          </div>
-        ))}
+          );
+        })}
       </div>
 
       {showAllLabel && showAllHref && (
-        <div style={{ textAlign: "center", marginTop: "var(--sandy-spacing-md)" }}>
-          <a
-            href={showAllHref}
-            className="text-sm"
-            style={{
-              color: "var(--sandy-color-primary)",
-              textDecoration: "none",
-              fontWeight: "var(--sandy-font-heading-weight)",
-            } as React.CSSProperties}
-          >
-            {showAllLabel}
-          </a>
-        </div>
+        <a
+          href={showAllHref}
+          style={{
+            display: "block",
+            textAlign: "center",
+            marginTop: "var(--sandy-spacing-lg)",
+            padding: "var(--sandy-spacing-sm) var(--sandy-spacing-md)",
+            backgroundColor: "var(--sandy-color-background)",
+            borderRadius: "var(--sandy-radius-lg)",
+            color: "var(--sandy-color-primary)",
+            textDecoration: "none",
+            fontWeight: "var(--sandy-font-heading-weight)",
+            fontSize: 14,
+          } as React.CSSProperties}
+        >
+          {showAllLabel}
+        </a>
       )}
     </div>
   );

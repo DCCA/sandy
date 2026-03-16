@@ -1,4 +1,5 @@
 import type { BalanceCardProps } from "@/lib/schemas/balance-card";
+import { renderIcon } from "@/lib/icons";
 
 export function BalanceCard({
   label,
@@ -12,46 +13,61 @@ export function BalanceCard({
       style={{
         fontFamily: "var(--sandy-font-family)",
         color: "var(--sandy-color-foreground)",
-        backgroundColor: "var(--sandy-color-secondary)",
-        borderRadius: "var(--sandy-radius-lg)",
-        padding: "var(--sandy-spacing-lg)",
+        display: "flex",
+        alignItems: "center",
+        gap: "var(--sandy-spacing-md)",
       }}
     >
-      <p className="text-xs m-0" style={{ color: "var(--sandy-color-muted)" }}>
-        {label}
-      </p>
-
-      <p
-        className="text-2xl m-0 mt-1"
-        style={
-          {
-            fontWeight: "var(--sandy-font-heading-weight)",
-          } as React.CSSProperties
-        }
-      >
-        {visible ? amount : "••••••"}
-      </p>
-
-      {footnote && (
+      {/* Left: label + amount */}
+      <div style={{ flex: 1, minWidth: 0 }}>
         <p
-          className="text-xs m-0 mt-2"
+          className="text-sm m-0"
           style={{ color: "var(--sandy-color-muted)" }}
         >
-          {footnote}
+          {label}
         </p>
-      )}
+        <p
+          className="m-0 mt-1"
+          style={
+            {
+              fontSize: 28,
+              fontWeight: "var(--sandy-font-heading-weight)",
+              letterSpacing: "-0.02em",
+            } as React.CSSProperties
+          }
+        >
+          {visible ? amount : "R$ ••••"}
+        </p>
+        {footnote && (
+          <p
+            className="text-xs m-0 mt-1"
+            style={{ color: "var(--sandy-color-muted)" }}
+          >
+            {footnote}
+          </p>
+        )}
+      </div>
 
+      {/* Right: chevron button */}
       {action && (
         <a
           href={action.href}
-          className="text-sm mt-3 inline-flex items-center gap-1"
+          title={action.label}
           style={{
-            color: "var(--sandy-color-primary)",
+            width: 40,
+            height: 40,
+            borderRadius: "50%",
+            backgroundColor: "var(--sandy-color-secondary)",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            color: "var(--sandy-color-muted)",
             textDecoration: "none",
-            fontWeight: "var(--sandy-font-heading-weight)",
-          } as React.CSSProperties}
+            flexShrink: 0,
+            boxShadow: "var(--sandy-shadow-sm)",
+          }}
         >
-          {action.label} →
+          {renderIcon("chevron-right", { size: 20, color: "var(--sandy-color-muted)" })}
         </a>
       )}
     </div>

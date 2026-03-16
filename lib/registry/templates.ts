@@ -152,11 +152,11 @@ export const pageTemplates: PageTemplate[] = [
           id: "sec_1",
           component: "AccountHeader",
           props: {
-            greeting: "Good morning",
-            userName: "Maria",
+            greeting: "Olá",
+            userName: "Daniel",
             actions: [
-              { icon: "🔔", label: "Notifications" },
-              { icon: "⚙️", label: "Settings" },
+              { icon: "eye-off", label: "Hide balance" },
+              { icon: "help-circle", label: "Help" },
             ],
           },
         },
@@ -164,9 +164,9 @@ export const pageTemplates: PageTemplate[] = [
           id: "sec_2",
           component: "BalanceCard",
           props: {
-            label: "Available balance",
+            label: "Saldo",
             amount: "R$ 4,521.89",
-            visible: true,
+            visible: false,
             action: { label: "See statement", href: "/statement" },
           },
         },
@@ -175,10 +175,10 @@ export const pageTemplates: PageTemplate[] = [
           component: "QuickActions",
           props: {
             actions: [
-              { icon: "💸", label: "Send", href: "/send" },
-              { icon: "📱", label: "Pay", href: "/pay", badge: "12x" },
-              { icon: "🔄", label: "Transfer", href: "/transfer" },
-              { icon: "💳", label: "Cards", href: "/cards" },
+              { icon: "camera", label: "Scan", href: "/scan" },
+              { icon: "arrow-up-right", label: "Send Pix", href: "/send", badge: "12x" },
+              { icon: "barcode", label: "Pay", href: "/pay" },
+              { icon: "phone", label: "Top up", href: "/topup" },
             ],
           },
         },
@@ -213,10 +213,11 @@ export const pageTemplates: PageTemplate[] = [
           component: "BottomTabBar",
           props: {
             tabs: [
-              { icon: "🏠", label: "Home", href: "/home", active: true },
-              { icon: "💳", label: "Cards", href: "/cards" },
-              { icon: "📊", label: "Invest", href: "/invest" },
-              { icon: "👤", label: "Profile", href: "/profile" },
+              { icon: "home", label: "Home", href: "/home", active: true },
+              { icon: "card", label: "Cards", href: "/cards" },
+              { icon: "diamond", label: "Pix", href: "/pix" },
+              { icon: "chart", label: "Invest", href: "/invest" },
+              { icon: "grid", label: "Products", href: "/products" },
             ],
           },
         },

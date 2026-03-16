@@ -1,4 +1,5 @@
 import type { InfoCardGridProps } from "@/lib/schemas/info-card-grid";
+import { renderIcon } from "@/lib/icons";
 
 export function InfoCardGrid({ cards }: InfoCardGridProps) {
   return (
@@ -16,11 +17,13 @@ export function InfoCardGrid({ cards }: InfoCardGridProps) {
           key={i}
           style={{
             backgroundColor: "var(--sandy-color-secondary)",
-            borderRadius: "var(--sandy-radius-md)",
+            borderRadius: "var(--sandy-radius-lg)",
             padding: "var(--sandy-spacing-md)",
             display: "flex",
             flexDirection: "column",
-            gap: "var(--sandy-spacing-xs)",
+            minHeight: 140,
+            boxShadow: "var(--sandy-shadow-sm)",
+            position: "relative",
           }}
         >
           <h3
@@ -36,7 +39,7 @@ export function InfoCardGrid({ cards }: InfoCardGridProps) {
 
           {card.description && (
             <p
-              className="text-xs m-0"
+              className="text-xs m-0 mt-2"
               style={{ color: "var(--sandy-color-muted)" }}
             >
               {card.description}
@@ -45,10 +48,9 @@ export function InfoCardGrid({ cards }: InfoCardGridProps) {
 
           {card.value && (
             <p
-              className="text-base m-0"
+              className="text-lg m-0 mt-2"
               style={
                 {
-                  color: "var(--sandy-color-primary)",
                   fontWeight: "var(--sandy-font-heading-weight)",
                 } as React.CSSProperties
               }
@@ -57,28 +59,47 @@ export function InfoCardGrid({ cards }: InfoCardGridProps) {
             </p>
           )}
 
-          {card.footnote && (
-            <p
-              className="text-xs m-0"
-              style={{ color: "var(--sandy-color-muted)" }}
-            >
-              {card.footnote}
-            </p>
-          )}
-
-          {card.action && (
-            <a
-              href={card.action.href}
-              className="text-xs mt-auto inline-flex items-center gap-1"
-              style={{
-                color: "var(--sandy-color-primary)",
-                textDecoration: "none",
-                fontWeight: "var(--sandy-font-heading-weight)",
-              } as React.CSSProperties}
-            >
-              {card.action.label} →
-            </a>
-          )}
+          {/* Bottom row: footnote/action + arrow */}
+          <div
+            style={{
+              marginTop: "auto",
+              paddingTop: "var(--sandy-spacing-sm)",
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "flex-end",
+            }}
+          >
+            <div>
+              {card.footnote && (
+                <p
+                  className="text-xs m-0"
+                  style={{ color: "var(--sandy-color-muted)" }}
+                >
+                  {card.footnote}
+                </p>
+              )}
+              {card.action && (
+                <a
+                  href={card.action.href}
+                  className="text-xs"
+                  style={{
+                    color: "var(--sandy-color-primary)",
+                    textDecoration: "none",
+                    fontWeight: "var(--sandy-font-heading-weight)",
+                    display: "inline-block",
+                    marginTop: 2,
+                  } as React.CSSProperties}
+                >
+                  {card.action.label}
+                </a>
+              )}
+            </div>
+            {card.action && (
+              <span style={{ color: "var(--sandy-color-primary)", flexShrink: 0 }}>
+                {renderIcon("arrow-right", { size: 18, color: "var(--sandy-color-primary)" })}
+              </span>
+            )}
+          </div>
         </div>
       ))}
     </div>

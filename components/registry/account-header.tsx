@@ -1,4 +1,5 @@
 import type { AccountHeaderProps } from "@/lib/schemas/account-header";
+import { renderIcon } from "@/lib/icons";
 
 export function AccountHeader({
   greeting,
@@ -16,14 +17,13 @@ export function AccountHeader({
         display: "flex",
         alignItems: "center",
         gap: "var(--sandy-spacing-md)",
-        padding: "var(--sandy-spacing-md)",
       }}
     >
       {/* Avatar */}
       <div
         style={{
-          width: 40,
-          height: 40,
+          width: 48,
+          height: 48,
           borderRadius: "50%",
           backgroundColor: "var(--sandy-color-primary)",
           color: "#fff",
@@ -32,7 +32,7 @@ export function AccountHeader({
           justifyContent: "center",
           flexShrink: 0,
           overflow: "hidden",
-          fontSize: 18,
+          fontSize: 22,
           fontWeight: "var(--sandy-font-heading-weight)",
         } as React.CSSProperties}
       >
@@ -51,20 +51,14 @@ export function AccountHeader({
       {/* Greeting + Name */}
       <div style={{ flex: 1, minWidth: 0 }}>
         <p
-          className="text-xs m-0"
-          style={{ color: "var(--sandy-color-muted)" }}
-        >
-          {greeting}
-        </p>
-        <p
-          className="text-base m-0"
+          className="text-lg m-0"
           style={
             {
               fontWeight: "var(--sandy-font-heading-weight)",
             } as React.CSSProperties
           }
         >
-          {userName}
+          {greeting}, {userName}
         </p>
       </div>
 
@@ -76,18 +70,19 @@ export function AccountHeader({
               key={i}
               title={action.label}
               style={{
-                width: 36,
-                height: 36,
+                width: 40,
+                height: 40,
                 borderRadius: "50%",
-                backgroundColor: "var(--sandy-color-secondary)",
+                border: "1.5px solid var(--sandy-color-primary)",
+                backgroundColor: "transparent",
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
-                fontSize: 16,
+                color: "var(--sandy-color-primary)",
                 cursor: "default",
               }}
             >
-              {action.icon}
+              {renderIcon(action.icon, { size: 20, color: "var(--sandy-color-primary)" })}
             </div>
           ))}
         </div>

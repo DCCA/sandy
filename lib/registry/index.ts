@@ -282,8 +282,8 @@ export const registry: Record<string, RegistryItem> = {
       userName: "Maria",
       avatarUrl: "https://i.pravatar.cc/80?u=maria",
       actions: [
-        { icon: "🔔", label: "Notifications" },
-        { icon: "💬", label: "Messages" },
+        { icon: "eye-off", label: "Hide balance" },
+        { icon: "help-circle", label: "Help" },
       ],
     }),
     metadata: { name: "Account Header", description: "User greeting bar with avatar and action icons", supportsTheme: true },
@@ -305,11 +305,10 @@ export const registry: Record<string, RegistryItem> = {
     schema: QuickActionsSchema,
     example: section("sec_1", "QuickActions", {
       actions: [
-        { icon: "💸", label: "Send", href: "/send" },
-        { icon: "📱", label: "Pay", href: "/pay" },
-        { icon: "🔄", label: "Transfer", href: "/transfer" },
-        { icon: "📊", label: "Invest", href: "/invest", badge: "New" },
-        { icon: "💳", label: "Cards", href: "/cards" },
+        { icon: "camera", label: "Scan", href: "/scan" },
+        { icon: "arrow-up-right", label: "Send Pix", href: "/send", badge: "12x" },
+        { icon: "barcode", label: "Pay", href: "/pay" },
+        { icon: "phone", label: "Top up", href: "/topup" },
       ],
     }),
     metadata: { name: "Quick Actions", description: "Horizontal row of icon action buttons with labels", supportsTheme: true },
@@ -348,10 +347,11 @@ export const registry: Record<string, RegistryItem> = {
     schema: BottomTabBarSchema,
     example: section("sec_1", "BottomTabBar", {
       tabs: [
-        { icon: "🏠", label: "Home", href: "/home", active: true },
-        { icon: "💳", label: "Cards", href: "/cards" },
-        { icon: "📊", label: "Invest", href: "/invest" },
-        { icon: "👤", label: "Profile", href: "/profile" },
+        { icon: "home", label: "Home", href: "/home", active: true },
+        { icon: "card", label: "Cards", href: "/cards" },
+        { icon: "diamond", label: "Pix", href: "/pix" },
+        { icon: "chart", label: "Invest", href: "/invest" },
+        { icon: "grid", label: "Products", href: "/products" },
       ],
     }),
     metadata: { name: "Bottom Tab Bar", description: "Bottom navigation bar with icon tabs", supportsTheme: true },
