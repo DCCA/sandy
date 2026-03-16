@@ -46,15 +46,15 @@ export function QuickActions({ actions }: QuickActionsProps) {
                     bottom: -6,
                     left: "50%",
                     transform: "translateX(-50%)",
-                    backgroundColor: "var(--sandy-color-accent)",
+                    backgroundColor: "var(--sandy-color-success)",
                     color: "#fff",
-                    fontSize: 10,
-                    fontWeight: 700,
-                    borderRadius: 999,
+                    fontSize: "var(--sandy-font-size-xs)",
+                    fontWeight: "var(--sandy-font-heading-weight)",
+                    borderRadius: "var(--sandy-radius-full)",
                     padding: "2px 8px",
                     lineHeight: "14px",
                     whiteSpace: "nowrap",
-                  }}
+                  } as React.CSSProperties}
                 >
                   {action.badge}
                 </span>
@@ -63,8 +63,9 @@ export function QuickActions({ actions }: QuickActionsProps) {
 
             {/* Label */}
             <span
-              className="text-xs text-center"
               style={{
+                fontSize: "var(--sandy-font-size-xs)",
+                textAlign: "center" as const,
                 color: "var(--sandy-color-foreground)",
                 marginTop: action.badge ? 4 : 0,
               }}

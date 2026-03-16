@@ -28,8 +28,8 @@ export function BottomTabBar({ tabs }: BottomTabBarProps) {
               alignItems: "center",
               gap: 2,
               padding: "6px 14px",
-              borderRadius: 999,
-              backgroundColor: isActive ? "var(--sandy-color-background)" : "transparent",
+              borderRadius: "var(--sandy-radius-full)",
+              backgroundColor: isActive ? "var(--sandy-color-surface)" : "transparent",
             }}
           >
             <span style={{ lineHeight: 1, color }}>
@@ -37,7 +37,7 @@ export function BottomTabBar({ tabs }: BottomTabBarProps) {
             </span>
             <span
               style={{
-                fontSize: 10,
+                fontSize: "var(--sandy-font-size-xs)",
                 color,
                 fontWeight: isActive
                   ? ("var(--sandy-font-heading-weight)" as string)

@@ -24,7 +24,7 @@ export function AccountHeader({
         style={{
           width: 48,
           height: 48,
-          borderRadius: "50%",
+          borderRadius: "var(--sandy-radius-full)",
           backgroundColor: "var(--sandy-color-primary)",
           color: "#fff",
           display: "flex",
@@ -32,7 +32,7 @@ export function AccountHeader({
           justifyContent: "center",
           flexShrink: 0,
           overflow: "hidden",
-          fontSize: 22,
+          fontSize: "var(--sandy-font-size-xl)",
           fontWeight: "var(--sandy-font-heading-weight)",
         } as React.CSSProperties}
       >
@@ -51,12 +51,12 @@ export function AccountHeader({
       {/* Greeting + Name */}
       <div style={{ flex: 1, minWidth: 0 }}>
         <p
-          className="text-lg m-0"
-          style={
-            {
-              fontWeight: "var(--sandy-font-heading-weight)",
-            } as React.CSSProperties
-          }
+          style={{
+            margin: 0,
+            fontSize: "var(--sandy-font-size-lg)",
+            fontWeight: "var(--sandy-font-heading-weight)",
+            lineHeight: "var(--sandy-line-height-tight)",
+          } as React.CSSProperties}
         >
           {greeting}, {userName}
         </p>
@@ -72,8 +72,8 @@ export function AccountHeader({
               style={{
                 width: 40,
                 height: 40,
-                borderRadius: "50%",
-                border: "1.5px solid var(--sandy-color-primary)",
+                borderRadius: "var(--sandy-radius-full)",
+                border: "var(--sandy-border-thin) solid var(--sandy-color-primary)",
                 backgroundColor: "transparent",
                 display: "flex",
                 alignItems: "center",

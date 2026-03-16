@@ -27,20 +27,23 @@ export function InfoCardGrid({ cards }: InfoCardGridProps) {
           }}
         >
           <h3
-            className="text-sm m-0"
-            style={
-              {
-                fontWeight: "var(--sandy-font-heading-weight)",
-              } as React.CSSProperties
-            }
+            style={{
+              margin: 0,
+              fontSize: "var(--sandy-font-size-sm)",
+              fontWeight: "var(--sandy-font-heading-weight)",
+            } as React.CSSProperties}
           >
             {card.title}
           </h3>
 
           {card.description && (
             <p
-              className="text-xs m-0 mt-2"
-              style={{ color: "var(--sandy-color-muted)" }}
+              style={{
+                margin: 0,
+                marginTop: "var(--sandy-spacing-sm)",
+                fontSize: "var(--sandy-font-size-xs)",
+                color: "var(--sandy-color-muted)",
+              }}
             >
               {card.description}
             </p>
@@ -48,9 +51,11 @@ export function InfoCardGrid({ cards }: InfoCardGridProps) {
 
           {card.value && (
             <p
-              className="text-lg m-0 mt-2"
               style={
                 {
+                  margin: 0,
+                  marginTop: "var(--sandy-spacing-sm)",
+                  fontSize: "var(--sandy-font-size-lg)",
                   fontWeight: "var(--sandy-font-heading-weight)",
                 } as React.CSSProperties
               }
@@ -72,8 +77,11 @@ export function InfoCardGrid({ cards }: InfoCardGridProps) {
             <div>
               {card.footnote && (
                 <p
-                  className="text-xs m-0"
-                  style={{ color: "var(--sandy-color-muted)" }}
+                  style={{
+                    margin: 0,
+                    fontSize: "var(--sandy-font-size-xs)",
+                    color: "var(--sandy-color-muted)",
+                  }}
                 >
                   {card.footnote}
                 </p>
@@ -81,8 +89,8 @@ export function InfoCardGrid({ cards }: InfoCardGridProps) {
               {card.action && (
                 <a
                   href={card.action.href}
-                  className="text-xs"
                   style={{
+                    fontSize: "var(--sandy-font-size-xs)",
                     color: "var(--sandy-color-primary)",
                     textDecoration: "none",
                     fontWeight: "var(--sandy-font-heading-weight)",

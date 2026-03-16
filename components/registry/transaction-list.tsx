@@ -1,11 +1,11 @@
 import type { TransactionListProps } from "@/lib/schemas/transaction-list";
 import { renderIcon } from "@/lib/icons";
 
-const typeConfig: Record<string, { icon: string; bg: string }> = {
-  sent: { icon: "arrow-up-right", bg: "rgba(0,102,204,0.08)" },
-  received: { icon: "arrow-down-left", bg: "rgba(0,168,107,0.10)" },
-  payment: { icon: "arrow-right", bg: "rgba(0,102,204,0.08)" },
-  investment: { icon: "trending-up", bg: "rgba(0,168,107,0.10)" },
+const typeConfig: Record<string, { icon: string; bgColor: string; fgColor: string }> = {
+  sent: { icon: "arrow-up-right", bgColor: "var(--sandy-color-info)", fgColor: "var(--sandy-color-info)" },
+  received: { icon: "arrow-down-left", bgColor: "var(--sandy-color-success)", fgColor: "var(--sandy-color-success)" },
+  payment: { icon: "arrow-right", bgColor: "var(--sandy-color-info)", fgColor: "var(--sandy-color-info)" },
+  investment: { icon: "trending-up", bgColor: "var(--sandy-color-success)", fgColor: "var(--sandy-color-success)" },
 };
 
 export function TransactionList({
@@ -27,13 +27,14 @@ export function TransactionList({
     >
       {heading && (
         <h2
-          className="text-base m-0"
           style={
             {
+              margin: 0,
+              marginBottom: "var(--sandy-spacing-md)",
+              fontSize: "var(--sandy-font-size-md)",
               fontWeight: "var(--sandy-font-heading-weight)",
               color: "var(--sandy-color-primary)",
               fontStyle: "italic",
-              marginBottom: "var(--sandy-spacing-md)",
             } as React.CSSProperties
           }
         >
@@ -60,27 +61,25 @@ export function TransactionList({
                 style={{
                   width: 48,
                   height: 48,
-                  borderRadius: "50%",
-                  backgroundColor: config.bg,
+                  borderRadius: "var(--sandy-radius-full)",
+                  backgroundColor: "var(--sandy-color-surface)",
                   display: "flex",
                   alignItems: "center",
                   justifyContent: "center",
                   flexShrink: 0,
-                  color: isReceived ? "var(--sandy-color-accent)" : "var(--sandy-color-primary)",
+                  color: config.fgColor,
                 }}
               >
-                {renderIcon(config.icon, {
-                  size: 22,
-                  color: isReceived ? "var(--sandy-color-accent)" : "var(--sandy-color-primary)",
-                })}
+                {renderIcon(config.icon, { size: 22, color: config.fgColor })}
               </div>
 
               {/* Title + Subtitle */}
               <div style={{ flex: 1, minWidth: 0 }}>
                 <p
-                  className="text-sm m-0"
                   style={
                     {
+                      margin: 0,
+                      fontSize: "var(--sandy-font-size-sm)",
                       fontWeight: "var(--sandy-font-heading-weight)",
                     } as React.CSSProperties
                   }
@@ -89,8 +88,12 @@ export function TransactionList({
                 </p>
                 {tx.subtitle && (
                   <p
-                    className="text-xs m-0 mt-0.5"
-                    style={{ color: "var(--sandy-color-muted)" }}
+                    style={{
+                      margin: 0,
+                      marginTop: 2,
+                      fontSize: "var(--sandy-font-size-xs)",
+                      color: "var(--sandy-color-muted)",
+                    }}
                   >
                     {tx.subtitle}
                   </p>
@@ -100,12 +103,13 @@ export function TransactionList({
               {/* Amount + Timestamp */}
               <div style={{ textAlign: "right", flexShrink: 0 }}>
                 <p
-                  className="text-sm m-0"
                   style={
                     {
+                      margin: 0,
+                      fontSize: "var(--sandy-font-size-sm)",
                       fontWeight: "var(--sandy-font-heading-weight)",
                       color: isReceived
-                        ? "var(--sandy-color-accent)"
+                        ? "var(--sandy-color-success)"
                         : "var(--sandy-color-foreground)",
                     } as React.CSSProperties
                   }
@@ -114,8 +118,12 @@ export function TransactionList({
                 </p>
                 {tx.timestamp && (
                   <p
-                    className="text-xs m-0 mt-0.5"
-                    style={{ color: "var(--sandy-color-muted)" }}
+                    style={{
+                      margin: 0,
+                      marginTop: 2,
+                      fontSize: "var(--sandy-font-size-xs)",
+                      color: "var(--sandy-color-muted)",
+                    }}
                   >
                     {tx.timestamp}
                   </p>
@@ -134,12 +142,12 @@ export function TransactionList({
             textAlign: "center",
             marginTop: "var(--sandy-spacing-lg)",
             padding: "var(--sandy-spacing-sm) var(--sandy-spacing-md)",
-            backgroundColor: "var(--sandy-color-background)",
+            backgroundColor: "var(--sandy-color-surface)",
             borderRadius: "var(--sandy-radius-lg)",
             color: "var(--sandy-color-primary)",
             textDecoration: "none",
             fontWeight: "var(--sandy-font-heading-weight)",
-            fontSize: 14,
+            fontSize: "var(--sandy-font-size-sm)",
           } as React.CSSProperties}
         >
           {showAllLabel}

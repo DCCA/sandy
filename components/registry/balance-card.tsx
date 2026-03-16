@@ -21,18 +21,23 @@ export function BalanceCard({
       {/* Left: label + amount */}
       <div style={{ flex: 1, minWidth: 0 }}>
         <p
-          className="text-sm m-0"
-          style={{ color: "var(--sandy-color-muted)" }}
+          style={{
+            margin: 0,
+            fontSize: "var(--sandy-font-size-sm)",
+            color: "var(--sandy-color-muted)",
+          }}
         >
           {label}
         </p>
         <p
-          className="m-0 mt-1"
           style={
             {
-              fontSize: 28,
+              margin: 0,
+              marginTop: "var(--sandy-spacing-xs)",
+              fontSize: "var(--sandy-font-size-2xl)",
               fontWeight: "var(--sandy-font-heading-weight)",
-              letterSpacing: "-0.02em",
+              letterSpacing: "var(--sandy-letter-spacing-tight)",
+              lineHeight: "var(--sandy-line-height-tight)",
             } as React.CSSProperties
           }
         >
@@ -40,8 +45,12 @@ export function BalanceCard({
         </p>
         {footnote && (
           <p
-            className="text-xs m-0 mt-1"
-            style={{ color: "var(--sandy-color-muted)" }}
+            style={{
+              margin: 0,
+              marginTop: "var(--sandy-spacing-xs)",
+              fontSize: "var(--sandy-font-size-xs)",
+              color: "var(--sandy-color-muted)",
+            }}
           >
             {footnote}
           </p>
@@ -56,7 +65,7 @@ export function BalanceCard({
           style={{
             width: 40,
             height: 40,
-            borderRadius: "50%",
+            borderRadius: "var(--sandy-radius-full)",
             backgroundColor: "var(--sandy-color-secondary)",
             display: "flex",
             alignItems: "center",
