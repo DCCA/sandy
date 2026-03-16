@@ -5,15 +5,15 @@ export const defaultTheme: ThemePreset = {
   name: "Default",
   tokens: {
     color: {
-      background: "#ffffff",
-      foreground: "#111111",
-      primary: "#0055ff",
-      secondary: "#f4f6f8",
-      border: "#dcdcdc",
-      muted: "#6b7280",
-      accent: "#0055ff",
+      background: "#E5F1FA",
+      foreground: "#1A2B3C",
+      primary: "#0066CC",
+      secondary: "#FFFFFF",
+      border: "#D0E2F0",
+      muted: "#6B8299",
+      accent: "#00A86B",
     },
-    radius: { sm: 6, md: 12, lg: 20 },
+    radius: { sm: 8, md: 14, lg: 20 },
     spacing: { xs: 4, sm: 8, md: 16, lg: 24 },
     typography: {
       fontFamily: "'Inter', system-ui, sans-serif",
@@ -21,8 +21,8 @@ export const defaultTheme: ThemePreset = {
       bodyWeight: 400,
     },
     shadow: {
-      sm: "0 1px 2px rgba(0,0,0,0.06)",
-      md: "0 4px 12px rgba(0,0,0,0.10)",
+      sm: "0 1px 3px rgba(0,40,100,0.06)",
+      md: "0 4px 12px rgba(0,40,100,0.10)",
     },
   },
 };
