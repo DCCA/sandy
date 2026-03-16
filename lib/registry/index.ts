@@ -19,6 +19,7 @@ import { QuickActions } from "@/components/registry/quick-actions";
 import { InfoCardGrid } from "@/components/registry/info-card-grid";
 import { TransactionList } from "@/components/registry/transaction-list";
 import { BottomTabBar } from "@/components/registry/bottom-tab-bar";
+import { BottomSheet } from "@/components/registry/bottom-sheet";
 import {
   HeroBannerSchema,
   ProductCardSchema,
@@ -40,6 +41,7 @@ import {
   InfoCardGridSchema,
   TransactionListSchema,
   BottomTabBarSchema,
+  BottomSheetSchema,
 } from "@/lib/schemas";
 
 function section(id: string, component: string, props: Record<string, unknown>): Section {
@@ -369,6 +371,23 @@ export const registry: Record<string, RegistryItem> = {
       ],
     }),
     metadata: { name: "Bottom Tab Bar", description: "Bottom navigation bar with icon tabs", supportsTheme: true },
+  },
+  BottomSheet: {
+    component: BottomSheet as RegistryItem["component"],
+    schema: BottomSheetSchema,
+    example: section("sec_1", "BottomSheet", {
+      title: "Confirm payment",
+      subtitle: "Review the details below",
+      items: [
+        { label: "To", value: "Ana Silva" },
+        { label: "Amount", value: "R$ 150.00" },
+        { label: "Method", value: "Pix" },
+        { label: "Date", value: "Today" },
+      ],
+      action: { label: "Pay now", href: "/pay" },
+      secondaryAction: { label: "Cancel", href: "/cancel" },
+    }),
+    metadata: { name: "Bottom Sheet", description: "Mobile bottom sheet overlay panel with items and actions", supportsTheme: true },
   },
 };
 

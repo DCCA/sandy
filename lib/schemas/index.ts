@@ -34,3 +34,7 @@ export {
   BottomTabBarSchema,
   type BottomTabBarProps,
 } from "./bottom-tab-bar";
+export {
+  BottomSheetSchema,
+  type BottomSheetProps,
+} from "./bottom-sheet";
