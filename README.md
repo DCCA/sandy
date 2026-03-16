@@ -1,36 +1,118 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Sandy
 
-## Getting Started
+A schema-first, registry-constrained JSON sandbox for rendering branded mobile UI components. Input validated JSON on the left, see live rendered components on the right — with multi-brand theming via design tokens.
 
-First, run the development server:
+Built for designers and engineers who need a fast way to prototype, validate, and preview SDUI (Server-Driven UI) components without writing frontend code.
+
+## Features
+
+- **Live preview** — edit JSON, see components render instantly in a mobile device frame
+- **Schema validation** — every component validates against a Zod contract with clear error messages
+- **Component registry** — 21 registered components (banking, marketing, navigation, forms, and more)
+- **46 design tokens** — colors, typography scale, spacing, radius, shadows, opacity, and borders
+- **3 theme presets** — Default (Neon-inspired), Acme Bank, Enterprise Dark
+- **Token editor** — tweak any design token in real-time and see components update
+- **Page templates** — 6 pre-built page compositions (Banking Home, Full Banner, Bottom Sheet, etc.)
+- **SVG icon system** — 15 Lucide-style line icons with emoji fallback
+- **URL state sharing** — every sandbox state is serializable to a shareable URL
+- **Safety by default** — no eval, no arbitrary JSX, registry-only rendering with error boundaries
+
+## Quick Start
 
 ```bash
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000/sandbox](http://localhost:3000/sandbox) to start.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Commands
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```bash
+npm run dev          # Start dev server
+npm run build        # Production build (includes type checking)
+npm run lint         # ESLint
+npm run typecheck    # TypeScript type check
+npm run validate     # Typecheck + lint
+```
 
-## Learn More
+## Architecture
 
-To learn more about Next.js, take a look at the following resources:
+```
+JSON input → parse → validate envelope (Zod) → resolve component from registry
+→ validate props → resolve theme tokens to CSS variables → render inside error boundary
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+### Key Directories
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+```
+app/sandbox/              Main sandbox page
+components/registry/      21 registered UI components
+components/sandbox/       Editor, preview, toolbar, token editor
+lib/registry/             Registry system, types, templates
+lib/schemas/              Zod schemas (envelope + per-component)
+lib/theme/                Token types, presets, CSS variable mapping
+lib/icons.tsx             SVG icon rendering utility
+```
 
-## Deploy on Vercel
+### Design Token System
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+46 CSS variables scoped to the preview container via `--sandy-*` prefix:
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+| Category | Tokens | Examples |
+|----------|--------|---------|
+| Colors | 13 | primary, secondary, success, warning, error, surface, overlay |
+| Typography | 15 | 6 font sizes, 3 line heights, 3 letter spacings, family, weights |
+| Spacing | 6 | xs (4px) through 2xl (48px) |
+| Radius | 4 | sm, md, lg, full (999px) |
+| Shadows | 3 | sm, md, lg |
+| Opacity | 3 | disabled, hover, overlay |
+| Borders | 2 | thin (1px), thick (2px) |
+
+### Adding a New Component
+
+1. Create schema in `lib/schemas/{name}.ts`
+2. Create component in `components/registry/{name}.tsx`
+3. Export from `lib/schemas/index.ts`
+4. Add registry entry in `lib/registry/index.ts`
+
+Components use inline styles with `var(--sandy-*)` CSS variables for theming. No Tailwind classes in registry components.
+
+## Registered Components
+
+| Component | Description |
+|-----------|-------------|
+| HeroBanner | Full-width hero with title, subtitle, CTA |
+| ProductCard | Card with image, badge, description, action |
+| PromoBanner | Promotional banner with variant styling |
+| NoticeBox | Alert box (info/warning/error/success) |
+| FeatureList | Grid of features with icons |
+| InputField | Form input with label and validation |
+| CTAButtonGroup | Row of action buttons |
+| ModalPreview | Modal dialog rendered inline |
+| PricingTable | Tiered pricing comparison |
+| Testimonial | Customer quote with rating |
+| StatsRow | Key metrics grid |
+| NavBar | Navigation with logo and links |
+| Footer | Multi-column footer |
+| AvatarGroup | Overlapping avatar stack |
+| AccountHeader | User greeting with avatar and actions |
+| BalanceCard | Balance display with masking |
+| QuickActions | Icon action button row |
+| InfoCardGrid | Two-column summary cards |
+| TransactionList | Transaction history with icons |
+| BottomTabBar | Bottom navigation tabs |
+| BottomSheet | Mobile bottom sheet overlay |
+
+## Tech Stack
+
+- **Framework:** Next.js 16 (App Router) + TypeScript
+- **Validation:** Zod 4
+- **Editor:** Monaco Editor
+- **Styling:** Tailwind CSS 4 + CSS variables for theming
+- **UI primitives:** shadcn/ui
+- **Deployment:** Vercel
+
+## License
+
+MIT
