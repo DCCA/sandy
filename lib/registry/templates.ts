@@ -224,4 +224,107 @@ export const pageTemplates: PageTemplate[] = [
       ],
     },
   },
+  {
+    id: "full-banner",
+    name: "Full Banner",
+    description: "Hero banner with features, testimonial, and CTA",
+    page: {
+      version: "2.0",
+      theme: { brand: "default", mode: "light" },
+      meta: { viewport: "mobile" },
+      sections: [
+        {
+          id: "sec_1",
+          component: "HeroBanner",
+          props: {
+            title: "Your money, your way",
+            subtitle: "Open your digital account in minutes. No fees, no paperwork.",
+            cta: { label: "Get started", href: "/signup" },
+            align: "center",
+          },
+        },
+        {
+          id: "sec_2",
+          component: "FeatureList",
+          props: {
+            heading: "Why choose us",
+            columns: "3",
+            features: [
+              { title: "No fees", description: "Zero monthly fees on your account.", icon: "💰" },
+              { title: "Instant transfers", description: "Send and receive money in seconds.", icon: "⚡" },
+              { title: "100% digital", description: "Open your account from your phone.", icon: "📱" },
+            ],
+          },
+        },
+        {
+          id: "sec_3",
+          component: "Testimonial",
+          props: {
+            quote: "I switched to this app and never looked back. Everything is so simple and fast.",
+            author: "Maria Santos",
+            role: "Customer since 2024",
+            rating: 5,
+          },
+        },
+        {
+          id: "sec_4",
+          component: "CTAButtonGroup",
+          props: {
+            alignment: "center",
+            buttons: [
+              { label: "Open account", href: "/signup", variant: "primary" },
+              { label: "Learn more", href: "/about", variant: "outline" },
+            ],
+          },
+        },
+      ],
+    },
+  },
+  {
+    id: "bottom-sheet",
+    name: "Bottom Sheet",
+    description: "Payment confirmation bottom sheet over account view",
+    page: {
+      version: "2.0",
+      theme: { brand: "default", mode: "light" },
+      meta: { viewport: "mobile" },
+      sections: [
+        {
+          id: "sec_1",
+          component: "AccountHeader",
+          props: {
+            greeting: "Olá",
+            userName: "Daniel",
+            actions: [{ icon: "eye-off", label: "Hide" }],
+          },
+        },
+        {
+          id: "sec_2",
+          component: "BalanceCard",
+          props: {
+            label: "Saldo",
+            amount: "R$ 4,521.89",
+            visible: false,
+            action: { label: "Statement", href: "/statement" },
+          },
+        },
+        {
+          id: "sec_3",
+          component: "BottomSheet",
+          props: {
+            title: "Confirm payment",
+            subtitle: "Review the details below",
+            items: [
+              { label: "To", value: "Ana Silva" },
+              { label: "Amount", value: "R$ 150.00" },
+              { label: "Method", value: "Pix" },
+              { label: "Date", value: "Today" },
+            ],
+            action: { label: "Pay now", href: "/pay" },
+            secondaryAction: { label: "Cancel", href: "/cancel" },
+          },
+        },
+      ],
+    },
+  },
 ];
