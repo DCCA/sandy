@@ -1,7 +1,7 @@
 import type { ThemeTokens, DeepPartial } from "./types";
 
 const VALID_CATEGORIES: Set<string> = new Set([
-  "color", "radius", "spacing", "typography", "shadow",
+  "color", "radius", "spacing", "typography", "shadow", "opacity", "border",
 ]);
 
 export function mergeTokens(
@@ -17,7 +17,18 @@ export function mergeTokens(
       const baseCategory = result[category];
       for (const key of Object.keys(partial)) {
         if (key in baseCategory) {
-          (baseCategory as Record<string, unknown>)[key] = (partial as Record<string, unknown>)[key];
+          const baseValue = (baseCategory as Record<string, unknown>)[key];
+          const overrideValue = (partial as Record<string, unknown>)[key];
+          // Handle nested objects (e.g., typography.fontSize, typography.lineHeight)
+          if (baseValue && typeof baseValue === "object" && overrideValue && typeof overrideValue === "object") {
+            for (const subKey of Object.keys(overrideValue as Record<string, unknown>)) {
+              if (subKey in (baseValue as Record<string, unknown>)) {
+                (baseValue as Record<string, unknown>)[subKey] = (overrideValue as Record<string, unknown>)[subKey];
+              }
+            }
+          } else {
+            (baseCategory as Record<string, unknown>)[key] = overrideValue;
+          }
         }
       }
     }
