@@ -4,6 +4,17 @@ A schema-first, registry-constrained JSON sandbox for rendering branded mobile U
 
 Built for designers and engineers who need a fast way to prototype, validate, and preview SDUI (Server-Driven UI) components without writing frontend code.
 
+## Review first
+
+If you are evaluating Sandy, start with:
+
+1. **[Features](#features)** — what the sandbox proves about schema-first SDUI prototyping.
+2. **[Architecture](#architecture)** — the constrained JSON → schema → registry → render pipeline.
+3. **[Registered Components](#registered-components)** — the component surface available for branded mobile flows.
+4. **[Commands](#commands)** — the deterministic checks used before sharing or deploying.
+
+**Current proof:** validation, tests, and production build pass against the current tree; the renderer never turns arbitrary JSON into arbitrary JSX.
+
 ## Features
 
 - **Live preview** — edit JSON, see components render instantly in a mobile device frame
@@ -34,7 +45,10 @@ npm run build        # Production build (includes type checking)
 npm run lint         # ESLint
 npm run typecheck    # TypeScript type check
 npm run validate     # Typecheck + lint
+npm test             # Vitest component/schema tests
 ```
+
+Verified against the current working tree on 2026-06-27: `npm run validate`, `npm test -- --run`, and `npm run build` pass locally; latest GitHub Actions `CI` run passed on `master`.
 
 ## Architecture
 
