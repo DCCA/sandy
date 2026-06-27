@@ -92,9 +92,10 @@ export function BottomSheet({
             }}
           >
             {items.map((item, i) => {
+              const itemKey = `bottom-sheet-item-${i}-${item.label}`;
               const row = (
                 <div
-                  key={`bottom-sheet-item-${i}-${item.label}`}
+                  key={itemKey}
                   style={{
                     display: "flex",
                     alignItems: "center",
@@ -133,7 +134,7 @@ export function BottomSheet({
               );
 
               return item.href ? (
-                <a key={i} href={item.href} style={{ textDecoration: "none", color: "inherit" }}>
+                <a key={itemKey} href={item.href} style={{ textDecoration: "none", color: "inherit" }}>
                   {row}
                 </a>
               ) : (
