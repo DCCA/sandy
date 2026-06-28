@@ -1,4 +1,59 @@
-import type { ThemePreset } from "./types";
+import type { ThemePreset, ThemeMode, ThemeTokens, DeepPartial } from "./types";
+import { mergeTokens } from "./merge-tokens";
+
+// Mode override sets. A preset's `tokens` is its natural appearance; these are
+// applied on top when a page explicitly requests the opposite mode, so each
+// brand can render in both light and dark.
+const defaultDark: DeepPartial<ThemeTokens> = {
+  color: {
+    background: "#0f1620",
+    foreground: "#e6eef7",
+    secondary: "#1b2530",
+    border: "#2a3744",
+    muted: "#8aa0b5",
+    surface: "#16202b",
+    overlay: "rgba(0,0,0,0.6)",
+  },
+  shadow: {
+    sm: "0 1px 3px rgba(0,0,0,0.4)",
+    md: "0 4px 12px rgba(0,0,0,0.5)",
+    lg: "0 8px 24px rgba(0,0,0,0.6)",
+  },
+};
+
+const acmeDark: DeepPartial<ThemeTokens> = {
+  color: {
+    background: "#0d1320",
+    foreground: "#e7ecf3",
+    secondary: "#17202e",
+    border: "#27313f",
+    muted: "#8693a5",
+    surface: "#121a26",
+    overlay: "rgba(0,0,0,0.6)",
+  },
+  shadow: {
+    sm: "0 1px 3px rgba(0,0,0,0.4)",
+    md: "0 2px 8px rgba(0,0,0,0.5)",
+    lg: "0 6px 20px rgba(0,0,0,0.6)",
+  },
+};
+
+const enterpriseLight: DeepPartial<ThemeTokens> = {
+  color: {
+    background: "#ffffff",
+    foreground: "#0a0a0a",
+    secondary: "#f4f4f5",
+    border: "#e4e4e7",
+    muted: "#52525b",
+    surface: "#fafafa",
+    overlay: "rgba(0,0,0,0.4)",
+  },
+  shadow: {
+    sm: "0 1px 4px rgba(0,0,0,0.06)",
+    md: "0 4px 16px rgba(0,0,0,0.1)",
+    lg: "0 8px 32px rgba(0,0,0,0.14)",
+  },
+};
 
 export const defaultTheme: ThemePreset = {
   id: "default",
@@ -38,6 +93,7 @@ export const defaultTheme: ThemePreset = {
     opacity: { disabled: 0.4, hover: 0.8, overlay: 0.5 },
     border: { thin: "1px", thick: "2px" },
   },
+  dark: defaultDark,
 };
 
 export const acmeBankTheme: ThemePreset = {
@@ -78,6 +134,7 @@ export const acmeBankTheme: ThemePreset = {
     opacity: { disabled: 0.4, hover: 0.8, overlay: 0.5 },
     border: { thin: "1px", thick: "2px" },
   },
+  dark: acmeDark,
 };
 
 export const enterpriseDarkTheme: ThemePreset = {
@@ -118,10 +175,23 @@ export const enterpriseDarkTheme: ThemePreset = {
     opacity: { disabled: 0.35, hover: 0.75, overlay: 0.6 },
     border: { thin: "1px", thick: "2px" },
   },
+  light: enterpriseLight,
 };
 
 export const themePresets: ThemePreset[] = [defaultTheme, acmeBankTheme, enterpriseDarkTheme];
 
 export function getThemePreset(id: string): ThemePreset | undefined {
   return themePresets.find((t) => t.id === id);
+}
+
+/**
+ * Resolve the effective token set for a brand + light/dark mode. Falls back to
+ * the default preset for unknown brands and to the preset's natural tokens when
+ * it has no override for the requested mode.
+ */
+export function getThemeTokens(brandId: string, mode?: ThemeMode): ThemeTokens {
+  const preset = getThemePreset(brandId) ?? defaultTheme;
+  if (mode === "dark" && preset.dark) return mergeTokens(preset.tokens, preset.dark);
+  if (mode === "light" && preset.light) return mergeTokens(preset.tokens, preset.light);
+  return preset.tokens;
 }

@@ -30,7 +30,7 @@ import {
   serializeTokens,
   deserializeTokens,
 } from "@/lib/sandbox/serialize";
-import { getThemePreset, defaultTheme } from "@/lib/theme/presets";
+import { getThemeTokens } from "@/lib/theme/presets";
 import { mergeTokens } from "@/lib/theme/merge-tokens";
 import { downloadJSON } from "@/lib/export/json";
 import { generateReactCode } from "@/lib/export/react";
@@ -108,38 +108,41 @@ function SandboxContent() {
   }, []);
 
   // Parse, validate, derive state
-  const { errors, validatedSections, renderItems, parsedSections, parsedTheme } = useMemo(() => {
-    const errs: SandboxError[] = [];
-    const parsed = parseJSON(jsonText);
-    if (!parsed.success) {
-      errs.push({ type: "parse", messages: [parsed.error] });
+  const { errors, validatedSections, renderItems, parsedSections, parsedTheme, parsedMode } =
+    useMemo(() => {
+      const errs: SandboxError[] = [];
+      const parsed = parseJSON(jsonText);
+      if (!parsed.success) {
+        errs.push({ type: "parse", messages: [parsed.error] });
+        return {
+          errors: errs,
+          validatedSections: [],
+          renderItems: [],
+          parsedSections: [],
+          parsedTheme: null,
+          parsedMode: null,
+        };
+      }
+
+      let data = parsed.data;
+
+      // Auto-migrate legacy envelope
+      if (isLegacyEnvelope(data)) {
+        data = migrateEnvelopeToPage(data);
+      }
+
+      const pageResult = validatePage(data);
+      const pageData = data as Page;
+
       return {
-        errors: errs,
-        validatedSections: [],
-        renderItems: [],
-        parsedSections: [],
-        parsedTheme: null,
+        errors: pageResult.errors,
+        validatedSections: pageResult.sections,
+        renderItems: pageResult.renderItems,
+        parsedSections: pageData.sections ?? [],
+        parsedTheme: pageData.theme?.brand ?? null,
+        parsedMode: pageData.theme?.mode ?? null,
       };
-    }
-
-    let data = parsed.data;
-
-    // Auto-migrate legacy envelope
-    if (isLegacyEnvelope(data)) {
-      data = migrateEnvelopeToPage(data);
-    }
-
-    const pageResult = validatePage(data);
-    const pageData = data as Page;
-
-    return {
-      errors: pageResult.errors,
-      validatedSections: pageResult.sections,
-      renderItems: pageResult.renderItems,
-      parsedSections: pageData.sections ?? [],
-      parsedTheme: pageData.theme?.brand ?? null,
-    };
-  }, [jsonText]);
+    }, [jsonText]);
 
   // Derive selected section + registry item
   const selectedSection = useMemo(() => {
@@ -226,10 +229,13 @@ function SandboxContent() {
     return () => window.removeEventListener("keydown", handler);
   }, [undo, redo]);
 
-  const theme = getThemePreset(selectedTheme) ?? defaultTheme;
+  const baseTokens = useMemo(
+    () => getThemeTokens(selectedTheme, parsedMode ?? undefined),
+    [selectedTheme, parsedMode],
+  );
   const mergedTokens = useMemo(
-    () => mergeTokens(theme.tokens, tokenOverrides),
-    [theme.tokens, tokenOverrides],
+    () => mergeTokens(baseTokens, tokenOverrides),
+    [baseTokens, tokenOverrides],
   );
 
   // Generate next section ID based on existing sections

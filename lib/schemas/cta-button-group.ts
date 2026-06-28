@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { safeHref } from "./shared";
+import { safeHref, alignEnum } from "./shared";
 
 export const CTAButtonGroupSchema = z.object({
   buttons: z
@@ -12,7 +12,7 @@ export const CTAButtonGroupSchema = z.object({
     )
     .min(1)
     .max(4),
-  alignment: z.enum(["left", "center", "right"]).default("left"),
+  alignment: alignEnum.default("left"),
 });
 
 export type CTAButtonGroupProps = z.infer<typeof CTAButtonGroupSchema>;

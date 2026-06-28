@@ -5,7 +5,7 @@ const PricingTierSchema = z.object({
   name: z.string().min(1),
   price: z.string().min(1),
   period: z.string().optional(),
-  features: z.array(z.string()).min(1),
+  features: z.array(z.string()).min(1).max(12),
   cta: z.object({
     label: z.string(),
     href: safeHref,

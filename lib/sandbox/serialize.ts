@@ -1,5 +1,6 @@
 import type { Page } from "@/lib/registry/types";
 import type { ThemeTokens, DeepPartial } from "@/lib/theme/types";
+import { parseThemeOverrides } from "@/lib/theme/schema";
 import { isLegacyEnvelope, migrateEnvelopeToPage } from "./validate";
 
 export function serializeState(page: Page): string {
@@ -36,7 +37,9 @@ export function serializeTokens(overrides: DeepPartial<ThemeTokens>): string {
 export function deserializeTokens(encoded: string): DeepPartial<ThemeTokens> | null {
   try {
     const json = decodeURIComponent(atob(encoded));
-    return JSON.parse(json) as DeepPartial<ThemeTokens>;
+    // Validate the shape/types of the override payload (it comes from the URL)
+    // before trusting it; malformed input is dropped rather than merged.
+    return parseThemeOverrides(JSON.parse(json));
   } catch {
     return null;
   }
