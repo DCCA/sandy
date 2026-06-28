@@ -37,13 +37,14 @@ envelope → re-validated by `validatePage()` → loaded into the editor for hum
 - **Full Page generation** (one or more registry sections).
 - **Model contract:** enum+catalog JSON Schema for the CLI; `validatePage()` is the hard gate.
 
-## Build state (2026-06-28)
+## Build state
 
-Phase 1 is **built and shipped** on branch `feat/generative-ui-prompt-to-envelope`:
-`lib/ai/generate-envelope.ts`, `app/api/generate/route.ts`,
-`components/sandbox/generate-panel.tsx`, toolbar + page wiring, unit + route + e2e tests, docs.
-Full gate green locally (typecheck · lint · vitest · build · playwright). Dogfooded live via the
-Claude Code CLI (stored login) — real prompts produce envelopes that pass `validatePage`.
+Phase 1 is **merged to `master`** (PR #9, commit `22ed57c`): `lib/ai/generate-envelope.ts`,
+`app/api/generate/route.ts`, `components/sandbox/generate-panel.tsx`, toolbar + page wiring,
+unit + route + e2e tests, docs. A loading state on the Generate button followed (PR #10,
+`8fad9fe`). Full gate green locally and in CI (typecheck · lint · vitest · build · playwright).
+Dogfooded live via the Claude Code CLI (stored login) — real prompts produce envelopes that pass
+`validatePage` and render in light and dark.
 
 ## needs_human
 
@@ -55,4 +56,40 @@ in, the stored login is used and no token is needed.)
 
 Phase 1 done. Candidate follow-ups (from `docs/generative-ui.md` §6): quality evals + telemetry
 on validation-failure rate (Phase 2), streaming preview via `streamObject`/SpecStream (Phase 3),
-theming-aware generation (Phase 4).
+theming-aware generation (Phase 4). Smaller polish: wire an `AbortController`/cancel so a slow
+generation can be cancelled instead of waiting out the 120s timeout (noted in review).
+
+## Session log
+
+### 2026-06-28 — Generative UI Phase 1: prompt-to-envelope, shipped
+
+**Where we were:** Roadmap Phases 0–4 + most of Phase 5 shipped; the generative-UI research doc
+(PR #8) had just landed with an "adopt-narrowly" decision but no implementation. No `app/api/`,
+no AI dependency.
+
+**What we did:**
+
+- Planned, then built **Generative UI Phase 1** — a "Generate from prompt" toolbar action that
+  emits Sandy's validated Page envelope, re-validated through the existing render gate (PR #9,
+  `22ed57c`). New `lib/ai/generate-envelope.ts`, `app/api/generate/route.ts`,
+  `components/sandbox/generate-panel.tsx`, toolbar + page wiring; unit + route + e2e tests; docs
+  (`.env.example`, README, CHANGELOG, `docs/generative-ui.md`).
+- Added a **loading state** to the Generate button (PR #10, `8fad9fe`).
+- Verified: 239 unit tests, build, 7 Playwright e2e — green locally and in CI for both PRs.
+- Dogfooded live with the real CLI (banking + SaaS-landing prompts; light + dark).
+
+**Decisions:**
+
+- **No metered API — subscription only.** Generation runs via the **Claude Code headless CLI**
+  (`claude -p --json-schema`), not the Vercel AI SDK or the Claude Agent SDK (the Agent SDK
+  forbids subscription auth). Consequence: a **local-only** feature; the deployed build hides it.
+- **Model contract:** enum + per-component field catalog (rendered from each component's JSON
+  Schema) in the prompt; `validatePage()` is the hard gate.
+- Dogfooding fixed two fidelity bugs (arrays-of-primitives mis-described; invented icon names);
+  an adversarial review fixed three (prompt arg-injection via `--`, raw-stderr leak, theme sync).
+
+**Pending / next:**
+
+- [ ] Phase 2 — quality evals + telemetry on the validation-failure rate.
+- [ ] Streaming preview (Phase 3); theming-aware generation (Phase 4).
+- [ ] Polish: cancel/AbortController for in-flight generation (avoid waiting out the 120s timeout).
