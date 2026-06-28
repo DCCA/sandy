@@ -17,7 +17,12 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { schemaToFields, type FieldDescriptor } from "@/lib/schema-introspect";
-import type { PrimitiveNode, PrimitiveType, PropBinding, CompositeDefinition } from "@/lib/composite/types";
+import type {
+  PrimitiveNode,
+  PrimitiveType,
+  PropBinding,
+  CompositeDefinition,
+} from "@/lib/composite/types";
 import type { ThemeTokens } from "@/lib/theme/types";
 
 type ComponentBuilderProps = {
@@ -32,10 +37,12 @@ function nextNodeId(): string {
 }
 
 function toSlug(name: string): string {
-  return name
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, "_")
-    .replace(/^_|_$/g, "") || "custom_component";
+  return (
+    name
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, "_")
+      .replace(/^_|_$/g, "") || "custom_component"
+  );
 }
 
 // --- Inline node prop editor (reuses property-editor patterns) ---
@@ -89,7 +96,9 @@ function InlineField({
           </SelectTrigger>
           <SelectContent>
             {field.enum.map((opt) => (
-              <SelectItem key={opt} value={opt}>{opt}</SelectItem>
+              <SelectItem key={opt} value={opt}>
+                {opt}
+              </SelectItem>
             ))}
           </SelectContent>
         </Select>
@@ -189,17 +198,21 @@ export function ComponentBuilder({
     });
   }, []);
 
-  const handleDeleteNode = useCallback((id: string) => {
-    setNodes((prev) => prev.filter((n) => n.id !== id));
-    if (selectedNodeId === id) setSelectedNodeId(null);
-  }, [selectedNodeId]);
+  const handleDeleteNode = useCallback(
+    (id: string) => {
+      setNodes((prev) => prev.filter((n) => n.id !== id));
+      if (selectedNodeId === id) setSelectedNodeId(null);
+    },
+    [selectedNodeId],
+  );
 
-  const handleNodePropsChange = useCallback((props: Record<string, unknown>) => {
-    if (!selectedNodeId) return;
-    setNodes((prev) =>
-      prev.map((n) => (n.id === selectedNodeId ? { ...n, props } : n)),
-    );
-  }, [selectedNodeId]);
+  const handleNodePropsChange = useCallback(
+    (props: Record<string, unknown>) => {
+      if (!selectedNodeId) return;
+      setNodes((prev) => prev.map((n) => (n.id === selectedNodeId ? { ...n, props } : n)));
+    },
+    [selectedNodeId],
+  );
 
   const handleSave = useCallback(() => {
     if (!name.trim() || nodes.length === 0) return;
@@ -232,12 +245,7 @@ export function ComponentBuilder({
         >
           Save
         </Button>
-        <Button
-          variant="ghost"
-          size="sm"
-          className="h-7 w-7 p-0"
-          onClick={onClose}
-        >
+        <Button variant="ghost" size="sm" className="h-7 w-7 p-0" onClick={onClose}>
           <X className="size-4" />
         </Button>
       </div>
@@ -278,12 +286,7 @@ export function ComponentBuilder({
             onMove={handleMoveNode}
             onDelete={handleDeleteNode}
           />
-          {selectedNode && (
-            <NodePropEditor
-              node={selectedNode}
-              onChange={handleNodePropsChange}
-            />
-          )}
+          {selectedNode && <NodePropEditor node={selectedNode} onChange={handleNodePropsChange} />}
         </div>
 
         {/* Center: Live Preview */}
@@ -308,7 +311,13 @@ export function ComponentBuilder({
                     Add primitives to build your component
                   </div>
                 ) : (
-                  <div style={{ display: "flex", flexDirection: "column", gap: "var(--sandy-spacing-md, 16px)" }}>
+                  <div
+                    style={{
+                      display: "flex",
+                      flexDirection: "column",
+                      gap: "var(--sandy-spacing-md, 16px)",
+                    }}
+                  >
                     {nodes.map((node) => (
                       <NodeRenderer key={node.id} node={node} />
                     ))}
@@ -321,11 +330,7 @@ export function ComponentBuilder({
 
         {/* Right: Bindings */}
         <div className="border-l border-border/50 overflow-y-auto p-3">
-          <BuilderBindings
-            bindings={bindings}
-            nodes={nodes}
-            onChange={setBindings}
-          />
+          <BuilderBindings bindings={bindings} nodes={nodes} onChange={setBindings} />
         </div>
       </div>
     </div>

@@ -40,22 +40,30 @@ export function PricingTable({ heading, tiers }: PricingTableProps) {
               {tier.name}
             </h3>
             <div className="mb-3">
-              <span className="text-2xl" style={{ fontWeight: "var(--sandy-font-heading-weight)" } as React.CSSProperties}>
+              <span
+                className="text-2xl"
+                style={{ fontWeight: "var(--sandy-font-heading-weight)" } as React.CSSProperties}
+              >
                 {tier.price}
               </span>
               {tier.period && (
-                <span
-                  className="text-sm ml-1"
-                  style={{ opacity: 0.7 }}
-                >
+                <span className="text-sm ml-1" style={{ opacity: 0.7 }}>
                   /{tier.period}
                 </span>
               )}
             </div>
-            <ul className="list-none p-0 m-0 mb-4 flex-1" style={{ display: "flex", flexDirection: "column", gap: "var(--sandy-spacing-sm)" }}>
+            <ul
+              className="list-none p-0 m-0 mb-4 flex-1"
+              style={{ display: "flex", flexDirection: "column", gap: "var(--sandy-spacing-sm)" }}
+            >
               {tier.features.map((feature, fi) => (
                 <li key={fi} className="text-sm flex items-start gap-2">
-                  <span style={{ color: tier.highlighted ? "#fff" : "var(--sandy-color-primary)", flexShrink: 0 }}>
+                  <span
+                    style={{
+                      color: tier.highlighted ? "#fff" : "var(--sandy-color-primary)",
+                      flexShrink: 0,
+                    }}
+                  >
                     &#10003;
                   </span>
                   {feature}

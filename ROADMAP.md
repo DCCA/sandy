@@ -20,27 +20,28 @@ not matched by any single competitor surveyed.
 
 The gaps are **maturity and breadth**, not architecture.
 
-| Dimension | Grade | Summary |
-|---|---|---|
-| Architecture / security | A− | Solid & safe; held back by version drift + composite lifecycle |
-| Type safety | A | Strict TS + Zod throughout |
-| Component quality | C+ | Consistent, but accessibility near-zero and no responsiveness |
-| Schema rigor | B− | Good coverage, loose constraints, duplicated enums |
-| Theming | B | Strong token set; `mode` field unused, no light/dark pairing, bespoke format |
-| Testing | C | Domain logic tested (~10–15% overall); no e2e, no UI, no coverage tool |
-| CI/CD & tooling | C | **Tests not gated in CI**; no Prettier, no dependabot |
-| Project hygiene | C− | No LICENSE file, CONTRIBUTING, monitoring, analytics |
+| Dimension               | Grade | Summary                                                                      |
+| ----------------------- | ----- | ---------------------------------------------------------------------------- |
+| Architecture / security | A−    | Solid & safe; held back by version drift + composite lifecycle               |
+| Type safety             | A     | Strict TS + Zod throughout                                                   |
+| Component quality       | C+    | Consistent, but accessibility near-zero and no responsiveness                |
+| Schema rigor            | B−    | Good coverage, loose constraints, duplicated enums                           |
+| Theming                 | B     | Strong token set; `mode` field unused, no light/dark pairing, bespoke format |
+| Testing                 | C     | Domain logic tested (~10–15% overall); no e2e, no UI, no coverage tool       |
+| CI/CD & tooling         | C     | **Tests not gated in CI**; no Prettier, no dependabot                        |
+| Project hygiene         | C−    | No LICENSE file, CONTRIBUTING, monitoring, analytics                         |
 
 ---
 
 ## 2. Key issues found in the codebase
 
 ### Correctness / architecture
+
 - **Version drift (Critical).** Envelope `v1.0` and Page `v2.0` coexist; composites
   hardcode `"1.0"`. Migration is one-way and composite definitions don't survive
   share-links. (`lib/schemas/envelope.ts`, `lib/sandbox/validate.ts`)
 - **No graceful degradation (High).** One unknown component or one props failure
-  flips `validatePage` to `success: false` for the *entire page*. Mature SDUI systems
+  flips `validatePage` to `success: false` for the _entire page_. Mature SDUI systems
   degrade per-section instead (see §4.4).
 - **Composite registry lifecycle (High).** Global mutable registry, silent ID
   overwrite, localStorage-only — so a shared page referencing a custom composite
@@ -52,6 +53,7 @@ The gaps are **maturity and breadth**, not architecture.
   (`{...item.example.props}` should be `structuredClone`).
 
 ### Components / accessibility
+
 - **Accessibility near-zero (Critical for "on par").** Exactly one ARIA attribute
   in the whole codebase; no keyboard nav, no focus management/trap in modal/sheet,
   unlabeled icon buttons.
@@ -61,6 +63,7 @@ The gaps are **maturity and breadth**, not architecture.
   index-as-key throughout `.map()` calls.
 
 ### Schemas / theming
+
 - Loose constraints (unbounded arrays, `amount` as free string); duplicated variant
   enums across 4+ schemas; `shared.ts` underused.
 - `theme.mode` is in the schema but **never read**; no light variant for Enterprise Dark.
@@ -70,17 +73,17 @@ The gaps are **maturity and breadth**, not architecture.
 
 ## 3. How Sandy compares to the field
 
-| Category | What leaders do | Sandy's gap |
-|---|---|---|
-| **Playgrounds** — Storybook, Sandpack | Args/controls auto-UI, a11y addon, interaction tests, visual regression (Chromatic), in-browser bundling | No controls-style prop UI; no a11y/visual testing |
-| **Low-code builders** — [Puck](https://github.com/puckeditor/puck), [Builder.io](https://www.builder.io/), [Plasmic](https://docs.plasmic.app/), [Craft.js](https://craft.js.org/), GrapesJS | Drag-drop canvas + layer tree, JSON output, own-your-data, source codegen, slots, per-breakpoint model, real-time collab | No visual canvas/layer tree, no codegen, no collab, no per-breakpoint model |
-| **Schema-driven forms** — [rjsf](https://github.com/rjsf-team/react-jsonschema-form), [JSONForms](https://jsonforms.io/), [Uniforms](https://github.com/vazco/uniforms) | Auto-generate editor UI from schema, `liveValidate`, error-summary + focus-first-error, localized messages | Hand-written JSON; no schema-driven prop editor; simpler error UX |
-| **Design tokens** — [Style Dictionary v4](https://styledictionary.com/info/dtcg/), [Tokens Studio](https://docs.tokens.studio/), Panda, Radix Colors | [W3C DTCG](https://www.w3.org/community/design-tokens/2025/10/28/design-tokens-specification-reaches-first-stable-version/) `.tokens.json` interop, token aliasing (primitive→semantic→component), orthogonal theme axes, export/codegen, Figma sync | Bespoke flat presets; no aliasing/tiers, no DTCG, no export, no Figma round-trip, no runtime custom themes |
-| **Server-driven UI** — Adaptive Cards, Airbnb, DoorDash | Per-element `fallback`/`drop` with bubbling, capability `requires` + version gating, data-binding/templating, declarative actions, per-section status/telemetry | `version` inert, `slots` declared but unused, no fallback, no binding, no action model |
+| Category                                                                                                                                                                                     | What leaders do                                                                                                                                                                                                                                      | Sandy's gap                                                                                                |
+| -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------- |
+| **Playgrounds** — Storybook, Sandpack                                                                                                                                                        | Args/controls auto-UI, a11y addon, interaction tests, visual regression (Chromatic), in-browser bundling                                                                                                                                             | No controls-style prop UI; no a11y/visual testing                                                          |
+| **Low-code builders** — [Puck](https://github.com/puckeditor/puck), [Builder.io](https://www.builder.io/), [Plasmic](https://docs.plasmic.app/), [Craft.js](https://craft.js.org/), GrapesJS | Drag-drop canvas + layer tree, JSON output, own-your-data, source codegen, slots, per-breakpoint model, real-time collab                                                                                                                             | No visual canvas/layer tree, no codegen, no collab, no per-breakpoint model                                |
+| **Schema-driven forms** — [rjsf](https://github.com/rjsf-team/react-jsonschema-form), [JSONForms](https://jsonforms.io/), [Uniforms](https://github.com/vazco/uniforms)                      | Auto-generate editor UI from schema, `liveValidate`, error-summary + focus-first-error, localized messages                                                                                                                                           | Hand-written JSON; no schema-driven prop editor; simpler error UX                                          |
+| **Design tokens** — [Style Dictionary v4](https://styledictionary.com/info/dtcg/), [Tokens Studio](https://docs.tokens.studio/), Panda, Radix Colors                                         | [W3C DTCG](https://www.w3.org/community/design-tokens/2025/10/28/design-tokens-specification-reaches-first-stable-version/) `.tokens.json` interop, token aliasing (primitive→semantic→component), orthogonal theme axes, export/codegen, Figma sync | Bespoke flat presets; no aliasing/tiers, no DTCG, no export, no Figma round-trip, no runtime custom themes |
+| **Server-driven UI** — Adaptive Cards, Airbnb, DoorDash                                                                                                                                      | Per-element `fallback`/`drop` with bubbling, capability `requires` + version gating, data-binding/templating, declarative actions, per-section status/telemetry                                                                                      | `version` inert, `slots` declared but unused, no fallback, no binding, no action model                     |
 
 **The most commonly-expected-but-missing features:** accessibility, visual/e2e
 testing, schema-driven prop editing, DTCG token import/export, and a visual
-canvas. Sandy is already *ahead* on registry-validated rendering + portable token
+canvas. Sandy is already _ahead_ on registry-validated rendering + portable token
 theming combined — no surveyed tool fuses both the way Sandy does.
 
 ---
@@ -89,8 +92,10 @@ theming combined — no surveyed tool fuses both the way Sandy does.
 
 Six phases, ordered by leverage. Each is independently shippable.
 
-### Phase 0 — Stop the bleeding (½–1 day) · *do first*
+### Phase 0 — Stop the bleeding (½–1 day) · _do first_
+
 Cheap, high-confidence fixes that prevent regressions.
+
 - Add `npm run test` to CI (`.github/workflows/ci.yml`) and to `.husky/pre-push`.
   **Broken tests can currently merge to master.**
 - Add Prettier + `format` script + lint-staged integration.
@@ -99,6 +104,7 @@ Cheap, high-confidence fixes that prevent regressions.
 - Enable `vitest --coverage` (c8) with a floor on `lib/`.
 
 ### Phase 1 — Data model integrity (2–3 days)
+
 - **Resolve version drift:** make Page `v2.0` canonical; mark Envelope `v1.0`
   legacy-migrate-only with a deprecation warning; realign composite version.
 - **Per-section graceful degradation:** extend the data model so an unknown/invalid
@@ -111,7 +117,8 @@ Cheap, high-confidence fixes that prevent regressions.
 - URL-size guard + user feedback when share serialization fails.
 - Reconcile `meta.viewport` schema with docs.
 
-### Phase 2 — Accessibility (1–2 weeks) · *biggest "on par" gap*
+### Phase 2 — Accessibility (1–2 weeks) · _biggest "on par" gap_
+
 - ARIA pass on all 21 components (labels on icon buttons, roles,
   `aria-current`/`aria-expanded`).
 - Keyboard nav + focus management/trap in `ModalPreview` and `BottomSheet`;
@@ -119,9 +126,10 @@ Cheap, high-confidence fixes that prevent regressions.
 - Move hardcoded `NoticeBox`/`PromoBanner` colors into theme tokens; add
   WCAG-contrast tests for presets.
 - Wire `@axe-core` into the test suite so a11y regressions are caught.
-- *Differentiator:* a Puck-style built-in heading-outline / a11y checker panel.
+- _Differentiator:_ a Puck-style built-in heading-outline / a11y checker panel.
 
 ### Phase 3 — Responsiveness & theming (1 week)
+
 - Mobile-first `@media` fallbacks for the fixed-grid components.
 - **Make `theme.mode` actually work** — light/dark token sets per brand (add
   Enterprise Light).
@@ -132,16 +140,19 @@ Cheap, high-confidence fixes that prevent regressions.
   `alignEnum`); tighten array/string constraints.
 
 ### Phase 4 — Testing & quality bar (1 week)
+
 - **Playwright e2e** for top flows: JSON→render, theme switch, section
   add/reorder, error recovery, share-link round-trip, builder save→use.
 - Component interaction tests (Toolbar, PropertyEditor, TokenEditor).
 - Extend schema tests to all 21 components (currently ~8); add `tokensToCSSVars`
-  + preset-shape tests.
+  - preset-shape tests.
 - `next/bundle-analyzer` (Monaco is the prime suspect); optional error monitoring (Sentry).
 - Add CONTRIBUTING.md, PR/issue templates, CHANGELOG.
 
-### Phase 5 — Differentiating features (2–4 weeks) · *upgrade beyond par*
+### Phase 5 — Differentiating features (2–4 weeks) · _upgrade beyond par_
+
 Pick based on product direction:
+
 - **Schema-driven prop editor** — auto-generate a form from each component's Zod
   schema (rjsf/JSONForms/Uniforms-style; Uniforms already supports Zod). Highest
   UX leverage for non-JSON users.

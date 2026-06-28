@@ -10,10 +10,8 @@ export const TransactionListSchema = z.object({
         subtitle: z.string().optional(),
         amount: z.string().min(1),
         timestamp: z.string().optional(),
-        type: z
-          .enum(["sent", "received", "payment", "investment"])
-          .default("payment"),
-      })
+        type: z.enum(["sent", "received", "payment", "investment"]).default("payment"),
+      }),
     )
     .min(1),
   showAllLabel: z.string().optional(),

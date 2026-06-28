@@ -1,9 +1,5 @@
 import { describe, it, expect } from "vitest";
-import {
-  validatePage,
-  isLegacyEnvelope,
-  migrateEnvelopeToPage,
-} from "@/lib/sandbox/validate";
+import { validatePage, isLegacyEnvelope, migrateEnvelopeToPage } from "@/lib/sandbox/validate";
 
 describe("isLegacyEnvelope", () => {
   it("detects legacy envelope format", () => {
@@ -101,9 +97,7 @@ describe("validatePage", () => {
   it("reports unknown component", () => {
     const result = validatePage({
       version: "2.0",
-      sections: [
-        { id: "sec_1", component: "NonExistent", props: {} },
-      ],
+      sections: [{ id: "sec_1", component: "NonExistent", props: {} }],
     });
     expect(result.success).toBe(false);
     expect(result.errors[0].messages[0]).toContain("Unknown component");
@@ -112,9 +106,7 @@ describe("validatePage", () => {
   it("reports invalid props for known component", () => {
     const result = validatePage({
       version: "2.0",
-      sections: [
-        { id: "sec_1", component: "HeroBanner", props: {} },
-      ],
+      sections: [{ id: "sec_1", component: "HeroBanner", props: {} }],
     });
     expect(result.success).toBe(false);
     expect(result.errors.length).toBeGreaterThan(0);

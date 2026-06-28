@@ -25,17 +25,25 @@ export function PromoBanner({ title, description, href, variant = "info" }: Prom
       }}
     >
       <h3
-        style={{
-          margin: 0,
-          marginBottom: 4,
-          fontSize: "var(--sandy-font-size-md)",
-          fontWeight: "var(--sandy-font-heading-weight)",
-        } as React.CSSProperties}
+        style={
+          {
+            margin: 0,
+            marginBottom: 4,
+            fontSize: "var(--sandy-font-size-md)",
+            fontWeight: "var(--sandy-font-heading-weight)",
+          } as React.CSSProperties
+        }
       >
         {title}
       </h3>
       {description && (
-        <p style={{ margin: 0, fontSize: "var(--sandy-font-size-sm)", color: "var(--sandy-color-muted)" }}>
+        <p
+          style={{
+            margin: 0,
+            fontSize: "var(--sandy-font-size-sm)",
+            color: "var(--sandy-color-muted)",
+          }}
+        >
           {description}
         </p>
       )}

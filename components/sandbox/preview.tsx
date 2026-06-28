@@ -31,9 +31,7 @@ function SectionErrorFallback({
         <span className="text-red-400 text-lg">!</span>
       </div>
       <div className="text-red-400 text-sm font-semibold mb-1">{sectionLabel}</div>
-      <p className="text-xs text-muted-foreground mb-4 max-w-md font-mono">
-        {message}
-      </p>
+      <p className="text-xs text-muted-foreground mb-4 max-w-md font-mono">{message}</p>
       <button
         onClick={resetErrorBoundary}
         className="px-3 py-1.5 text-xs bg-secondary rounded-md hover:bg-secondary/80 transition-colors"
@@ -124,7 +122,9 @@ export function Preview({
                   <div
                     style={{
                       padding: "var(--sandy-spacing-lg, 24px)",
-                      outline: isSelected ? "2px solid var(--sandy-color-primary, #3b82f6)" : "none",
+                      outline: isSelected
+                        ? "2px solid var(--sandy-color-primary, #3b82f6)"
+                        : "none",
                       outlineOffset: "-2px",
                       cursor: onSectionClick ? "pointer" : undefined,
                       position: "relative",

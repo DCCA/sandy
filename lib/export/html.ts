@@ -1,10 +1,7 @@
 import type { ThemeTokens } from "@/lib/theme/types";
 import { tokensToCSSVars } from "@/lib/theme/css-vars";
 
-export function generateHTML(
-  previewHTML: string,
-  tokens: ThemeTokens,
-): string {
+export function generateHTML(previewHTML: string, tokens: ThemeTokens): string {
   const vars = tokensToCSSVars(tokens);
   const cssVarBlock = Object.entries(vars)
     .map(([key, value]) => `      ${key}: ${value};`)

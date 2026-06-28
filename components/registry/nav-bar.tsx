@@ -18,11 +18,7 @@ export function NavBar({ logo, links = [], cta }: NavBarProps) {
         <div className="flex items-center gap-2 shrink-0">
           {logo.imageUrl && (
             // eslint-disable-next-line @next/next/no-img-element
-            <img
-              src={logo.imageUrl}
-              alt={logo.text ?? "Logo"}
-              className="h-8 w-auto"
-            />
+            <img src={logo.imageUrl} alt={logo.text ?? "Logo"} className="h-8 w-auto" />
           )}
           {logo.text && (
             <span
@@ -54,13 +50,15 @@ export function NavBar({ logo, links = [], cta }: NavBarProps) {
         <a
           href={cta.href}
           className="text-sm px-4 py-1.5 shrink-0"
-          style={{
-            backgroundColor: "var(--sandy-color-primary)",
-            color: "#fff",
-            borderRadius: "var(--sandy-radius-md)",
-            textDecoration: "none",
-            fontWeight: "var(--sandy-font-heading-weight)",
-          } as React.CSSProperties}
+          style={
+            {
+              backgroundColor: "var(--sandy-color-primary)",
+              color: "#fff",
+              borderRadius: "var(--sandy-radius-md)",
+              textDecoration: "none",
+              fontWeight: "var(--sandy-font-heading-weight)",
+            } as React.CSSProperties
+          }
         >
           {cta.label}
         </a>

@@ -117,11 +117,7 @@ export const enterpriseDarkTheme: ThemePreset = {
   },
 };
 
-export const themePresets: ThemePreset[] = [
-  defaultTheme,
-  acmeBankTheme,
-  enterpriseDarkTheme,
-];
+export const themePresets: ThemePreset[] = [defaultTheme, acmeBankTheme, enterpriseDarkTheme];
 
 export function getThemePreset(id: string): ThemePreset | undefined {
   return themePresets.find((t) => t.id === id);

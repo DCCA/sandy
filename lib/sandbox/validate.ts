@@ -17,7 +17,7 @@ function formatZodErrors(error: z.ZodError): string[] {
 }
 
 export function validateEnvelope(
-  data: unknown
+  data: unknown,
 ): { success: true; data: Envelope } | { success: false; errors: string[] } {
   const result = EnvelopeSchema.safeParse(data);
   if (result.success) {
@@ -28,7 +28,7 @@ export function validateEnvelope(
 
 export function validateComponentProps(
   schema: z.ZodType,
-  props: unknown
+  props: unknown,
 ): { success: true; data: unknown } | { success: false; errors: string[] } {
   const result = schema.safeParse(props);
   if (result.success) {

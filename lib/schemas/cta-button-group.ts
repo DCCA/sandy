@@ -8,7 +8,7 @@ export const CTAButtonGroupSchema = z.object({
         label: z.string(),
         href: safeHref,
         variant: z.enum(["primary", "secondary", "outline"]).default("primary"),
-      })
+      }),
     )
     .min(1)
     .max(4),

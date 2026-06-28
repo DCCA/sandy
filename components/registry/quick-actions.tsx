@@ -41,20 +41,22 @@ export function QuickActions({ actions }: QuickActionsProps) {
               </div>
               {action.badge && (
                 <span
-                  style={{
-                    position: "absolute",
-                    bottom: -6,
-                    left: "50%",
-                    transform: "translateX(-50%)",
-                    backgroundColor: "var(--sandy-color-success)",
-                    color: "#fff",
-                    fontSize: "var(--sandy-font-size-xs)",
-                    fontWeight: "var(--sandy-font-heading-weight)",
-                    borderRadius: "var(--sandy-radius-full)",
-                    padding: "2px 8px",
-                    lineHeight: "14px",
-                    whiteSpace: "nowrap",
-                  } as React.CSSProperties}
+                  style={
+                    {
+                      position: "absolute",
+                      bottom: -6,
+                      left: "50%",
+                      transform: "translateX(-50%)",
+                      backgroundColor: "var(--sandy-color-success)",
+                      color: "#fff",
+                      fontSize: "var(--sandy-font-size-xs)",
+                      fontWeight: "var(--sandy-font-heading-weight)",
+                      borderRadius: "var(--sandy-radius-full)",
+                      padding: "2px 8px",
+                      lineHeight: "14px",
+                      whiteSpace: "nowrap",
+                    } as React.CSSProperties
+                  }
                 >
                   {action.badge}
                 </span>

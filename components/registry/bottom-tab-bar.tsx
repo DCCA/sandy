@@ -16,9 +16,7 @@ export function BottomTabBar({ tabs }: BottomTabBarProps) {
     >
       {tabs.map((tab, i) => {
         const isActive = tab.active ?? false;
-        const color = isActive
-          ? "var(--sandy-color-primary)"
-          : "var(--sandy-color-muted)";
+        const color = isActive ? "var(--sandy-color-primary)" : "var(--sandy-color-muted)";
 
         const content = (
           <div
@@ -36,13 +34,15 @@ export function BottomTabBar({ tabs }: BottomTabBarProps) {
               {renderIcon(tab.icon, { size: 22, color })}
             </span>
             <span
-              style={{
-                fontSize: "var(--sandy-font-size-xs)",
-                color,
-                fontWeight: isActive
-                  ? ("var(--sandy-font-heading-weight)" as string)
-                  : "var(--sandy-font-body-weight)",
-              } as React.CSSProperties}
+              style={
+                {
+                  fontSize: "var(--sandy-font-size-xs)",
+                  color,
+                  fontWeight: isActive
+                    ? ("var(--sandy-font-heading-weight)" as string)
+                    : "var(--sandy-font-body-weight)",
+                } as React.CSSProperties
+              }
             >
               {tab.label}
             </span>
@@ -50,11 +50,7 @@ export function BottomTabBar({ tabs }: BottomTabBarProps) {
         );
 
         return tab.href ? (
-          <a
-            key={i}
-            href={tab.href}
-            style={{ textDecoration: "none", color: "inherit" }}
-          >
+          <a key={i} href={tab.href} style={{ textDecoration: "none", color: "inherit" }}>
             {content}
           </a>
         ) : (

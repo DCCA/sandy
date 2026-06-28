@@ -12,9 +12,7 @@ describe("serializeState / deserializeState", () => {
     version: "2.0",
     theme: { brand: "default", mode: "light" },
     meta: { viewport: "mobile" },
-    sections: [
-      { id: "sec_1", component: "HeroBanner", props: { title: "Hello" } },
-    ],
+    sections: [{ id: "sec_1", component: "HeroBanner", props: { title: "Hello" } }],
   };
 
   it("round-trips losslessly", () => {
@@ -27,9 +25,7 @@ describe("serializeState / deserializeState", () => {
   it("handles unicode content", () => {
     const unicodePage: Page = {
       ...page,
-      sections: [
-        { id: "sec_1", component: "HeroBanner", props: { title: "Héllo wörld 日本語" } },
-      ],
+      sections: [{ id: "sec_1", component: "HeroBanner", props: { title: "Héllo wörld 日本語" } }],
     };
     const encoded = serializeState(unicodePage);
     const decoded = deserializeState(encoded);

@@ -2,11 +2,11 @@
 
 ## 1. Document control
 
-* **Product name:** JSON Component Sandbox
-* **Version:** v1
-* **Status:** Draft for build
-* **Primary audience:** LLM / engineers building the product
-* **Goal of this document:** provide enough product and technical specificity for an LLM to generate the initial repo and MVP with minimal ambiguity
+- **Product name:** JSON Component Sandbox
+- **Version:** v1
+- **Status:** Draft for build
+- **Primary audience:** LLM / engineers building the product
+- **Goal of this document:** provide enough product and technical specificity for an LLM to generate the initial repo and MVP with minimal ambiguity
 
 ---
 
@@ -30,11 +30,11 @@ Today, most options fail in one of these ways:
 
 There is a gap for a schema-first sandbox where:
 
-* JSON is constrained and validated
-* rendering is safe and predictable
-* components come from a controlled registry
-* theming is token-based
-* companies can bring their design system via adapters instead of forcing a full rewrite
+- JSON is constrained and validated
+- rendering is safe and predictable
+- components come from a controlled registry
+- theming is token-based
+- companies can bring their design system via adapters instead of forcing a full rewrite
 
 ---
 
@@ -42,18 +42,18 @@ There is a gap for a schema-first sandbox where:
 
 Create the best sandbox for:
 
-* prototyping JSON-driven UI
-* validating component contracts
-* previewing branded UI in real time
-* giving LLMs a clear target format for generating UI configurations
-* supporting enterprise customers that want their own visual identity without breaking the core rendering model
+- prototyping JSON-driven UI
+- validating component contracts
+- previewing branded UI in real time
+- giving LLMs a clear target format for generating UI configurations
+- supporting enterprise customers that want their own visual identity without breaking the core rendering model
 
 The product should feel like a mix of:
 
-* playground
-* schema validator
-* design-system preview tool
-* component contract tester
+- playground
+- schema validator
+- design-system preview tool
+- component contract tester
 
 It is **not** a website builder, Figma replacement, or arbitrary React runtime.
 
@@ -63,16 +63,16 @@ It is **not** a website builder, Figma replacement, or arbitrary React runtime.
 
 ### Primary users
 
-* frontend engineers
-* design-system engineers
-* product designers working with component systems
-* AI product builders generating UI from structured data
+- frontend engineers
+- design-system engineers
+- product designers working with component systems
+- AI product builders generating UI from structured data
 
 ### Secondary users
 
-* solution engineers onboarding enterprise customers
-* platform teams managing component contracts
-* internal teams experimenting with generative UI
+- solution engineers onboarding enterprise customers
+- platform teams managing component contracts
+- internal teams experimenting with generative UI
 
 ---
 
@@ -116,27 +116,27 @@ A company brings colors, spacing, typography, and primitive overrides so compone
 
 ## In scope for MVP
 
-* JSON editor
-* live preview pane
-* component registry with 5–8 components
-* runtime validation with clear errors
-* theme/company selector
-* token-based theming
-* mobile/tablet/desktop preview toggle
-* shareable permalink with serialized state
-* starter examples/templates
-* strict envelope format
+- JSON editor
+- live preview pane
+- component registry with 5–8 components
+- runtime validation with clear errors
+- theme/company selector
+- token-based theming
+- mobile/tablet/desktop preview toggle
+- shareable permalink with serialized state
+- starter examples/templates
+- strict envelope format
 
 ## Out of scope for MVP
 
-* arbitrary React rendering
-* user-authored JavaScript in JSON
-* full drag-and-drop page builder
-* WYSIWYG editor
-* full enterprise auth/admin console
-* visual diffing platform
-* complete component nesting/page composition
-* company-uploaded custom code execution
+- arbitrary React rendering
+- user-authored JavaScript in JSON
+- full drag-and-drop page builder
+- WYSIWYG editor
+- full enterprise auth/admin console
+- visual diffing platform
+- complete component nesting/page composition
+- company-uploaded custom code execution
 
 ---
 
@@ -162,36 +162,36 @@ The MVP should allow a user to:
 
 The app should have a two-panel layout:
 
-* **Left panel:** JSON editor and controls
-* **Right panel:** rendered preview
+- **Left panel:** JSON editor and controls
+- **Right panel:** rendered preview
 
 Optional supporting panels:
 
-* validation/errors
-* schema/contract view
-* example selector
-* resolved props inspector
+- validation/errors
+- schema/contract view
+- example selector
+- resolved props inspector
 
 ## 10.2 Editor
 
 The editor must:
 
-* support JSON editing
-* show syntax errors
-* show validation errors separately from syntax errors
-* support loading starter templates
-* support formatting JSON
-* optionally support autocomplete based on schema if feasible in MVP
+- support JSON editing
+- show syntax errors
+- show validation errors separately from syntax errors
+- support loading starter templates
+- support formatting JSON
+- optionally support autocomplete based on schema if feasible in MVP
 
 ## 10.3 Live preview
 
 The preview must:
 
-* update on valid JSON change
-* fail gracefully on invalid JSON
-* never crash the whole app due to component errors
-* render inside a preview shell/frame
-* support viewport switching
+- update on valid JSON change
+- fail gracefully on invalid JSON
+- never crash the whole app due to component errors
+- render inside a preview shell/frame
+- support viewport switching
 
 ## 10.4 Component selection
 
@@ -199,32 +199,32 @@ Users must be able to select from a predefined list of components.
 
 Initial components should include:
 
-* HeroBanner
-* ProductCard
-* PromoBanner
-* NoticeBox
-* FeatureList
-* InputField
-* CTAButtonGroup
-* ModalPreview
+- HeroBanner
+- ProductCard
+- PromoBanner
+- NoticeBox
+- FeatureList
+- InputField
+- CTAButtonGroup
+- ModalPreview
 
 ## 10.5 Validation
 
 The system must validate:
 
-* top-level envelope
-* component existence in registry
-* component props against schema
-* theme payload shape if included
-* slot payload shape if included
+- top-level envelope
+- component existence in registry
+- component props against schema
+- theme payload shape if included
+- slot payload shape if included
 
 ## 10.6 Theme switching
 
 The user must be able to switch between at least 3 predefined themes, for example:
 
-* Default
-* Acme Bank
-* Enterprise Dark
+- Default
+- Acme Bank
+- Enterprise Dark
 
 The selected theme must immediately affect preview styling.
 
@@ -240,9 +240,9 @@ Each component should have at least 1 starter payload template.
 
 Errors should be separated into:
 
-* JSON parse error
-* schema validation error
-* render/runtime error
+- JSON parse error
+- schema validation error
+- render/runtime error
 
 The UI should explain clearly what failed.
 
@@ -252,30 +252,30 @@ The UI should explain clearly what failed.
 
 ### Performance
 
-* preview updates should feel near real time
-* typing should remain smooth for normal-sized payloads
+- preview updates should feel near real time
+- typing should remain smooth for normal-sized payloads
 
 ### Reliability
 
-* invalid payloads must not break the app shell
-* broken components must be isolated via error boundaries
+- invalid payloads must not break the app shell
+- broken components must be isolated via error boundaries
 
 ### Security
 
-* JSON must never be treated as executable code
-* no eval
-* no function bodies from JSON
-* no arbitrary HTML injection without sanitization
-* no arbitrary remote component loading in MVP
+- JSON must never be treated as executable code
+- no eval
+- no function bodies from JSON
+- no arbitrary HTML injection without sanitization
+- no arbitrary remote component loading in MVP
 
 ### Maintainability
 
-* each component contract must be versioned or version-ready
-* schemas and components must live in a predictable structure
+- each component contract must be versioned or version-ready
+- schemas and components must live in a predictable structure
 
 ### Extensibility
 
-* adding a new component should require:
+- adding a new component should require:
 
   1. component implementation
   2. schema
@@ -316,12 +316,12 @@ The app should use a strict top-level envelope.
 
 ### Envelope requirements
 
-* `component`: required string, must match registry key
-* `version`: required string
-* `props`: required object, validated by component schema
-* `theme`: optional but recommended
-* `slots`: optional, structured only
-* `meta`: optional
+- `component`: required string, must match registry key
+- `version`: required string
+- `props`: required object, validated by component schema
+- `theme`: optional but recommended
+- `slots`: optional, structured only
+- `meta`: optional
 
 ---
 
@@ -333,24 +333,24 @@ The renderer must only render components that exist in a controlled registry.
 
 ```ts
 export type RegistryItem = {
-  component: React.ComponentType<any>
-  schema: ZodSchema<any>
-  example: unknown
+  component: React.ComponentType<any>;
+  schema: ZodSchema<any>;
+  example: unknown;
   metadata: {
-    name: string
-    description?: string
-    supportsTheme?: boolean
-    supportsSlots?: boolean
-  }
-}
+    name: string;
+    description?: string;
+    supportsTheme?: boolean;
+    supportsSlots?: boolean;
+  };
+};
 ```
 
 ### Registry rules
 
-* components are keyed by stable IDs
-* every component must have a schema
-* every component must have at least one example
-* registry lookup is the only allowed render path
+- components are keyed by stable IDs
+- every component must have a schema
+- every component must have at least one example
+- registry lookup is the only allowed render path
 
 ---
 
@@ -364,12 +364,12 @@ Start with **token-based theming**, not full company component injection.
 
 That means companies provide:
 
-* colors
-* typography
-* radius
-* spacing
-* shadows
-* assets/logo
+- colors
+- typography
+- radius
+- spacing
+- shadows
+- assets/logo
 
 The app maps these into CSS variables and uses them in canonical components.
 
@@ -429,31 +429,31 @@ Not in MVP. High complexity. Avoid unless necessary.
 
 ### Left side
 
-* component picker
-* theme picker
-* example/template dropdown
-* Monaco JSON editor
-* format/reset actions
+- component picker
+- theme picker
+- example/template dropdown
+- Monaco JSON editor
+- format/reset actions
 
 ### Right side
 
-* preview frame
-* viewport toggle: mobile / tablet / desktop
-* light/dark if supported by theme
-* optional background switch
+- preview frame
+- viewport toggle: mobile / tablet / desktop
+- light/dark if supported by theme
+- optional background switch
 
 ### Supporting area
 
-* validation status
-* error details
-* schema or prop reference
+- validation status
+- error details
+- schema or prop reference
 
 ## 15.2 UX expectations
 
-* instant feedback
-* clear distinction between valid and invalid state
-* easy way to recover to last valid template
-* no hidden magic
+- instant feedback
+- clear distinction between valid and invalid state
+- easy way to recover to last valid template
+- no hidden magic
 
 ---
 
@@ -461,15 +461,15 @@ Not in MVP. High complexity. Avoid unless necessary.
 
 ## 16.1 Recommended stack
 
-* **Framework:** Next.js App Router
-* **Language:** TypeScript
-* **Validation:** Zod
-* **Editor:** Monaco Editor
-* **Styling:** Tailwind + CSS variables
-* **UI shell:** shadcn/ui or equivalent primitives
-* **State:** URL state + local component state
-* **Error isolation:** React Error Boundary
-* **Deployment:** Vercel
+- **Framework:** Next.js App Router
+- **Language:** TypeScript
+- **Validation:** Zod
+- **Editor:** Monaco Editor
+- **Styling:** Tailwind + CSS variables
+- **UI shell:** shadcn/ui or equivalent primitives
+- **State:** URL state + local component state
+- **Error isolation:** React Error Boundary
+- **Deployment:** Vercel
 
 ## 16.2 High-level architecture
 
@@ -488,9 +488,9 @@ There must be no code path where arbitrary JSON becomes arbitrary JSX.
 
 Only this pattern is allowed:
 
-* `registry[componentKey]`
-* `schema.parse(props)`
-* `<RegisteredComponent {...validatedProps} />`
+- `registry[componentKey]`
+- `schema.parse(props)`
+- `<RegisteredComponent {...validatedProps} />`
 
 ---
 
@@ -538,9 +538,9 @@ lib/
 
 The build should take inspiration from these Vercel-side references:
 
-* **`vercel-labs/json-render`** for schema-backed JSON-to-UI rendering patterns
-* **`vercel/registry-starter`** for component registry structure and distribution ideas
-* **`vercel/ai-elements`** for customizable component patterns and theming concepts
+- **`vercel-labs/json-render`** for schema-backed JSON-to-UI rendering patterns
+- **`vercel/registry-starter`** for component registry structure and distribution ideas
+- **`vercel/ai-elements`** for customizable component patterns and theming concepts
 
 These should be treated as architectural inspiration, not copied blindly.
 
@@ -554,10 +554,10 @@ The MVP can run entirely client-side except for optional persistence.
 
 ### Optional future APIs
 
-* save sandbox config
-* load sandbox config by id
-* store company theme presets
-* upload design-token packs
+- save sandbox config
+- load sandbox config by id
+- store company theme presets
+- upload design-token packs
 
 ---
 
@@ -569,12 +569,14 @@ The MVP can run entirely client-side except for optional persistence.
 const HeroBannerSchema = z.object({
   title: z.string().min(1),
   subtitle: z.string().optional(),
-  cta: z.object({
-    label: z.string(),
-    href: z.string()
-  }).optional(),
-  align: z.enum(["left", "center"]).default("left")
-})
+  cta: z
+    .object({
+      label: z.string(),
+      href: z.string(),
+    })
+    .optional(),
+  align: z.enum(["left", "center"]).default("left"),
+});
 ```
 
 ## 20.2 ProductCard props example
@@ -585,11 +587,13 @@ const ProductCardSchema = z.object({
   description: z.string(),
   badge: z.string().optional(),
   imageUrl: z.string().url().optional(),
-  action: z.object({
-    label: z.string(),
-    href: z.string()
-  }).optional()
-})
+  action: z
+    .object({
+      label: z.string(),
+      href: z.string(),
+    })
+    .optional(),
+});
 ```
 
 ---
@@ -598,12 +602,12 @@ const ProductCardSchema = z.object({
 
 The system must reject or avoid the following:
 
-* inline JavaScript
-* function props defined in JSON
-* raw executable expressions
-* arbitrary remote imports
-* unsafe HTML rendering by default
-* unrestricted className injection from external payloads
+- inline JavaScript
+- function props defined in JSON
+- raw executable expressions
+- arbitrary remote imports
+- unsafe HTML rendering by default
+- unrestricted className injection from external payloads
 
 If rich text is needed, it must be structured and sanitized.
 
@@ -636,18 +640,18 @@ If rich text is needed, it must be structured and sanitized.
 
 ## MVP success metrics
 
-* user can render all starter components from JSON
-* validation catches malformed payloads correctly
-* switching themes updates preview correctly
-* preview remains stable even with invalid inputs
-* shareable URL restores equivalent state
+- user can render all starter components from JSON
+- validation catches malformed payloads correctly
+- switching themes updates preview correctly
+- preview remains stable even with invalid inputs
+- shareable URL restores equivalent state
 
 ## Longer-term metrics
 
-* time to create a valid payload
-* number of supported component contracts
-* number of company themes onboarded
-* percentage of LLM-generated payloads that validate on first pass
+- time to create a valid payload
+- number of supported component contracts
+- number of company themes onboarded
+- percentage of LLM-generated payloads that validate on first pass
 
 ---
 
@@ -655,28 +659,28 @@ If rich text is needed, it must be structured and sanitized.
 
 ## Phase 1 — foundation
 
-* app shell
-* envelope schema
-* registry system
-* 3–5 starter components
-* validation and preview
-* error handling
+- app shell
+- envelope schema
+- registry system
+- 3–5 starter components
+- validation and preview
+- error handling
 
 ## Phase 2 — productized sandbox
 
-* Monaco editor
-* theme presets
-* viewport toggles
-* URL serialization
-* examples/templates
+- Monaco editor
+- theme presets
+- viewport toggles
+- URL serialization
+- examples/templates
 
 ## Phase 3 — enterprise readiness
 
-* more components
-* schema docs panel
-* primitive overrides
-* persistence/share ids
-* company token import workflow
+- more components
+- schema docs panel
+- primitive overrides
+- persistence/share ids
+- company token import workflow
 
 ---
 
@@ -715,10 +719,10 @@ The builder should make a call on these during implementation:
 
 Default recommendation:
 
-* URL-first sharing
-* schema docs in side panel
-* local/simple placeholder assets
-* autocomplete optional, not required for MVP
+- URL-first sharing
+- schema docs in side panel
+- local/simple placeholder assets
+- autocomplete optional, not required for MVP
 
 ---
 
@@ -728,32 +732,32 @@ Build a **Next.js + TypeScript** application that implements a **JSON Component 
 
 ### Must-have requirements
 
-* two-panel layout with JSON editor on left and preview on right
-* strict envelope validation using Zod
-* component registry pattern
-* at least 5 starter components
-* theme presets using CSS variables
-* clear error handling for parse, validation, and runtime failures
-* viewport switching
-* starter templates/examples
-* URL state sharing
+- two-panel layout with JSON editor on left and preview on right
+- strict envelope validation using Zod
+- component registry pattern
+- at least 5 starter components
+- theme presets using CSS variables
+- clear error handling for parse, validation, and runtime failures
+- viewport switching
+- starter templates/examples
+- URL state sharing
 
 ### Must-not-do requirements
 
-* do not implement arbitrary JSON-to-JSX rendering
-* do not use eval or dynamic code execution
-* do not accept functions in JSON
-* do not make this a full page builder in v1
-* do not add backend complexity unless required for optional share persistence
+- do not implement arbitrary JSON-to-JSX rendering
+- do not use eval or dynamic code execution
+- do not accept functions in JSON
+- do not make this a full page builder in v1
+- do not add backend complexity unless required for optional share persistence
 
 ### Implementation quality requirements
 
-* clean folder structure
-* typed contracts
-* reusable registry system
-* simple but polished UI
-* resilient error boundaries
-* easy path to add new components and themes
+- clean folder structure
+- typed contracts
+- reusable registry system
+- simple but polished UI
+- resilient error boundaries
+- easy path to add new components and themes
 
 ---
 

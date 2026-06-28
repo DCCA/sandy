@@ -189,7 +189,10 @@ export const Toolbar = memo(function Toolbar({
         {composites.length > 0 && onEditComposite && onDeleteComposite && (
           <div className="flex items-center gap-0.5">
             {composites.map((def) => (
-              <div key={def.id} className="flex items-center gap-0.5 px-1.5 py-0.5 rounded bg-muted/30 text-[10px] font-mono">
+              <div
+                key={def.id}
+                className="flex items-center gap-0.5 px-1.5 py-0.5 rounded bg-muted/30 text-[10px] font-mono"
+              >
                 <span className="truncate max-w-[80px]">{def.name}</span>
                 <Button
                   variant="ghost"
@@ -248,10 +251,22 @@ export const Toolbar = memo(function Toolbar({
         >
           <Paintbrush className="size-3.5" />
         </Button>
-        <Button variant="ghost" size="sm" className="h-7 px-2" onClick={onFormat} title="Format JSON">
+        <Button
+          variant="ghost"
+          size="sm"
+          className="h-7 px-2"
+          onClick={onFormat}
+          title="Format JSON"
+        >
           <AlignLeft className="size-3.5" />
         </Button>
-        <Button variant="ghost" size="sm" className="h-7 px-2" onClick={onReset} title="Reset to template">
+        <Button
+          variant="ghost"
+          size="sm"
+          className="h-7 px-2"
+          onClick={onReset}
+          title="Reset to template"
+        >
           <RotateCcw className="size-3.5" />
         </Button>
 

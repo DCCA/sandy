@@ -10,7 +10,7 @@ export const BottomSheetSchema = z.object({
         label: z.string().min(1),
         value: z.string().optional(),
         href: safeHref.optional(),
-      })
+      }),
     )
     .optional(),
   action: z

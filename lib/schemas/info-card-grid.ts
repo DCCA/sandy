@@ -15,7 +15,7 @@ export const InfoCardGridSchema = z.object({
             href: safeHref,
           })
           .optional(),
-      })
+      }),
     )
     .min(1)
     .max(8),

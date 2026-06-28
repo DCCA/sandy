@@ -26,7 +26,10 @@ export function Footer({ columns, bottomText }: FooterProps) {
             >
               {col.heading}
             </h4>
-            <ul className="list-none p-0 m-0" style={{ display: "flex", flexDirection: "column", gap: "var(--sandy-spacing-sm)" }}>
+            <ul
+              className="list-none p-0 m-0"
+              style={{ display: "flex", flexDirection: "column", gap: "var(--sandy-spacing-sm)" }}
+            >
               {col.links.map((link, li) => (
                 <li key={li}>
                   <a

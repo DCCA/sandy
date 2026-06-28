@@ -22,14 +22,33 @@ const gapSizes: Record<string, string> = {
 const paddingSizes: Record<string, string> = gapSizes;
 
 const headingStyles: Record<string, React.CSSProperties> = {
-  h1: { fontSize: "2rem", fontWeight: "var(--sandy-typography-headingWeight, 700)" as unknown as number, lineHeight: 1.2 },
-  h2: { fontSize: "1.5rem", fontWeight: "var(--sandy-typography-headingWeight, 700)" as unknown as number, lineHeight: 1.3 },
-  h3: { fontSize: "1.25rem", fontWeight: "var(--sandy-typography-headingWeight, 700)" as unknown as number, lineHeight: 1.4 },
-  h4: { fontSize: "1rem", fontWeight: "var(--sandy-typography-headingWeight, 700)" as unknown as number, lineHeight: 1.5 },
+  h1: {
+    fontSize: "2rem",
+    fontWeight: "var(--sandy-typography-headingWeight, 700)" as unknown as number,
+    lineHeight: 1.2,
+  },
+  h2: {
+    fontSize: "1.5rem",
+    fontWeight: "var(--sandy-typography-headingWeight, 700)" as unknown as number,
+    lineHeight: 1.3,
+  },
+  h3: {
+    fontSize: "1.25rem",
+    fontWeight: "var(--sandy-typography-headingWeight, 700)" as unknown as number,
+    lineHeight: 1.4,
+  },
+  h4: {
+    fontSize: "1rem",
+    fontWeight: "var(--sandy-typography-headingWeight, 700)" as unknown as number,
+    lineHeight: 1.5,
+  },
 };
 
 const badgeVariants: Record<string, React.CSSProperties> = {
-  default: { backgroundColor: "var(--sandy-color-muted, #f3f4f6)", color: "var(--sandy-color-foreground, #111)" },
+  default: {
+    backgroundColor: "var(--sandy-color-muted, #f3f4f6)",
+    color: "var(--sandy-color-foreground, #111)",
+  },
   success: { backgroundColor: "#dcfce7", color: "#166534" },
   warning: { backgroundColor: "#fef9c3", color: "#854d0e" },
   error: { backgroundColor: "#fce8e8", color: "#991b1b" },
@@ -241,13 +260,7 @@ export function NodeRenderer({ node, depth = 0 }: { node: PrimitiveNode; depth?:
     case "badge":
       return <BadgeRenderer props={node.props} />;
     case "container":
-      return (
-        <ContainerRenderer
-          props={node.props}
-          nodeChildren={node.children}
-          depth={depth}
-        />
-      );
+      return <ContainerRenderer props={node.props} nodeChildren={node.children} depth={depth} />;
     default:
       return null;
   }

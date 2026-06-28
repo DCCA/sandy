@@ -1,13 +1,7 @@
 import type { BalanceCardProps } from "@/lib/schemas/balance-card";
 import { renderIcon } from "@/lib/icons";
 
-export function BalanceCard({
-  label,
-  amount,
-  visible = true,
-  footnote,
-  action,
-}: BalanceCardProps) {
+export function BalanceCard({ label, amount, visible = true, footnote, action }: BalanceCardProps) {
   return (
     <div
       style={{

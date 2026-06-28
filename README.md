@@ -73,15 +73,15 @@ lib/icons.tsx             SVG icon rendering utility
 
 46 CSS variables scoped to the preview container via `--sandy-*` prefix:
 
-| Category | Tokens | Examples |
-|----------|--------|---------|
-| Colors | 13 | primary, secondary, success, warning, error, surface, overlay |
-| Typography | 15 | 6 font sizes, 3 line heights, 3 letter spacings, family, weights |
-| Spacing | 6 | xs (4px) through 2xl (48px) |
-| Radius | 4 | sm, md, lg, full (999px) |
-| Shadows | 3 | sm, md, lg |
-| Opacity | 3 | disabled, hover, overlay |
-| Borders | 2 | thin (1px), thick (2px) |
+| Category   | Tokens | Examples                                                         |
+| ---------- | ------ | ---------------------------------------------------------------- |
+| Colors     | 13     | primary, secondary, success, warning, error, surface, overlay    |
+| Typography | 15     | 6 font sizes, 3 line heights, 3 letter spacings, family, weights |
+| Spacing    | 6      | xs (4px) through 2xl (48px)                                      |
+| Radius     | 4      | sm, md, lg, full (999px)                                         |
+| Shadows    | 3      | sm, md, lg                                                       |
+| Opacity    | 3      | disabled, hover, overlay                                         |
+| Borders    | 2      | thin (1px), thick (2px)                                          |
 
 ### Adding a New Component
 
@@ -94,29 +94,29 @@ Components use inline styles with `var(--sandy-*)` CSS variables for theming. No
 
 ## Registered Components
 
-| Component | Description |
-|-----------|-------------|
-| HeroBanner | Full-width hero with title, subtitle, CTA |
-| ProductCard | Card with image, badge, description, action |
-| PromoBanner | Promotional banner with variant styling |
-| NoticeBox | Alert box (info/warning/error/success) |
-| FeatureList | Grid of features with icons |
-| InputField | Form input with label and validation |
-| CTAButtonGroup | Row of action buttons |
-| ModalPreview | Modal dialog rendered inline |
-| PricingTable | Tiered pricing comparison |
-| Testimonial | Customer quote with rating |
-| StatsRow | Key metrics grid |
-| NavBar | Navigation with logo and links |
-| Footer | Multi-column footer |
-| AvatarGroup | Overlapping avatar stack |
-| AccountHeader | User greeting with avatar and actions |
-| BalanceCard | Balance display with masking |
-| QuickActions | Icon action button row |
-| InfoCardGrid | Two-column summary cards |
-| TransactionList | Transaction history with icons |
-| BottomTabBar | Bottom navigation tabs |
-| BottomSheet | Mobile bottom sheet overlay |
+| Component       | Description                                 |
+| --------------- | ------------------------------------------- |
+| HeroBanner      | Full-width hero with title, subtitle, CTA   |
+| ProductCard     | Card with image, badge, description, action |
+| PromoBanner     | Promotional banner with variant styling     |
+| NoticeBox       | Alert box (info/warning/error/success)      |
+| FeatureList     | Grid of features with icons                 |
+| InputField      | Form input with label and validation        |
+| CTAButtonGroup  | Row of action buttons                       |
+| ModalPreview    | Modal dialog rendered inline                |
+| PricingTable    | Tiered pricing comparison                   |
+| Testimonial     | Customer quote with rating                  |
+| StatsRow        | Key metrics grid                            |
+| NavBar          | Navigation with logo and links              |
+| Footer          | Multi-column footer                         |
+| AvatarGroup     | Overlapping avatar stack                    |
+| AccountHeader   | User greeting with avatar and actions       |
+| BalanceCard     | Balance display with masking                |
+| QuickActions    | Icon action button row                      |
+| InfoCardGrid    | Two-column summary cards                    |
+| TransactionList | Transaction history with icons              |
+| BottomTabBar    | Bottom navigation tabs                      |
+| BottomSheet     | Mobile bottom sheet overlay                 |
 
 ## Tech Stack
 

@@ -2,11 +2,26 @@ import { toJSONSchema } from "zod";
 import type { z } from "zod";
 
 export type FieldDescriptor =
-  | { kind: "string"; key: string; label: string; required: boolean; default?: string; enum?: string[] }
+  | {
+      kind: "string";
+      key: string;
+      label: string;
+      required: boolean;
+      default?: string;
+      enum?: string[];
+    }
   | { kind: "boolean"; key: string; label: string; required: boolean; default?: boolean }
   | { kind: "number"; key: string; label: string; required: boolean; default?: number }
   | { kind: "object"; key: string; label: string; required: boolean; fields: FieldDescriptor[] }
-  | { kind: "array"; key: string; label: string; required: boolean; itemFields: FieldDescriptor[]; minItems?: number; maxItems?: number };
+  | {
+      kind: "array";
+      key: string;
+      label: string;
+      required: boolean;
+      itemFields: FieldDescriptor[];
+      minItems?: number;
+      maxItems?: number;
+    };
 
 type JSONSchemaProperty = {
   type?: string;

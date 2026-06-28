@@ -68,9 +68,13 @@ function NodeRow({
   depth: number;
 }) {
   const label = primitiveLabels[node.type] ?? node.type;
-  const preview = node.type === "heading" || node.type === "paragraph" || node.type === "button" || node.type === "badge"
-    ? String(node.props.text ?? node.props.label ?? "")
-    : "";
+  const preview =
+    node.type === "heading" ||
+    node.type === "paragraph" ||
+    node.type === "button" ||
+    node.type === "badge"
+      ? String(node.props.text ?? node.props.label ?? "")
+      : "";
   const isSelected = selectedNodeId === node.id;
   const isNested = depth > 0;
 
@@ -78,9 +82,7 @@ function NodeRow({
     <>
       <div
         className={`flex items-center gap-1 px-2 py-1 rounded-md transition-colors group cursor-pointer ${
-          isSelected
-            ? "bg-accent/15 ring-1 ring-accent/30"
-            : "bg-muted/20 hover:bg-muted/30"
+          isSelected ? "bg-accent/15 ring-1 ring-accent/30" : "bg-muted/20 hover:bg-muted/30"
         }`}
         style={{ paddingLeft: `${8 + depth * 16}px` }}
         onClick={() => onSelect(node.id)}
@@ -100,7 +102,10 @@ function NodeRow({
               variant="ghost"
               size="sm"
               className="h-5 w-5 p-0"
-              onClick={(e) => { e.stopPropagation(); onMove(node.id, "up"); }}
+              onClick={(e) => {
+                e.stopPropagation();
+                onMove(node.id, "up");
+              }}
               disabled={index === 0}
               title="Move up"
             >
@@ -110,7 +115,10 @@ function NodeRow({
               variant="ghost"
               size="sm"
               className="h-5 w-5 p-0"
-              onClick={(e) => { e.stopPropagation(); onMove(node.id, "down"); }}
+              onClick={(e) => {
+                e.stopPropagation();
+                onMove(node.id, "down");
+              }}
               disabled={index === total - 1}
               title="Move down"
             >
@@ -120,7 +128,10 @@ function NodeRow({
               variant="ghost"
               size="sm"
               className="h-5 w-5 p-0 text-red-400 hover:text-red-300"
-              onClick={(e) => { e.stopPropagation(); onDelete(node.id); }}
+              onClick={(e) => {
+                e.stopPropagation();
+                onDelete(node.id);
+              }}
               title="Delete"
             >
               <Trash2 className="size-3" />
@@ -129,19 +140,20 @@ function NodeRow({
         )}
       </div>
       {/* Render children for containers (display only — nested operations not supported) */}
-      {node.type === "container" && node.children?.map((child, ci) => (
-        <NodeRow
-          key={child.id}
-          node={child}
-          index={ci}
-          total={node.children!.length}
-          selectedNodeId={selectedNodeId}
-          onSelect={onSelect}
-          onMove={onMove}
-          onDelete={onDelete}
-          depth={depth + 1}
-        />
-      ))}
+      {node.type === "container" &&
+        node.children?.map((child, ci) => (
+          <NodeRow
+            key={child.id}
+            node={child}
+            index={ci}
+            total={node.children!.length}
+            selectedNodeId={selectedNodeId}
+            onSelect={onSelect}
+            onMove={onMove}
+            onDelete={onDelete}
+            depth={depth + 1}
+          />
+        ))}
     </>
   );
 }

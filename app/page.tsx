@@ -55,8 +55,8 @@ export default function Home() {
             <span className="text-accent">component sandbox</span>
           </h1>
           <p className="text-muted-foreground text-base max-w-xl mx-auto mb-10 leading-relaxed">
-            Compose multi-section pages from validated JSON with multi-brand theming.
-            Registry-only rendering, strict contracts, token-driven design.
+            Compose multi-section pages from validated JSON with multi-brand theming. Registry-only
+            rendering, strict contracts, token-driven design.
           </p>
           <div className="max-w-md mx-auto mb-10 text-left">
             <pre className="bg-background ring-1 ring-foreground/10 rounded-lg px-5 py-4 font-mono text-xs text-muted-foreground leading-relaxed overflow-x-auto">
@@ -80,10 +80,7 @@ export default function Home() {
         </p>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           {themePresets.map((preset) => (
-            <div
-              key={preset.id}
-              className="rounded-lg ring-1 ring-foreground/10 bg-card p-5"
-            >
+            <div key={preset.id} className="rounded-lg ring-1 ring-foreground/10 bg-card p-5">
               <h3 className="font-semibold text-sm mb-3">{preset.name}</h3>
               <div className="flex gap-1.5 mb-4">
                 {COLOR_KEYS.map((key) => (
@@ -96,9 +93,17 @@ export default function Home() {
                 ))}
               </div>
               <div className="space-y-1 text-xs text-muted-foreground font-mono">
-                <div>font: {preset.tokens.typography.fontFamily.split(",")[0].replace(/'/g, "")}</div>
-                <div>radius: {preset.tokens.radius.sm}/{preset.tokens.radius.md}/{preset.tokens.radius.lg}px</div>
-                <div>weights: {preset.tokens.typography.headingWeight}/{preset.tokens.typography.bodyWeight}</div>
+                <div>
+                  font: {preset.tokens.typography.fontFamily.split(",")[0].replace(/'/g, "")}
+                </div>
+                <div>
+                  radius: {preset.tokens.radius.sm}/{preset.tokens.radius.md}/
+                  {preset.tokens.radius.lg}px
+                </div>
+                <div>
+                  weights: {preset.tokens.typography.headingWeight}/
+                  {preset.tokens.typography.bodyWeight}
+                </div>
               </div>
             </div>
           ))}

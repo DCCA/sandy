@@ -37,7 +37,8 @@ export function useHistory(initialValue: string) {
     (valueOrUpdater: string | ((prev: string) => string)) => {
       setState((prev) => {
         const currentVal = prev.stack[prev.cursor];
-        const newVal = typeof valueOrUpdater === "function" ? valueOrUpdater(currentVal) : valueOrUpdater;
+        const newVal =
+          typeof valueOrUpdater === "function" ? valueOrUpdater(currentVal) : valueOrUpdater;
         if (newVal === currentVal) return prev;
 
         // Update the current entry immediately (for responsiveness)
@@ -69,7 +70,10 @@ export function useHistory(initialValue: string) {
       if (currentVal !== lastPushed.current) {
         const truncated = prev.stack.slice(0, prev.cursor + 1);
         const withCurrent = [...truncated, currentVal];
-        const capped = withCurrent.length > MAX_HISTORY ? withCurrent.slice(withCurrent.length - MAX_HISTORY) : withCurrent;
+        const capped =
+          withCurrent.length > MAX_HISTORY
+            ? withCurrent.slice(withCurrent.length - MAX_HISTORY)
+            : withCurrent;
         lastPushed.current = capped[capped.length - 2];
         return { stack: capped, cursor: capped.length - 2 };
       }

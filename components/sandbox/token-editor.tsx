@@ -54,13 +54,17 @@ const FONT_SIZE_LABELS: { key: keyof ThemeTokens["typography"]["fontSize"]; labe
   { key: "2xl", label: "2XL" },
 ];
 
-const LINE_HEIGHT_LABELS: { key: keyof ThemeTokens["typography"]["lineHeight"]; label: string }[] = [
-  { key: "tight", label: "Tight" },
-  { key: "normal", label: "Normal" },
-  { key: "relaxed", label: "Relaxed" },
-];
+const LINE_HEIGHT_LABELS: { key: keyof ThemeTokens["typography"]["lineHeight"]; label: string }[] =
+  [
+    { key: "tight", label: "Tight" },
+    { key: "normal", label: "Normal" },
+    { key: "relaxed", label: "Relaxed" },
+  ];
 
-const LETTER_SPACING_LABELS: { key: keyof ThemeTokens["typography"]["letterSpacing"]; label: string }[] = [
+const LETTER_SPACING_LABELS: {
+  key: keyof ThemeTokens["typography"]["letterSpacing"];
+  label: string;
+}[] = [
   { key: "tight", label: "Tight" },
   { key: "normal", label: "Normal" },
   { key: "wide", label: "Wide" },
@@ -107,7 +111,9 @@ function Section({
 function Subsection({ title, children }: { title: string; children: React.ReactNode }) {
   return (
     <div className="space-y-2">
-      <span className="text-[10px] font-medium text-muted-foreground/70 uppercase tracking-wider">{title}</span>
+      <span className="text-[10px] font-medium text-muted-foreground/70 uppercase tracking-wider">
+        {title}
+      </span>
       {children}
     </div>
   );
@@ -134,10 +140,7 @@ function ColorInput({
           className="size-6 rounded cursor-pointer border-0 bg-transparent p-0 [&::-webkit-color-swatch-wrapper]:p-0 [&::-webkit-color-swatch]:rounded [&::-webkit-color-swatch]:border-0"
         />
       ) : (
-        <div
-          className="size-6 rounded border border-border/50"
-          style={{ background: value }}
-        />
+        <div className="size-6 rounded border border-border/50" style={{ background: value }} />
       )}
       <span className="font-mono text-[10px] text-muted-foreground truncate">{value}</span>
     </div>
@@ -212,28 +215,28 @@ export function TokenEditor({
     (key: keyof ThemeTokens["color"], value: string) => {
       onOverrideChange({ ...overrides, color: { ...overrides.color, [key]: value } });
     },
-    [overrides, onOverrideChange]
+    [overrides, onOverrideChange],
   );
 
   const handleRadius = useCallback(
     (key: keyof ThemeTokens["radius"], value: number) => {
       onOverrideChange({ ...overrides, radius: { ...overrides.radius, [key]: value } });
     },
-    [overrides, onOverrideChange]
+    [overrides, onOverrideChange],
   );
 
   const handleSpacing = useCallback(
     (key: keyof ThemeTokens["spacing"], value: number) => {
       onOverrideChange({ ...overrides, spacing: { ...overrides.spacing, [key]: value } });
     },
-    [overrides, onOverrideChange]
+    [overrides, onOverrideChange],
   );
 
   const handleTypography = useCallback(
     (key: "fontFamily" | "headingWeight" | "bodyWeight", value: string | number) => {
       onOverrideChange({ ...overrides, typography: { ...overrides.typography, [key]: value } });
     },
-    [overrides, onOverrideChange]
+    [overrides, onOverrideChange],
   );
 
   const handleFontSize = useCallback(
@@ -244,7 +247,7 @@ export function TokenEditor({
         typography: { ...overrides.typography, fontSize: { ...existing, [key]: value } },
       });
     },
-    [overrides, onOverrideChange]
+    [overrides, onOverrideChange],
   );
 
   const handleLineHeight = useCallback(
@@ -255,7 +258,7 @@ export function TokenEditor({
         typography: { ...overrides.typography, lineHeight: { ...existing, [key]: value } },
       });
     },
-    [overrides, onOverrideChange]
+    [overrides, onOverrideChange],
   );
 
   const handleLetterSpacing = useCallback(
@@ -266,28 +269,28 @@ export function TokenEditor({
         typography: { ...overrides.typography, letterSpacing: { ...existing, [key]: value } },
       });
     },
-    [overrides, onOverrideChange]
+    [overrides, onOverrideChange],
   );
 
   const handleShadow = useCallback(
     (key: keyof ThemeTokens["shadow"], value: string) => {
       onOverrideChange({ ...overrides, shadow: { ...overrides.shadow, [key]: value } });
     },
-    [overrides, onOverrideChange]
+    [overrides, onOverrideChange],
   );
 
   const handleOpacity = useCallback(
     (key: keyof ThemeTokens["opacity"], value: number) => {
       onOverrideChange({ ...overrides, opacity: { ...overrides.opacity, [key]: value } });
     },
-    [overrides, onOverrideChange]
+    [overrides, onOverrideChange],
   );
 
   const handleBorder = useCallback(
     (key: keyof ThemeTokens["border"], value: string) => {
       onOverrideChange({ ...overrides, border: { ...overrides.border, [key]: value } });
     },
-    [overrides, onOverrideChange]
+    [overrides, onOverrideChange],
   );
 
   const hasOverrides = Object.keys(overrides).length > 0;
@@ -431,9 +434,21 @@ export function TokenEditor({
           </Section>
 
           <Section title="Shadows" defaultOpen={false}>
-            <TextInput label="Small" value={tokens.shadow.sm} onChange={(v) => handleShadow("sm", v)} />
-            <TextInput label="Medium" value={tokens.shadow.md} onChange={(v) => handleShadow("md", v)} />
-            <TextInput label="Large" value={tokens.shadow.lg} onChange={(v) => handleShadow("lg", v)} />
+            <TextInput
+              label="Small"
+              value={tokens.shadow.sm}
+              onChange={(v) => handleShadow("sm", v)}
+            />
+            <TextInput
+              label="Medium"
+              value={tokens.shadow.md}
+              onChange={(v) => handleShadow("md", v)}
+            />
+            <TextInput
+              label="Large"
+              value={tokens.shadow.lg}
+              onChange={(v) => handleShadow("lg", v)}
+            />
           </Section>
 
           <Section title="Opacity" defaultOpen={false}>
@@ -452,8 +467,16 @@ export function TokenEditor({
           </Section>
 
           <Section title="Borders" defaultOpen={false}>
-            <TextInput label="Thin" value={tokens.border.thin} onChange={(v) => handleBorder("thin", v)} />
-            <TextInput label="Thick" value={tokens.border.thick} onChange={(v) => handleBorder("thick", v)} />
+            <TextInput
+              label="Thin"
+              value={tokens.border.thin}
+              onChange={(v) => handleBorder("thin", v)}
+            />
+            <TextInput
+              label="Thick"
+              value={tokens.border.thick}
+              onChange={(v) => handleBorder("thick", v)}
+            />
           </Section>
         </div>
       )}

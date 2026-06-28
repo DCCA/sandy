@@ -13,7 +13,7 @@ export const NavBarSchema = z.object({
       z.object({
         label: z.string(),
         href: safeHref,
-      })
+      }),
     )
     .default([]),
   cta: z

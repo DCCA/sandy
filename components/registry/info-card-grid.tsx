@@ -27,11 +27,13 @@ export function InfoCardGrid({ cards }: InfoCardGridProps) {
           }}
         >
           <h3
-            style={{
-              margin: 0,
-              fontSize: "var(--sandy-font-size-sm)",
-              fontWeight: "var(--sandy-font-heading-weight)",
-            } as React.CSSProperties}
+            style={
+              {
+                margin: 0,
+                fontSize: "var(--sandy-font-size-sm)",
+                fontWeight: "var(--sandy-font-heading-weight)",
+              } as React.CSSProperties
+            }
           >
             {card.title}
           </h3>
@@ -89,14 +91,16 @@ export function InfoCardGrid({ cards }: InfoCardGridProps) {
               {card.action && (
                 <a
                   href={card.action.href}
-                  style={{
-                    fontSize: "var(--sandy-font-size-xs)",
-                    color: "var(--sandy-color-primary)",
-                    textDecoration: "none",
-                    fontWeight: "var(--sandy-font-heading-weight)",
-                    display: "inline-block",
-                    marginTop: 2,
-                  } as React.CSSProperties}
+                  style={
+                    {
+                      fontSize: "var(--sandy-font-size-xs)",
+                      color: "var(--sandy-color-primary)",
+                      textDecoration: "none",
+                      fontWeight: "var(--sandy-font-heading-weight)",
+                      display: "inline-block",
+                      marginTop: 2,
+                    } as React.CSSProperties
+                  }
                 >
                   {card.action.label}
                 </a>

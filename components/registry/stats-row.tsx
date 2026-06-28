@@ -28,25 +28,35 @@ export function StatsRow({ stats, columns = "3" }: StatsRowProps) {
           }}
         >
           <div
-            style={{
-              fontSize: "var(--sandy-font-size-2xl)",
-              marginBottom: 4,
-              fontWeight: "var(--sandy-font-heading-weight)",
-              color: "var(--sandy-color-primary)",
-            } as React.CSSProperties}
+            style={
+              {
+                fontSize: "var(--sandy-font-size-2xl)",
+                marginBottom: 4,
+                fontWeight: "var(--sandy-font-heading-weight)",
+                color: "var(--sandy-color-primary)",
+              } as React.CSSProperties
+            }
           >
             {stat.value}
           </div>
           <div
-            style={{
-              fontSize: "var(--sandy-font-size-sm)",
-              fontWeight: "var(--sandy-font-heading-weight)",
-            } as React.CSSProperties}
+            style={
+              {
+                fontSize: "var(--sandy-font-size-sm)",
+                fontWeight: "var(--sandy-font-heading-weight)",
+              } as React.CSSProperties
+            }
           >
             {stat.label}
           </div>
           {stat.description && (
-            <div style={{ fontSize: "var(--sandy-font-size-xs)", marginTop: 4, color: "var(--sandy-color-muted)" }}>
+            <div
+              style={{
+                fontSize: "var(--sandy-font-size-xs)",
+                marginTop: 4,
+                color: "var(--sandy-color-muted)",
+              }}
+            >
               {stat.description}
             </div>
           )}

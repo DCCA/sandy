@@ -9,7 +9,7 @@ export const AccountHeaderSchema = z.object({
       z.object({
         icon: z.string().min(1),
         label: z.string().min(1),
-      })
+      }),
     )
     .default([]),
 });

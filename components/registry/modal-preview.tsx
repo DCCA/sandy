@@ -26,7 +26,13 @@ function getActionStyles(variant: string) {
   }
 }
 
-export function ModalPreview({ title, body, open = true, actions, size = "md" }: ModalPreviewProps) {
+export function ModalPreview({
+  title,
+  body,
+  open = true,
+  actions,
+  size = "md",
+}: ModalPreviewProps) {
   if (!open) {
     return (
       <div

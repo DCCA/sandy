@@ -214,12 +214,12 @@ describe("TestimonialSchema", () => {
   });
 
   it("rejects rating out of range", () => {
-    expect(
-      TestimonialSchema.safeParse({ quote: "Good", author: "A", rating: 0 }).success,
-    ).toBe(false);
-    expect(
-      TestimonialSchema.safeParse({ quote: "Good", author: "A", rating: 6 }).success,
-    ).toBe(false);
+    expect(TestimonialSchema.safeParse({ quote: "Good", author: "A", rating: 0 }).success).toBe(
+      false,
+    );
+    expect(TestimonialSchema.safeParse({ quote: "Good", author: "A", rating: 6 }).success).toBe(
+      false,
+    );
   });
 });
 

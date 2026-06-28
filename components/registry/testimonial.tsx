@@ -13,7 +13,10 @@ export function Testimonial({ quote, author, role, avatarUrl, rating }: Testimon
       }}
     >
       {rating != null && (
-        <div style={{ marginBottom: "var(--sandy-spacing-sm)", fontSize: "var(--sandy-font-size-lg)" }} aria-label={`${rating} out of 5 stars`}>
+        <div
+          style={{ marginBottom: "var(--sandy-spacing-sm)", fontSize: "var(--sandy-font-size-lg)" }}
+          aria-label={`${rating} out of 5 stars`}
+        >
           {Array.from({ length: 5 }, (_, i) => (
             <span key={i} style={{ opacity: i < rating ? 1 : 0.25 }}>
               &#9733;
@@ -22,14 +25,16 @@ export function Testimonial({ quote, author, role, avatarUrl, rating }: Testimon
         </div>
       )}
       <blockquote
-        style={{
-          margin: 0,
-          marginBottom: "var(--sandy-spacing-sm)",
-          fontSize: "var(--sandy-font-size-md)",
-          fontStyle: "italic",
-          lineHeight: "var(--sandy-line-height-relaxed)",
-          fontWeight: "var(--sandy-font-body-weight)",
-        } as React.CSSProperties}
+        style={
+          {
+            margin: 0,
+            marginBottom: "var(--sandy-spacing-sm)",
+            fontSize: "var(--sandy-font-size-md)",
+            fontStyle: "italic",
+            lineHeight: "var(--sandy-line-height-relaxed)",
+            fontWeight: "var(--sandy-font-body-weight)",
+          } as React.CSSProperties
+        }
       >
         &ldquo;{quote}&rdquo;
       </blockquote>
@@ -50,15 +55,19 @@ export function Testimonial({ quote, author, role, avatarUrl, rating }: Testimon
         )}
         <div>
           <div
-            style={{
-              fontSize: "var(--sandy-font-size-sm)",
-              fontWeight: "var(--sandy-font-heading-weight)",
-            } as React.CSSProperties}
+            style={
+              {
+                fontSize: "var(--sandy-font-size-sm)",
+                fontWeight: "var(--sandy-font-heading-weight)",
+              } as React.CSSProperties
+            }
           >
             {author}
           </div>
           {role && (
-            <div style={{ fontSize: "var(--sandy-font-size-xs)", color: "var(--sandy-color-muted)" }}>
+            <div
+              style={{ fontSize: "var(--sandy-font-size-xs)", color: "var(--sandy-color-muted)" }}
+            >
               {role}
             </div>
           )}

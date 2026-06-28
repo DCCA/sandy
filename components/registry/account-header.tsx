@@ -1,12 +1,7 @@
 import type { AccountHeaderProps } from "@/lib/schemas/account-header";
 import { renderIcon } from "@/lib/icons";
 
-export function AccountHeader({
-  greeting,
-  userName,
-  avatarUrl,
-  actions = [],
-}: AccountHeaderProps) {
+export function AccountHeader({ greeting, userName, avatarUrl, actions = [] }: AccountHeaderProps) {
   const initial = userName.charAt(0).toUpperCase();
 
   return (
@@ -21,20 +16,22 @@ export function AccountHeader({
     >
       {/* Avatar */}
       <div
-        style={{
-          width: 48,
-          height: 48,
-          borderRadius: "var(--sandy-radius-full)",
-          backgroundColor: "var(--sandy-color-primary)",
-          color: "#fff",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          flexShrink: 0,
-          overflow: "hidden",
-          fontSize: "var(--sandy-font-size-xl)",
-          fontWeight: "var(--sandy-font-heading-weight)",
-        } as React.CSSProperties}
+        style={
+          {
+            width: 48,
+            height: 48,
+            borderRadius: "var(--sandy-radius-full)",
+            backgroundColor: "var(--sandy-color-primary)",
+            color: "#fff",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            flexShrink: 0,
+            overflow: "hidden",
+            fontSize: "var(--sandy-font-size-xl)",
+            fontWeight: "var(--sandy-font-heading-weight)",
+          } as React.CSSProperties
+        }
       >
         {avatarUrl ? (
           // eslint-disable-next-line @next/next/no-img-element
@@ -51,12 +48,14 @@ export function AccountHeader({
       {/* Greeting + Name */}
       <div style={{ flex: 1, minWidth: 0 }}>
         <p
-          style={{
-            margin: 0,
-            fontSize: "var(--sandy-font-size-lg)",
-            fontWeight: "var(--sandy-font-heading-weight)",
-            lineHeight: "var(--sandy-line-height-tight)",
-          } as React.CSSProperties}
+          style={
+            {
+              margin: 0,
+              fontSize: "var(--sandy-font-size-lg)",
+              fontWeight: "var(--sandy-font-heading-weight)",
+              lineHeight: "var(--sandy-line-height-tight)",
+            } as React.CSSProperties
+          }
         >
           {greeting}, {userName}
         </p>

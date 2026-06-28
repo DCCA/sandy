@@ -6,7 +6,7 @@ export const AvatarGroupSchema = z.object({
       z.object({
         imageUrl: z.string().url(),
         name: z.string(),
-      })
+      }),
     )
     .min(1),
   label: z.string().optional(),

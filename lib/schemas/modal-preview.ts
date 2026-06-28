@@ -8,10 +8,8 @@ export const ModalPreviewSchema = z.object({
     .array(
       z.object({
         label: z.string(),
-        variant: z
-          .enum(["primary", "secondary", "ghost"])
-          .default("primary"),
-      })
+        variant: z.enum(["primary", "secondary", "ghost"]).default("primary"),
+      }),
     )
     .optional(),
   size: z.enum(["sm", "md", "lg"]).default("md"),

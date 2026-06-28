@@ -34,9 +34,17 @@ export const pageTemplates: PageTemplate[] = [
             heading: "Why choose us",
             columns: "3",
             features: [
-              { title: "Fast", description: "Lightning-fast performance out of the box.", icon: "⚡" },
+              {
+                title: "Fast",
+                description: "Lightning-fast performance out of the box.",
+                icon: "⚡",
+              },
               { title: "Secure", description: "Enterprise-grade security by default.", icon: "🔒" },
-              { title: "Scalable", description: "Grows with your team and your traffic.", icon: "📈" },
+              {
+                title: "Scalable",
+                description: "Grows with your team and your traffic.",
+                icon: "📈",
+              },
             ],
           },
         },
@@ -187,10 +195,29 @@ export const pageTemplates: PageTemplate[] = [
           component: "InfoCardGrid",
           props: {
             cards: [
-              { title: "Credit card", value: "R$ 2,500.00", footnote: "Available limit", action: { label: "Details", href: "/card" } },
-              { title: "Invoice", value: "R$ 189.50", footnote: "Due Apr 06", action: { label: "Pay now", href: "/invoice" } },
-              { title: "Loans", description: "Best rates available", action: { label: "Simulate", href: "/loans" } },
-              { title: "Investments", value: "R$ 12,350.00", footnote: "Total invested", action: { label: "Simulate", href: "/invest" } },
+              {
+                title: "Credit card",
+                value: "R$ 2,500.00",
+                footnote: "Available limit",
+                action: { label: "Details", href: "/card" },
+              },
+              {
+                title: "Invoice",
+                value: "R$ 189.50",
+                footnote: "Due Apr 06",
+                action: { label: "Pay now", href: "/invoice" },
+              },
+              {
+                title: "Loans",
+                description: "Best rates available",
+                action: { label: "Simulate", href: "/loans" },
+              },
+              {
+                title: "Investments",
+                value: "R$ 12,350.00",
+                footnote: "Total invested",
+                action: { label: "Simulate", href: "/invest" },
+              },
             ],
           },
         },
@@ -200,9 +227,27 @@ export const pageTemplates: PageTemplate[] = [
           props: {
             heading: "Recent activity",
             transactions: [
-              { title: "Coffee Shop", subtitle: "Debit card", amount: "- R$ 12.50", timestamp: "Today", type: "payment" },
-              { title: "Salary deposit", subtitle: "TED received", amount: "+ R$ 5,200.00", timestamp: "Yesterday", type: "received" },
-              { title: "Transfer to Ana", subtitle: "Pix", amount: "- R$ 150.00", timestamp: "Mar 9", type: "sent" },
+              {
+                title: "Coffee Shop",
+                subtitle: "Debit card",
+                amount: "- R$ 12.50",
+                timestamp: "Today",
+                type: "payment",
+              },
+              {
+                title: "Salary deposit",
+                subtitle: "TED received",
+                amount: "+ R$ 5,200.00",
+                timestamp: "Yesterday",
+                type: "received",
+              },
+              {
+                title: "Transfer to Ana",
+                subtitle: "Pix",
+                amount: "- R$ 150.00",
+                timestamp: "Mar 9",
+                type: "sent",
+              },
             ],
             showAllLabel: "View all transactions",
             showAllHref: "/transactions",
@@ -251,8 +296,16 @@ export const pageTemplates: PageTemplate[] = [
             columns: "3",
             features: [
               { title: "No fees", description: "Zero monthly fees on your account.", icon: "💰" },
-              { title: "Instant transfers", description: "Send and receive money in seconds.", icon: "⚡" },
-              { title: "100% digital", description: "Open your account from your phone.", icon: "📱" },
+              {
+                title: "Instant transfers",
+                description: "Send and receive money in seconds.",
+                icon: "⚡",
+              },
+              {
+                title: "100% digital",
+                description: "Open your account from your phone.",
+                icon: "📱",
+              },
             ],
           },
         },
@@ -260,7 +313,8 @@ export const pageTemplates: PageTemplate[] = [
           id: "sec_3",
           component: "Testimonial",
           props: {
-            quote: "I switched to this app and never looked back. Everything is so simple and fast.",
+            quote:
+              "I switched to this app and never looked back. Everything is so simple and fast.",
             author: "Maria Santos",
             role: "Customer since 2024",
             rating: 5,
