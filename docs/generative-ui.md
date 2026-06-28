@@ -1,6 +1,16 @@
 # Generative UI — Research, Conclusions & Recommendations
 
-_Status: research complete · Decision: **Adopt-narrowly** · Audience: Sandy maintainers_
+_Status: research complete · Decision: **Adopt-narrowly** · Phase 1 **shipped** (local, subscription-powered) · Audience: Sandy maintainers_
+
+> **Implementation note (Phase 1, shipped).** Sandy's no-metered-API constraint changed the
+> generation transport from the originally-scouted Vercel AI SDK `generateObject` (which needs an
+> API key) to the **Claude Code headless CLI** (`claude -p --json-schema`), which runs on the
+> user's Claude **subscription**. The Claude Agent SDK was also ruled out — it does not permit
+> subscription/claude.ai auth. The architecture below is otherwise unchanged: a Zod-derived JSON
+> Schema constrains component selection, a per-component field catalog is injected into the prompt,
+> and the output is re-validated through `validatePage` (the hard render gate). Because the CLI/
+> login is required, generation is a **local-only** feature — the deployed build hides it. See
+> `lib/ai/generate-envelope.ts`, `app/api/generate/route.ts`, `components/sandbox/generate-panel.tsx`.
 
 This document summarizes a multi-source, fact-checked review of generative UI
 (LLM-generated user interfaces) as of 2025–2026 and answers one question:
@@ -187,9 +197,10 @@ The only missing piece is the generation step.
 
 ## 6. Phased rollout
 
-1. **Phase 1 — Prompt-to-envelope (internal).** A "generate from prompt" action
-   that fills the existing JSON editor with a `generateObject`-produced envelope,
-   fully re-validated; **human reviews before render** (no autonomous render).
+1. **Phase 1 — Prompt-to-envelope (internal).** ✅ _Shipped (local, subscription-powered)._ A
+   "Generate from prompt" toolbar action fills the JSON editor with a CLI-produced envelope
+   (`claude -p --json-schema`), fully re-validated through `validatePage`; the result lands in the
+   editable JSON, which the human reviews/edits before sharing or exporting.
 2. **Phase 2 — Single-component generation** against the registry catalog, with
    quality evals + telemetry on validation-failure / rejection rate.
 3. **Phase 3 — Composite/multi-component layouts** via the existing composite

@@ -8,6 +8,12 @@ follow [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Added
 
+- Generative UI Phase 1 — "Generate from prompt" (local-only): a toolbar action
+  that turns a natural-language description into a validated page envelope via the
+  Claude Code CLI on the user's Claude subscription (no metered API key). Output is
+  re-validated through the existing render gate; the action is hidden when the CLI
+  is unavailable (e.g. on the deployed build). New `/api/generate` route,
+  `lib/ai/generate-envelope.ts`, and `components/sandbox/generate-panel.tsx`.
 - W3C DTCG design-token import/export (`.tokens.json`) in the token editor, for
   interop with Figma, Style Dictionary, and Tokens Studio.
 - Composite (custom component) import/export as portable `.json` bundles, so
