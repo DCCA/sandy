@@ -62,12 +62,116 @@ export function defaultPage(sectionOverride?: Section): Page {
     theme: { brand: "default", mode: "light" },
     meta: { viewport: "mobile" },
     sections: [
-      { id: "sec_1", component: "AccountHeader", props: { greeting: "Olá", userName: "Daniel", actions: [{ icon: "eye-off", label: "Hide balance" }, { icon: "help-circle", label: "Help" }] } },
-      { id: "sec_2", component: "BalanceCard", props: { label: "Saldo", amount: "R$ 4,521.89", visible: false, action: { label: "See statement", href: "/statement" } } },
-      { id: "sec_3", component: "QuickActions", props: { actions: [{ icon: "camera", label: "Scan", href: "/scan" }, { icon: "arrow-up-right", label: "Send Pix", href: "/send", badge: "12x" }, { icon: "barcode", label: "Pay", href: "/pay" }, { icon: "phone", label: "Top up", href: "/topup" }] } },
-      { id: "sec_4", component: "InfoCardGrid", props: { cards: [{ title: "Credit card", value: "R$ 2,500.00", footnote: "Available limit", action: { label: "Details", href: "/card" } }, { title: "Invoice", value: "R$ 189.50", footnote: "Due Apr 06", action: { label: "Pay now", href: "/invoice" } }, { title: "Loans", description: "Best rates available", action: { label: "Simulate", href: "/loans" } }, { title: "Investments", value: "R$ 12,350.00", footnote: "Total invested", action: { label: "Simulate", href: "/invest" } }] } },
-      { id: "sec_5", component: "TransactionList", props: { heading: "Recent activity", transactions: [{ title: "Coffee Shop", subtitle: "Debit card", amount: "- R$ 12.50", timestamp: "Today", type: "payment" }, { title: "Salary deposit", subtitle: "TED received", amount: "+ R$ 5,200.00", timestamp: "Yesterday", type: "received" }, { title: "Transfer to Ana", subtitle: "Pix", amount: "- R$ 150.00", timestamp: "Mar 9", type: "sent" }], showAllLabel: "View all transactions", showAllHref: "/transactions" } },
-      { id: "sec_6", component: "BottomTabBar", props: { tabs: [{ icon: "home", label: "Home", href: "/home", active: true }, { icon: "card", label: "Cards", href: "/cards" }, { icon: "diamond", label: "Pix", href: "/pix" }, { icon: "chart", label: "Invest", href: "/invest" }, { icon: "grid", label: "Products", href: "/products" }] } },
+      {
+        id: "sec_1",
+        component: "AccountHeader",
+        props: {
+          greeting: "Olá",
+          userName: "Daniel",
+          actions: [
+            { icon: "eye-off", label: "Hide balance" },
+            { icon: "help-circle", label: "Help" },
+          ],
+        },
+      },
+      {
+        id: "sec_2",
+        component: "BalanceCard",
+        props: {
+          label: "Saldo",
+          amount: "R$ 4,521.89",
+          visible: false,
+          action: { label: "See statement", href: "/statement" },
+        },
+      },
+      {
+        id: "sec_3",
+        component: "QuickActions",
+        props: {
+          actions: [
+            { icon: "camera", label: "Scan", href: "/scan" },
+            { icon: "arrow-up-right", label: "Send Pix", href: "/send", badge: "12x" },
+            { icon: "barcode", label: "Pay", href: "/pay" },
+            { icon: "phone", label: "Top up", href: "/topup" },
+          ],
+        },
+      },
+      {
+        id: "sec_4",
+        component: "InfoCardGrid",
+        props: {
+          cards: [
+            {
+              title: "Credit card",
+              value: "R$ 2,500.00",
+              footnote: "Available limit",
+              action: { label: "Details", href: "/card" },
+            },
+            {
+              title: "Invoice",
+              value: "R$ 189.50",
+              footnote: "Due Apr 06",
+              action: { label: "Pay now", href: "/invoice" },
+            },
+            {
+              title: "Loans",
+              description: "Best rates available",
+              action: { label: "Simulate", href: "/loans" },
+            },
+            {
+              title: "Investments",
+              value: "R$ 12,350.00",
+              footnote: "Total invested",
+              action: { label: "Simulate", href: "/invest" },
+            },
+          ],
+        },
+      },
+      {
+        id: "sec_5",
+        component: "TransactionList",
+        props: {
+          heading: "Recent activity",
+          transactions: [
+            {
+              title: "Coffee Shop",
+              subtitle: "Debit card",
+              amount: "- R$ 12.50",
+              timestamp: "Today",
+              type: "payment",
+            },
+            {
+              title: "Salary deposit",
+              subtitle: "TED received",
+              amount: "+ R$ 5,200.00",
+              timestamp: "Yesterday",
+              type: "received",
+            },
+            {
+              title: "Transfer to Ana",
+              subtitle: "Pix",
+              amount: "- R$ 150.00",
+              timestamp: "Mar 9",
+              type: "sent",
+            },
+          ],
+          showAllLabel: "View all transactions",
+          showAllHref: "/transactions",
+        },
+      },
+      {
+        id: "sec_6",
+        component: "BottomTabBar",
+        props: {
+          tabs: [
+            { icon: "home", label: "Home", href: "/home", active: true },
+            { icon: "card", label: "Cards", href: "/cards" },
+            { icon: "diamond", label: "Pix", href: "/pix" },
+            { icon: "chart", label: "Invest", href: "/invest" },
+            { icon: "grid", label: "Products", href: "/products" },
+          ],
+        },
+      },
     ],
   };
 }
@@ -82,7 +186,11 @@ export const registry: Record<string, RegistryItem> = {
       cta: { label: "See offers", href: "/offers" },
       align: "left",
     }),
-    metadata: { name: "Hero Banner", description: "Full-width hero section with title, subtitle, and CTA", supportsTheme: true },
+    metadata: {
+      name: "Hero Banner",
+      description: "Full-width hero section with title, subtitle, and CTA",
+      supportsTheme: true,
+    },
   },
   ProductCard: {
     component: ProductCard as RegistryItem["component"],
@@ -93,7 +201,11 @@ export const registry: Record<string, RegistryItem> = {
       badge: "Popular",
       action: { label: "Learn more", href: "/plans/premium" },
     }),
-    metadata: { name: "Product Card", description: "Card with image, title, description, badge, and action", supportsTheme: true },
+    metadata: {
+      name: "Product Card",
+      description: "Card with image, title, description, badge, and action",
+      supportsTheme: true,
+    },
   },
   PromoBanner: {
     component: PromoBanner as RegistryItem["component"],
@@ -104,7 +216,11 @@ export const registry: Record<string, RegistryItem> = {
       href: "/sale",
       variant: "info",
     }),
-    metadata: { name: "Promo Banner", description: "Promotional banner with variant styling", supportsTheme: true },
+    metadata: {
+      name: "Promo Banner",
+      description: "Promotional banner with variant styling",
+      supportsTheme: true,
+    },
   },
   NoticeBox: {
     component: NoticeBox as RegistryItem["component"],
@@ -114,7 +230,11 @@ export const registry: Record<string, RegistryItem> = {
       message: "Your email has been successfully verified. You can now access all features.",
       type: "success",
     }),
-    metadata: { name: "Notice Box", description: "Alert/notice box with type-based styling", supportsTheme: true },
+    metadata: {
+      name: "Notice Box",
+      description: "Alert/notice box with type-based styling",
+      supportsTheme: true,
+    },
   },
   FeatureList: {
     component: FeatureList as RegistryItem["component"],
@@ -128,7 +248,11 @@ export const registry: Record<string, RegistryItem> = {
         { title: "Scalable", description: "Grows with your team and your traffic.", icon: "📈" },
       ],
     }),
-    metadata: { name: "Feature List", description: "Grid of feature items with configurable columns", supportsTheme: true },
+    metadata: {
+      name: "Feature List",
+      description: "Grid of feature items with configurable columns",
+      supportsTheme: true,
+    },
   },
   InputField: {
     component: InputField as RegistryItem["component"],
@@ -140,7 +264,11 @@ export const registry: Record<string, RegistryItem> = {
       required: true,
       helperText: "We'll never share your email.",
     }),
-    metadata: { name: "Input Field", description: "Form input with label, validation, and helper text", supportsTheme: true },
+    metadata: {
+      name: "Input Field",
+      description: "Form input with label, validation, and helper text",
+      supportsTheme: true,
+    },
   },
   CTAButtonGroup: {
     component: CTAButtonGroup as RegistryItem["component"],
@@ -152,7 +280,11 @@ export const registry: Record<string, RegistryItem> = {
         { label: "Learn more", href: "/docs", variant: "outline" },
       ],
     }),
-    metadata: { name: "CTA Button Group", description: "Row of action buttons with variant styling", supportsTheme: true },
+    metadata: {
+      name: "CTA Button Group",
+      description: "Row of action buttons with variant styling",
+      supportsTheme: true,
+    },
   },
   ModalPreview: {
     component: ModalPreview as RegistryItem["component"],
@@ -167,7 +299,11 @@ export const registry: Record<string, RegistryItem> = {
         { label: "Confirm", variant: "primary" },
       ],
     }),
-    metadata: { name: "Modal Preview", description: "Modal dialog rendered inline for preview", supportsTheme: true },
+    metadata: {
+      name: "Modal Preview",
+      description: "Modal dialog rendered inline for preview",
+      supportsTheme: true,
+    },
   },
   PricingTable: {
     component: PricingTable as RegistryItem["component"],
@@ -194,23 +330,37 @@ export const registry: Record<string, RegistryItem> = {
           name: "Enterprise",
           price: "$99",
           period: "mo",
-          features: ["Unlimited everything", "Dedicated support", "SSO & SAML", "Custom integrations"],
+          features: [
+            "Unlimited everything",
+            "Dedicated support",
+            "SSO & SAML",
+            "Custom integrations",
+          ],
           cta: { label: "Contact sales", href: "/contact" },
         },
       ],
     }),
-    metadata: { name: "Pricing Table", description: "Tiered pricing comparison with highlighted plan", supportsTheme: true },
+    metadata: {
+      name: "Pricing Table",
+      description: "Tiered pricing comparison with highlighted plan",
+      supportsTheme: true,
+    },
   },
   Testimonial: {
     component: Testimonial as RegistryItem["component"],
     schema: TestimonialSchema,
     example: section("sec_1", "Testimonial", {
-      quote: "This product completely transformed how our team collaborates. The results speak for themselves.",
+      quote:
+        "This product completely transformed how our team collaborates. The results speak for themselves.",
       author: "Sarah Chen",
       role: "VP of Engineering, Acme Corp",
       rating: 5,
     }),
-    metadata: { name: "Testimonial", description: "Customer quote with author, role, avatar, and star rating", supportsTheme: true },
+    metadata: {
+      name: "Testimonial",
+      description: "Customer quote with author, role, avatar, and star rating",
+      supportsTheme: true,
+    },
   },
   StatsRow: {
     component: StatsRow as RegistryItem["component"],
@@ -223,7 +373,11 @@ export const registry: Record<string, RegistryItem> = {
         { value: "4.8/5", label: "Rating", description: "From 2,000+ reviews" },
       ],
     }),
-    metadata: { name: "Stats Row", description: "Grid of key metrics with values and labels", supportsTheme: true },
+    metadata: {
+      name: "Stats Row",
+      description: "Grid of key metrics with values and labels",
+      supportsTheme: true,
+    },
   },
   NavBar: {
     component: NavBar as RegistryItem["component"],
@@ -238,7 +392,11 @@ export const registry: Record<string, RegistryItem> = {
       ],
       cta: { label: "Sign up", href: "/signup" },
     }),
-    metadata: { name: "Nav Bar", description: "Navigation bar with logo, links, and optional CTA", supportsTheme: true },
+    metadata: {
+      name: "Nav Bar",
+      description: "Navigation bar with logo, links, and optional CTA",
+      supportsTheme: true,
+    },
   },
   Footer: {
     component: Footer as RegistryItem["component"],
@@ -272,7 +430,11 @@ export const registry: Record<string, RegistryItem> = {
       ],
       bottomText: "\u00a9 2026 Acme Inc. All rights reserved.",
     }),
-    metadata: { name: "Footer", description: "Multi-column footer with links and bottom text", supportsTheme: true },
+    metadata: {
+      name: "Footer",
+      description: "Multi-column footer with links and bottom text",
+      supportsTheme: true,
+    },
   },
   AvatarGroup: {
     component: AvatarGroup as RegistryItem["component"],
@@ -288,7 +450,11 @@ export const registry: Record<string, RegistryItem> = {
       maxVisible: 3,
       label: "5 team members",
     }),
-    metadata: { name: "Avatar Group", description: "Overlapping avatar stack with overflow count", supportsTheme: true },
+    metadata: {
+      name: "Avatar Group",
+      description: "Overlapping avatar stack with overflow count",
+      supportsTheme: true,
+    },
   },
   AccountHeader: {
     component: AccountHeader as RegistryItem["component"],
@@ -302,7 +468,11 @@ export const registry: Record<string, RegistryItem> = {
         { icon: "help-circle", label: "Help" },
       ],
     }),
-    metadata: { name: "Account Header", description: "User greeting bar with avatar and action icons", supportsTheme: true },
+    metadata: {
+      name: "Account Header",
+      description: "User greeting bar with avatar and action icons",
+      supportsTheme: true,
+    },
   },
   BalanceCard: {
     component: BalanceCard as RegistryItem["component"],
@@ -314,7 +484,11 @@ export const registry: Record<string, RegistryItem> = {
       footnote: "Updated just now",
       action: { label: "See statement", href: "/statement" },
     }),
-    metadata: { name: "Balance Card", description: "Account balance display with optional masking and CTA", supportsTheme: true },
+    metadata: {
+      name: "Balance Card",
+      description: "Account balance display with optional masking and CTA",
+      supportsTheme: true,
+    },
   },
   QuickActions: {
     component: QuickActions as RegistryItem["component"],
@@ -327,20 +501,46 @@ export const registry: Record<string, RegistryItem> = {
         { icon: "phone", label: "Top up", href: "/topup" },
       ],
     }),
-    metadata: { name: "Quick Actions", description: "Horizontal row of icon action buttons with labels", supportsTheme: true },
+    metadata: {
+      name: "Quick Actions",
+      description: "Horizontal row of icon action buttons with labels",
+      supportsTheme: true,
+    },
   },
   InfoCardGrid: {
     component: InfoCardGrid as RegistryItem["component"],
     schema: InfoCardGridSchema,
     example: section("sec_1", "InfoCardGrid", {
       cards: [
-        { title: "Credit card", value: "R$ 2,500.00", footnote: "Available limit", action: { label: "Details", href: "/card" } },
-        { title: "Invoice", value: "R$ 189.50", footnote: "Due Mar 15", action: { label: "Pay now", href: "/invoice" } },
-        { title: "Loans", description: "Pre-approved offer", action: { label: "Check rates", href: "/loans" } },
-        { title: "Insurance", description: "Protect what matters", action: { label: "Learn more", href: "/insurance" } },
+        {
+          title: "Credit card",
+          value: "R$ 2,500.00",
+          footnote: "Available limit",
+          action: { label: "Details", href: "/card" },
+        },
+        {
+          title: "Invoice",
+          value: "R$ 189.50",
+          footnote: "Due Mar 15",
+          action: { label: "Pay now", href: "/invoice" },
+        },
+        {
+          title: "Loans",
+          description: "Pre-approved offer",
+          action: { label: "Check rates", href: "/loans" },
+        },
+        {
+          title: "Insurance",
+          description: "Protect what matters",
+          action: { label: "Learn more", href: "/insurance" },
+        },
       ],
     }),
-    metadata: { name: "Info Card Grid", description: "Two-column grid of summary cards with optional values and actions", supportsTheme: true },
+    metadata: {
+      name: "Info Card Grid",
+      description: "Two-column grid of summary cards with optional values and actions",
+      supportsTheme: true,
+    },
   },
   TransactionList: {
     component: TransactionList as RegistryItem["component"],
@@ -348,15 +548,43 @@ export const registry: Record<string, RegistryItem> = {
     example: section("sec_1", "TransactionList", {
       heading: "Recent activity",
       transactions: [
-        { title: "Coffee Shop", subtitle: "Debit card", amount: "- R$ 12.50", timestamp: "Today", type: "payment" },
-        { title: "Salary deposit", subtitle: "TED received", amount: "+ R$ 5,200.00", timestamp: "Mar 10", type: "received" },
-        { title: "Transfer to Ana", subtitle: "Pix", amount: "- R$ 150.00", timestamp: "Mar 9", type: "sent" },
-        { title: "Investment fund", subtitle: "CDB 120%", amount: "- R$ 500.00", timestamp: "Mar 8", type: "investment" },
+        {
+          title: "Coffee Shop",
+          subtitle: "Debit card",
+          amount: "- R$ 12.50",
+          timestamp: "Today",
+          type: "payment",
+        },
+        {
+          title: "Salary deposit",
+          subtitle: "TED received",
+          amount: "+ R$ 5,200.00",
+          timestamp: "Mar 10",
+          type: "received",
+        },
+        {
+          title: "Transfer to Ana",
+          subtitle: "Pix",
+          amount: "- R$ 150.00",
+          timestamp: "Mar 9",
+          type: "sent",
+        },
+        {
+          title: "Investment fund",
+          subtitle: "CDB 120%",
+          amount: "- R$ 500.00",
+          timestamp: "Mar 8",
+          type: "investment",
+        },
       ],
       showAllLabel: "View all transactions",
       showAllHref: "/transactions",
     }),
-    metadata: { name: "Transaction List", description: "List of transactions with icons, amounts, and timestamps", supportsTheme: true },
+    metadata: {
+      name: "Transaction List",
+      description: "List of transactions with icons, amounts, and timestamps",
+      supportsTheme: true,
+    },
   },
   BottomTabBar: {
     component: BottomTabBar as RegistryItem["component"],
@@ -370,7 +598,11 @@ export const registry: Record<string, RegistryItem> = {
         { icon: "grid", label: "Products", href: "/products" },
       ],
     }),
-    metadata: { name: "Bottom Tab Bar", description: "Bottom navigation bar with icon tabs", supportsTheme: true },
+    metadata: {
+      name: "Bottom Tab Bar",
+      description: "Bottom navigation bar with icon tabs",
+      supportsTheme: true,
+    },
   },
   BottomSheet: {
     component: BottomSheet as RegistryItem["component"],
@@ -387,7 +619,11 @@ export const registry: Record<string, RegistryItem> = {
       action: { label: "Pay now", href: "/pay" },
       secondaryAction: { label: "Cancel", href: "/cancel" },
     }),
-    metadata: { name: "Bottom Sheet", description: "Mobile bottom sheet overlay panel with items and actions", supportsTheme: true },
+    metadata: {
+      name: "Bottom Sheet",
+      description: "Mobile bottom sheet overlay panel with items and actions",
+      supportsTheme: true,
+    },
   },
 };
 

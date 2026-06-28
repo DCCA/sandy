@@ -15,7 +15,7 @@ export function PricingTable({ heading, tiers }: PricingTableProps) {
         style={{
           display: "grid",
           gap: "var(--sandy-spacing-md)",
-          gridTemplateColumns: `repeat(${Math.min(tiers.length, 3)}, 1fr)`,
+          gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))",
         }}
       >
         {tiers.map((tier, i) => (
@@ -31,6 +31,8 @@ export function PricingTable({ heading, tiers }: PricingTableProps) {
               display: "flex",
               flexDirection: "column",
               border: tier.highlighted ? "none" : "1px solid var(--sandy-color-border)",
+              minWidth: 0,
+              overflowWrap: "break-word",
             }}
           >
             <h3
@@ -40,22 +42,30 @@ export function PricingTable({ heading, tiers }: PricingTableProps) {
               {tier.name}
             </h3>
             <div className="mb-3">
-              <span className="text-2xl" style={{ fontWeight: "var(--sandy-font-heading-weight)" } as React.CSSProperties}>
+              <span
+                className="text-2xl"
+                style={{ fontWeight: "var(--sandy-font-heading-weight)" } as React.CSSProperties}
+              >
                 {tier.price}
               </span>
               {tier.period && (
-                <span
-                  className="text-sm ml-1"
-                  style={{ opacity: 0.7 }}
-                >
+                <span className="text-sm ml-1" style={{ opacity: 0.7 }}>
                   /{tier.period}
                 </span>
               )}
             </div>
-            <ul className="list-none p-0 m-0 mb-4 flex-1" style={{ display: "flex", flexDirection: "column", gap: "var(--sandy-spacing-sm)" }}>
+            <ul
+              className="list-none p-0 m-0 mb-4 flex-1"
+              style={{ display: "flex", flexDirection: "column", gap: "var(--sandy-spacing-sm)" }}
+            >
               {tier.features.map((feature, fi) => (
                 <li key={fi} className="text-sm flex items-start gap-2">
-                  <span style={{ color: tier.highlighted ? "#fff" : "var(--sandy-color-primary)", flexShrink: 0 }}>
+                  <span
+                    style={{
+                      color: tier.highlighted ? "#fff" : "var(--sandy-color-primary)",
+                      flexShrink: 0,
+                    }}
+                  >
                     &#10003;
                   </span>
                   {feature}
@@ -64,6 +74,7 @@ export function PricingTable({ heading, tiers }: PricingTableProps) {
             </ul>
             <a
               href={tier.cta.href}
+              aria-label={`${tier.cta.label} — ${tier.name}`}
               className="inline-block text-center px-4 py-2 text-sm font-medium"
               style={{
                 backgroundColor: tier.highlighted ? "#fff" : "var(--sandy-color-primary)",

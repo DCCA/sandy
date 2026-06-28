@@ -1,12 +1,5 @@
 export type PrimitiveType =
-  | "heading"
-  | "paragraph"
-  | "button"
-  | "image"
-  | "spacer"
-  | "divider"
-  | "container"
-  | "badge";
+  "heading" | "paragraph" | "button" | "image" | "spacer" | "divider" | "container" | "badge";
 
 export type PrimitiveNode = {
   id: string;

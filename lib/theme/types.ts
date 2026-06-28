@@ -13,6 +13,7 @@ export type ThemeTokens = {
     info: string;
     surface: string;
     overlay: string;
+    focusRing: string;
   };
   radius: {
     sm: number;
@@ -67,10 +68,17 @@ export type ThemeTokens = {
   };
 };
 
+export type ThemeMode = "light" | "dark";
+
 export type ThemePreset = {
   id: string;
   name: string;
+  /** Default token set for this brand. */
   tokens: ThemeTokens;
+  /** Optional overrides applied when the page requests `mode: "light"`. */
+  light?: DeepPartial<ThemeTokens>;
+  /** Optional overrides applied when the page requests `mode: "dark"`. */
+  dark?: DeepPartial<ThemeTokens>;
 };
 
 export type DeepPartial<T> = {

@@ -20,7 +20,9 @@ type BuilderBindingsProps = {
 };
 
 // Get a flat list of bindable property paths from node tree
-function getBindableTargets(nodes: PrimitiveNode[]): { label: string; path: (string | number)[]; nodeId: string }[] {
+function getBindableTargets(
+  nodes: PrimitiveNode[],
+): { label: string; path: (string | number)[]; nodeId: string }[] {
   const targets: { label: string; path: (string | number)[]; nodeId: string }[] = [];
 
   function walk(nodeList: PrimitiveNode[], prefix: (string | number)[]) {
@@ -62,25 +64,26 @@ export function BuilderBindings({ bindings, nodes, onChange }: BuilderBindingsPr
     onChange([...bindings, newBinding]);
   }, [bindings, onChange]);
 
-  const handleRemove = useCallback((idx: number) => {
-    onChange(bindings.filter((_, i) => i !== idx));
-  }, [bindings, onChange]);
+  const handleRemove = useCallback(
+    (idx: number) => {
+      onChange(bindings.filter((_, i) => i !== idx));
+    },
+    [bindings, onChange],
+  );
 
-  const handleUpdate = useCallback((idx: number, partial: Partial<PropBinding>) => {
-    const updated = bindings.map((b, i) => (i === idx ? { ...b, ...partial } : b));
-    onChange(updated);
-  }, [bindings, onChange]);
+  const handleUpdate = useCallback(
+    (idx: number, partial: Partial<PropBinding>) => {
+      const updated = bindings.map((b, i) => (i === idx ? { ...b, ...partial } : b));
+      onChange(updated);
+    },
+    [bindings, onChange],
+  );
 
   return (
     <div>
       <div className="flex items-center justify-between mb-2">
         <span className="text-xs font-semibold text-muted-foreground">Prop Bindings</span>
-        <Button
-          variant="ghost"
-          size="sm"
-          className="h-6 px-2 text-xs gap-1"
-          onClick={handleAdd}
-        >
+        <Button variant="ghost" size="sm" className="h-6 px-2 text-xs gap-1" onClick={handleAdd}>
           <Plus className="size-3" />
           Add
         </Button>
@@ -150,7 +153,9 @@ export function BuilderBindings({ bindings, nodes, onChange }: BuilderBindingsPr
                 if (!v) return;
                 try {
                   handleUpdate(idx, { targetPath: JSON.parse(v) });
-                } catch { /* ignore parse errors */ }
+                } catch {
+                  /* ignore parse errors */
+                }
               }}
             >
               <SelectTrigger className="h-6 text-[10px]">

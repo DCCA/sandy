@@ -13,7 +13,10 @@ export function Testimonial({ quote, author, role, avatarUrl, rating }: Testimon
       }}
     >
       {rating != null && (
-        <div style={{ marginBottom: "var(--sandy-spacing-sm)", fontSize: "var(--sandy-font-size-lg)" }} aria-label={`${rating} out of 5 stars`}>
+        <div
+          style={{ marginBottom: "var(--sandy-spacing-sm)", fontSize: "var(--sandy-font-size-lg)" }}
+          aria-label={`${rating} out of 5 stars`}
+        >
           {Array.from({ length: 5 }, (_, i) => (
             <span key={i} style={{ opacity: i < rating ? 1 : 0.25 }}>
               &#9733;
@@ -22,18 +25,28 @@ export function Testimonial({ quote, author, role, avatarUrl, rating }: Testimon
         </div>
       )}
       <blockquote
-        style={{
-          margin: 0,
-          marginBottom: "var(--sandy-spacing-sm)",
-          fontSize: "var(--sandy-font-size-md)",
-          fontStyle: "italic",
-          lineHeight: "var(--sandy-line-height-relaxed)",
-          fontWeight: "var(--sandy-font-body-weight)",
-        } as React.CSSProperties}
+        style={
+          {
+            margin: 0,
+            marginBottom: "var(--sandy-spacing-sm)",
+            fontSize: "var(--sandy-font-size-md)",
+            fontStyle: "italic",
+            lineHeight: "var(--sandy-line-height-relaxed)",
+            fontWeight: "var(--sandy-font-body-weight)",
+            overflowWrap: "break-word",
+          } as React.CSSProperties
+        }
       >
         &ldquo;{quote}&rdquo;
       </blockquote>
-      <div style={{ display: "flex", alignItems: "center", gap: "var(--sandy-spacing-sm)" }}>
+      <cite
+        style={{
+          display: "flex",
+          alignItems: "center",
+          gap: "var(--sandy-spacing-sm)",
+          fontStyle: "normal",
+        }}
+      >
         {avatarUrl && (
           // eslint-disable-next-line @next/next/no-img-element
           <img
@@ -45,25 +58,30 @@ export function Testimonial({ quote, author, role, avatarUrl, rating }: Testimon
               borderRadius: "var(--sandy-radius-full)",
               objectFit: "cover",
               border: "var(--sandy-border-thick) solid var(--sandy-color-border)",
+              flexShrink: 0,
             }}
           />
         )}
-        <div>
+        <div style={{ minWidth: 0, overflowWrap: "break-word" }}>
           <div
-            style={{
-              fontSize: "var(--sandy-font-size-sm)",
-              fontWeight: "var(--sandy-font-heading-weight)",
-            } as React.CSSProperties}
+            style={
+              {
+                fontSize: "var(--sandy-font-size-sm)",
+                fontWeight: "var(--sandy-font-heading-weight)",
+              } as React.CSSProperties
+            }
           >
             {author}
           </div>
           {role && (
-            <div style={{ fontSize: "var(--sandy-font-size-xs)", color: "var(--sandy-color-muted)" }}>
+            <div
+              style={{ fontSize: "var(--sandy-font-size-xs)", color: "var(--sandy-color-muted)" }}
+            >
               {role}
             </div>
           )}
         </div>
-      </div>
+      </cite>
     </div>
   );
 }

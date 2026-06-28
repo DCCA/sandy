@@ -11,10 +11,10 @@ export const FooterSchema = z.object({
             z.object({
               label: z.string(),
               href: safeHref,
-            })
+            }),
           )
           .min(1),
-      })
+      }),
     )
     .min(1)
     .max(5),

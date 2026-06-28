@@ -33,13 +33,17 @@ export function AvatarGroup({ avatars, label, maxVisible }: AvatarGroupProps) {
         {overflow > 0 && (
           <div
             className="size-10 rounded-full flex items-center justify-center text-xs"
-            style={{
-              backgroundColor: "var(--sandy-color-secondary)",
-              border: "2px solid var(--sandy-color-background)",
-              marginLeft: "-0.5rem",
-              fontWeight: "var(--sandy-font-heading-weight)",
-              color: "var(--sandy-color-muted)",
-            } as React.CSSProperties}
+            role="img"
+            aria-label={`${overflow} more`}
+            style={
+              {
+                backgroundColor: "var(--sandy-color-secondary)",
+                border: "2px solid var(--sandy-color-background)",
+                marginLeft: "-0.5rem",
+                fontWeight: "var(--sandy-font-heading-weight)",
+                color: "var(--sandy-color-muted)",
+              } as React.CSSProperties
+            }
           >
             +{overflow}
           </div>

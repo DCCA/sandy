@@ -46,7 +46,7 @@ export type Envelope = {
   };
 };
 
-export type Viewport = "mobile";
+export type Viewport = "mobile" | "tablet" | "desktop";
 
 export type SandboxError = {
   type: "parse" | "validation" | "runtime";
@@ -62,6 +62,26 @@ export type ValidatedSection = {
   props: Record<string, unknown>;
 };
 
+/**
+ * An ordered, render-ready view of a page's sections. Valid sections render
+ * normally; invalid/unknown sections degrade to an in-place placeholder instead
+ * of disappearing (server-driven-UI "fallback" pattern), so page order and
+ * context are preserved.
+ */
+export type SectionRenderItem =
+  | { kind: "ok"; section: ValidatedSection }
+  | { kind: "error"; id: string; componentName: string; messages: string[] };
+
 export type PageValidationResult =
-  | { success: true; sections: ValidatedSection[]; errors: SandboxError[] }
-  | { success: false; sections: ValidatedSection[]; errors: SandboxError[] };
+  | {
+      success: true;
+      sections: ValidatedSection[];
+      renderItems: SectionRenderItem[];
+      errors: SandboxError[];
+    }
+  | {
+      success: false;
+      sections: ValidatedSection[];
+      renderItems: SectionRenderItem[];
+      errors: SandboxError[];
+    };

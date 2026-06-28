@@ -142,3 +142,14 @@
   background-image: radial-gradient(circle, oklch(0.5 0 0 / 6%) 1px, transparent 1px);
   background-size: 16px 16px;
 }
+
+/*
+ * Keyboard focus styling for rendered preview content. Registry components use
+ * inline styles (which can't express :focus-visible), so a single scoped rule
+ * gives every focusable element a themeable focus ring.
+ */
+.sandy-preview :where(a, button, input, select, textarea, [tabindex]):focus-visible {
+  outline: 2px solid var(--sandy-color-focus-ring, #0066cc);
+  outline-offset: 2px;
+  border-radius: 2px;
+}

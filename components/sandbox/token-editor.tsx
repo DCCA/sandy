@@ -1,9 +1,11 @@
 "use client";
 
-import { useState, useCallback } from "react";
-import { Paintbrush, ChevronDown, ChevronRight, RotateCcw } from "lucide-react";
+import { useState, useCallback, useRef } from "react";
+import { Paintbrush, ChevronDown, ChevronRight, RotateCcw, Download, Upload } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import type { ThemeTokens, DeepPartial } from "@/lib/theme/types";
+import { tokensToDTCGString, dtcgToOverrides } from "@/lib/theme/dtcg";
+import { downloadJSON } from "@/lib/export/json";
 
 type TokenEditorProps = {
   tokens: ThemeTokens;
@@ -54,13 +56,17 @@ const FONT_SIZE_LABELS: { key: keyof ThemeTokens["typography"]["fontSize"]; labe
   { key: "2xl", label: "2XL" },
 ];
 
-const LINE_HEIGHT_LABELS: { key: keyof ThemeTokens["typography"]["lineHeight"]; label: string }[] = [
-  { key: "tight", label: "Tight" },
-  { key: "normal", label: "Normal" },
-  { key: "relaxed", label: "Relaxed" },
-];
+const LINE_HEIGHT_LABELS: { key: keyof ThemeTokens["typography"]["lineHeight"]; label: string }[] =
+  [
+    { key: "tight", label: "Tight" },
+    { key: "normal", label: "Normal" },
+    { key: "relaxed", label: "Relaxed" },
+  ];
 
-const LETTER_SPACING_LABELS: { key: keyof ThemeTokens["typography"]["letterSpacing"]; label: string }[] = [
+const LETTER_SPACING_LABELS: {
+  key: keyof ThemeTokens["typography"]["letterSpacing"];
+  label: string;
+}[] = [
   { key: "tight", label: "Tight" },
   { key: "normal", label: "Normal" },
   { key: "wide", label: "Wide" },
@@ -107,7 +113,9 @@ function Section({
 function Subsection({ title, children }: { title: string; children: React.ReactNode }) {
   return (
     <div className="space-y-2">
-      <span className="text-[10px] font-medium text-muted-foreground/70 uppercase tracking-wider">{title}</span>
+      <span className="text-[10px] font-medium text-muted-foreground/70 uppercase tracking-wider">
+        {title}
+      </span>
       {children}
     </div>
   );
@@ -134,10 +142,7 @@ function ColorInput({
           className="size-6 rounded cursor-pointer border-0 bg-transparent p-0 [&::-webkit-color-swatch-wrapper]:p-0 [&::-webkit-color-swatch]:rounded [&::-webkit-color-swatch]:border-0"
         />
       ) : (
-        <div
-          className="size-6 rounded border border-border/50"
-          style={{ background: value }}
-        />
+        <div className="size-6 rounded border border-border/50" style={{ background: value }} />
       )}
       <span className="font-mono text-[10px] text-muted-foreground truncate">{value}</span>
     </div>
@@ -208,32 +213,55 @@ export function TokenEditor({
   isOpen,
   onToggle,
 }: TokenEditorProps) {
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  // Export the *effective* tokens (base + current overrides) as a W3C DTCG
+  // .tokens.json file for use in Figma / Style Dictionary / Tokens Studio.
+  const handleExportDTCG = useCallback(() => {
+    downloadJSON(tokensToDTCGString(tokens), "sandy-theme.tokens.json");
+  }, [tokens]);
+
+  const handleImportDTCG = useCallback(
+    async (e: React.ChangeEvent<HTMLInputElement>) => {
+      const file = e.target.files?.[0];
+      e.target.value = ""; // allow re-importing the same file
+      if (!file) return;
+      try {
+        const parsed = dtcgToOverrides(JSON.parse(await file.text()));
+        if (parsed) onOverrideChange(parsed);
+      } catch {
+        // Ignore unreadable/invalid files.
+      }
+    },
+    [onOverrideChange],
+  );
+
   const handleColor = useCallback(
     (key: keyof ThemeTokens["color"], value: string) => {
       onOverrideChange({ ...overrides, color: { ...overrides.color, [key]: value } });
     },
-    [overrides, onOverrideChange]
+    [overrides, onOverrideChange],
   );
 
   const handleRadius = useCallback(
     (key: keyof ThemeTokens["radius"], value: number) => {
       onOverrideChange({ ...overrides, radius: { ...overrides.radius, [key]: value } });
     },
-    [overrides, onOverrideChange]
+    [overrides, onOverrideChange],
   );
 
   const handleSpacing = useCallback(
     (key: keyof ThemeTokens["spacing"], value: number) => {
       onOverrideChange({ ...overrides, spacing: { ...overrides.spacing, [key]: value } });
     },
-    [overrides, onOverrideChange]
+    [overrides, onOverrideChange],
   );
 
   const handleTypography = useCallback(
     (key: "fontFamily" | "headingWeight" | "bodyWeight", value: string | number) => {
       onOverrideChange({ ...overrides, typography: { ...overrides.typography, [key]: value } });
     },
-    [overrides, onOverrideChange]
+    [overrides, onOverrideChange],
   );
 
   const handleFontSize = useCallback(
@@ -244,7 +272,7 @@ export function TokenEditor({
         typography: { ...overrides.typography, fontSize: { ...existing, [key]: value } },
       });
     },
-    [overrides, onOverrideChange]
+    [overrides, onOverrideChange],
   );
 
   const handleLineHeight = useCallback(
@@ -255,7 +283,7 @@ export function TokenEditor({
         typography: { ...overrides.typography, lineHeight: { ...existing, [key]: value } },
       });
     },
-    [overrides, onOverrideChange]
+    [overrides, onOverrideChange],
   );
 
   const handleLetterSpacing = useCallback(
@@ -266,28 +294,28 @@ export function TokenEditor({
         typography: { ...overrides.typography, letterSpacing: { ...existing, [key]: value } },
       });
     },
-    [overrides, onOverrideChange]
+    [overrides, onOverrideChange],
   );
 
   const handleShadow = useCallback(
     (key: keyof ThemeTokens["shadow"], value: string) => {
       onOverrideChange({ ...overrides, shadow: { ...overrides.shadow, [key]: value } });
     },
-    [overrides, onOverrideChange]
+    [overrides, onOverrideChange],
   );
 
   const handleOpacity = useCallback(
     (key: keyof ThemeTokens["opacity"], value: number) => {
       onOverrideChange({ ...overrides, opacity: { ...overrides.opacity, [key]: value } });
     },
-    [overrides, onOverrideChange]
+    [overrides, onOverrideChange],
   );
 
   const handleBorder = useCallback(
     (key: keyof ThemeTokens["border"], value: string) => {
       onOverrideChange({ ...overrides, border: { ...overrides.border, [key]: value } });
     },
-    [overrides, onOverrideChange]
+    [overrides, onOverrideChange],
   );
 
   const hasOverrides = Object.keys(overrides).length > 0;
@@ -312,17 +340,45 @@ export function TokenEditor({
           {/* Header */}
           <div className="flex items-center justify-between px-3 py-2 border-b border-border/30">
             <span className="text-xs font-semibold text-muted-foreground">Design Tokens</span>
-            {hasOverrides && (
+            <div className="flex items-center gap-0.5">
               <Button
                 variant="ghost"
                 size="sm"
                 className="h-5 px-1.5 text-[10px] gap-1"
-                onClick={onReset}
+                onClick={handleExportDTCG}
+                title="Export as W3C DTCG .tokens.json"
               >
-                <RotateCcw className="size-3" />
-                Reset
+                <Download className="size-3" />
+                DTCG
               </Button>
-            )}
+              <Button
+                variant="ghost"
+                size="sm"
+                className="h-5 px-1.5 text-[10px] gap-1"
+                onClick={() => fileInputRef.current?.click()}
+                title="Import DTCG .tokens.json"
+              >
+                <Upload className="size-3" />
+              </Button>
+              {hasOverrides && (
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="h-5 px-1.5 text-[10px] gap-1"
+                  onClick={onReset}
+                >
+                  <RotateCcw className="size-3" />
+                  Reset
+                </Button>
+              )}
+            </div>
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept=".json,application/json"
+              className="hidden"
+              onChange={handleImportDTCG}
+            />
           </div>
 
           {/* Sections */}
@@ -431,9 +487,21 @@ export function TokenEditor({
           </Section>
 
           <Section title="Shadows" defaultOpen={false}>
-            <TextInput label="Small" value={tokens.shadow.sm} onChange={(v) => handleShadow("sm", v)} />
-            <TextInput label="Medium" value={tokens.shadow.md} onChange={(v) => handleShadow("md", v)} />
-            <TextInput label="Large" value={tokens.shadow.lg} onChange={(v) => handleShadow("lg", v)} />
+            <TextInput
+              label="Small"
+              value={tokens.shadow.sm}
+              onChange={(v) => handleShadow("sm", v)}
+            />
+            <TextInput
+              label="Medium"
+              value={tokens.shadow.md}
+              onChange={(v) => handleShadow("md", v)}
+            />
+            <TextInput
+              label="Large"
+              value={tokens.shadow.lg}
+              onChange={(v) => handleShadow("lg", v)}
+            />
           </Section>
 
           <Section title="Opacity" defaultOpen={false}>
@@ -452,8 +520,16 @@ export function TokenEditor({
           </Section>
 
           <Section title="Borders" defaultOpen={false}>
-            <TextInput label="Thin" value={tokens.border.thin} onChange={(v) => handleBorder("thin", v)} />
-            <TextInput label="Thick" value={tokens.border.thick} onChange={(v) => handleBorder("thick", v)} />
+            <TextInput
+              label="Thin"
+              value={tokens.border.thin}
+              onChange={(v) => handleBorder("thin", v)}
+            />
+            <TextInput
+              label="Thick"
+              value={tokens.border.thick}
+              onChange={(v) => handleBorder("thick", v)}
+            />
           </Section>
         </div>
       )}

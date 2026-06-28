@@ -9,7 +9,7 @@ export const BottomTabBarSchema = z.object({
         label: z.string().min(1),
         href: safeHref.optional(),
         active: z.boolean().default(false),
-      })
+      }),
     )
     .min(2)
     .max(5),

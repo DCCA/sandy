@@ -44,16 +44,23 @@ export function CTAButtonGroup({ buttons, alignment = "left" }: CTAButtonGroupPr
         <a
           key={i}
           href={btn.href}
-          style={{
-            ...getButtonStyles(btn.variant ?? "primary"),
-            display: "inline-flex",
-            alignItems: "center",
-            padding: "var(--sandy-spacing-sm) var(--sandy-spacing-lg)",
-            fontSize: "var(--sandy-font-size-sm)",
-            fontWeight: "var(--sandy-font-heading-weight)",
-            borderRadius: "var(--sandy-radius-md)",
-            textDecoration: "none",
-          } as React.CSSProperties}
+          aria-label={btn.label}
+          style={
+            {
+              ...getButtonStyles(btn.variant ?? "primary"),
+              display: "inline-flex",
+              alignItems: "center",
+              justifyContent: "center",
+              padding: "var(--sandy-spacing-sm) var(--sandy-spacing-lg)",
+              fontSize: "var(--sandy-font-size-sm)",
+              fontWeight: "var(--sandy-font-heading-weight)",
+              borderRadius: "var(--sandy-radius-md)",
+              textDecoration: "none",
+              maxWidth: "100%",
+              overflowWrap: "break-word",
+              textAlign: "center",
+            } as React.CSSProperties
+          }
         >
           {btn.label}
         </a>

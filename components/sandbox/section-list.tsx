@@ -59,31 +59,33 @@ export const SectionList = memo(function SectionList({
     setDragOverPosition(e.clientY < midY ? "above" : "below");
   }, []);
 
-  const handleDrop = useCallback((e: React.DragEvent, targetId: string) => {
-    e.preventDefault();
-    const sourceId = dragSourceId.current;
-    if (!sourceId || sourceId === targetId) return;
+  const handleDrop = useCallback(
+    (e: React.DragEvent, targetId: string) => {
+      e.preventDefault();
+      const sourceId = dragSourceId.current;
+      if (!sourceId || sourceId === targetId) return;
 
-    const rect = e.currentTarget.getBoundingClientRect();
-    const midY = rect.top + rect.height / 2;
-    const position = e.clientY < midY ? "above" : "below";
+      const rect = e.currentTarget.getBoundingClientRect();
+      const midY = rect.top + rect.height / 2;
+      const position = e.clientY < midY ? "above" : "below";
 
-    const ids = sections.map((s) => s.id);
-    const fromIdx = ids.indexOf(sourceId);
-    const toIdx = ids.indexOf(targetId);
-    if (fromIdx < 0 || toIdx < 0) return;
+      const ids = sections.map((s) => s.id);
+      const fromIdx = ids.indexOf(sourceId);
+      const toIdx = ids.indexOf(targetId);
+      if (fromIdx < 0 || toIdx < 0) return;
 
-    // Remove source from list, then insert at target position
-    const without = ids.filter((id) => id !== sourceId);
-    const insertIdx = position === "above"
-      ? without.indexOf(targetId)
-      : without.indexOf(targetId) + 1;
-    without.splice(insertIdx, 0, sourceId);
+      // Remove source from list, then insert at target position
+      const without = ids.filter((id) => id !== sourceId);
+      const insertIdx =
+        position === "above" ? without.indexOf(targetId) : without.indexOf(targetId) + 1;
+      without.splice(insertIdx, 0, sourceId);
 
-    onReorder(without);
-    setDragOverId(null);
-    setDragOverPosition(null);
-  }, [sections, onReorder]);
+      onReorder(without);
+      setDragOverId(null);
+      setDragOverPosition(null);
+    },
+    [sections, onReorder],
+  );
 
   if (sections.length === 0) return null;
 
@@ -91,9 +93,7 @@ export const SectionList = memo(function SectionList({
     <div className="border-b border-border/50 shrink-0">
       <div className="px-3 py-1.5 text-xs text-muted-foreground font-mono flex items-center justify-between">
         <span>Sections</span>
-        <span className="px-1.5 py-0.5 rounded bg-muted/50 text-[10px]">
-          {sections.length}
-        </span>
+        <span className="px-1.5 py-0.5 rounded bg-muted/50 text-[10px]">{sections.length}</span>
       </div>
       <div className="px-2 pb-2 space-y-0.5 max-h-[180px] overflow-auto">
         {sections.map((section, i) => {
@@ -112,8 +112,14 @@ export const SectionList = memo(function SectionList({
                   : "bg-muted/20 hover:bg-muted/30"
               }`}
               style={{
-                borderTop: isDropTarget && dragOverPosition === "above" ? "2px solid var(--accent)" : "2px solid transparent",
-                borderBottom: isDropTarget && dragOverPosition === "below" ? "2px solid var(--accent)" : "2px solid transparent",
+                borderTop:
+                  isDropTarget && dragOverPosition === "above"
+                    ? "2px solid var(--accent)"
+                    : "2px solid transparent",
+                borderBottom:
+                  isDropTarget && dragOverPosition === "below"
+                    ? "2px solid var(--accent)"
+                    : "2px solid transparent",
               }}
               onClick={() => onSelect(section.id)}
             >
@@ -126,15 +132,16 @@ export const SectionList = memo(function SectionList({
               <span className="text-[10px] text-muted-foreground/60 font-mono w-4 shrink-0">
                 {i + 1}
               </span>
-              <span className="text-xs font-medium truncate flex-1">
-                {section.component}
-              </span>
+              <span className="text-xs font-medium truncate flex-1">{section.component}</span>
               <div className="flex items-center gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity">
                 <Button
                   variant="ghost"
                   size="sm"
                   className="h-5 w-5 p-0"
-                  onClick={(e) => { e.stopPropagation(); onMove(section.id, "up"); }}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onMove(section.id, "up");
+                  }}
                   disabled={i === 0}
                   title="Move up"
                 >
@@ -144,7 +151,10 @@ export const SectionList = memo(function SectionList({
                   variant="ghost"
                   size="sm"
                   className="h-5 w-5 p-0"
-                  onClick={(e) => { e.stopPropagation(); onMove(section.id, "down"); }}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onMove(section.id, "down");
+                  }}
                   disabled={i === sections.length - 1}
                   title="Move down"
                 >
@@ -154,7 +164,10 @@ export const SectionList = memo(function SectionList({
                   variant="ghost"
                   size="sm"
                   className="h-5 w-5 p-0 text-red-400 hover:text-red-300"
-                  onClick={(e) => { e.stopPropagation(); onDelete(section.id); }}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onDelete(section.id);
+                  }}
                   disabled={sections.length <= 1}
                   title="Delete section"
                 >

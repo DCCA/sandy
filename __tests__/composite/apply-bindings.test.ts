@@ -105,9 +105,7 @@ describe("applyBindings", () => {
         id: "c1",
         type: "container",
         props: {},
-        children: [
-          { id: "h1", type: "heading", props: { text: "Nested Title" } },
-        ],
+        children: [{ id: "h1", type: "heading", props: { text: "Nested Title" } }],
       },
     ];
     const bindings: PropBinding[] = [

@@ -13,7 +13,7 @@ export const EnvelopeSchema = z.object({
   slots: z.record(z.string(), z.unknown()).optional(),
   meta: z
     .object({
-      viewport: z.literal("mobile").optional(),
+      viewport: z.enum(["mobile", "tablet", "desktop"]).optional(),
       locale: z.string().optional(),
     })
     .optional(),
@@ -37,7 +37,7 @@ export const PageSchema = z.object({
     .optional(),
   meta: z
     .object({
-      viewport: z.literal("mobile").optional(),
+      viewport: z.enum(["mobile", "tablet", "desktop"]).optional(),
       locale: z.string().optional(),
     })
     .optional(),

@@ -16,6 +16,7 @@ export function tokensToCSSVars(tokens: ThemeTokens): Record<string, string> {
     "--sandy-color-info": tokens.color.info,
     "--sandy-color-surface": tokens.color.surface,
     "--sandy-color-overlay": tokens.color.overlay,
+    "--sandy-color-focus-ring": tokens.color.focusRing,
 
     // Radius
     "--sandy-radius-sm": `${tokens.radius.sm}px`,

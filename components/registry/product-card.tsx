@@ -11,10 +11,13 @@ export function ProductCard({ title, description, badge, imageUrl, action }: Pro
         boxShadow: "var(--sandy-shadow-sm)",
         fontFamily: "var(--sandy-font-family)",
         overflow: "hidden",
+        overflowWrap: "break-word",
       }}
     >
       {imageUrl ? (
         <div
+          role="img"
+          aria-label={title}
           style={{
             width: "100%",
             height: 160,
@@ -40,13 +43,23 @@ export function ProductCard({ title, description, badge, imageUrl, action }: Pro
         </div>
       )}
       <div style={{ padding: "var(--sandy-spacing-md)" }}>
-        <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: "var(--sandy-spacing-sm)", marginBottom: "var(--sandy-spacing-sm)" }}>
+        <div
+          style={{
+            display: "flex",
+            alignItems: "flex-start",
+            justifyContent: "space-between",
+            gap: "var(--sandy-spacing-sm)",
+            marginBottom: "var(--sandy-spacing-sm)",
+          }}
+        >
           <h3
-            style={{
-              margin: 0,
-              fontSize: "var(--sandy-font-size-lg)",
-              fontWeight: "var(--sandy-font-heading-weight)",
-            } as React.CSSProperties}
+            style={
+              {
+                margin: 0,
+                fontSize: "var(--sandy-font-size-lg)",
+                fontWeight: "var(--sandy-font-heading-weight)",
+              } as React.CSSProperties
+            }
           >
             {title}
           </h3>
@@ -65,18 +78,28 @@ export function ProductCard({ title, description, badge, imageUrl, action }: Pro
             </span>
           )}
         </div>
-        <p style={{ margin: 0, marginBottom: "var(--sandy-spacing-sm)", fontSize: "var(--sandy-font-size-sm)", color: "var(--sandy-color-muted)" }}>
+        <p
+          style={{
+            margin: 0,
+            marginBottom: "var(--sandy-spacing-sm)",
+            fontSize: "var(--sandy-font-size-sm)",
+            color: "var(--sandy-color-muted)",
+          }}
+        >
           {description}
         </p>
         {action && (
           <a
             href={action.href}
-            style={{
-              fontSize: "var(--sandy-font-size-sm)",
-              fontWeight: "var(--sandy-font-heading-weight)",
-              color: "var(--sandy-color-primary)",
-              textDecoration: "none",
-            } as React.CSSProperties}
+            aria-label={`${action.label}: ${title}`}
+            style={
+              {
+                fontSize: "var(--sandy-font-size-sm)",
+                fontWeight: "var(--sandy-font-heading-weight)",
+                color: "var(--sandy-color-primary)",
+                textDecoration: "none",
+              } as React.CSSProperties
+            }
           >
             {action.label} &rarr;
           </a>

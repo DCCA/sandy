@@ -16,9 +16,7 @@ describe("Component smoke tests", () => {
       const props = item.example.props;
 
       // Should not throw
-      const html = renderToStaticMarkup(
-        React.createElement(Component, props),
-      );
+      const html = renderToStaticMarkup(React.createElement(Component, props));
       expect(html).toBeTruthy();
       expect(typeof html).toBe("string");
     });

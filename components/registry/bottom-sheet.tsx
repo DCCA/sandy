@@ -1,13 +1,7 @@
 import type { BottomSheetProps } from "@/lib/schemas/bottom-sheet";
 import { renderIcon } from "@/lib/icons";
 
-export function BottomSheet({
-  title,
-  subtitle,
-  items,
-  action,
-  secondaryAction,
-}: BottomSheetProps) {
+export function BottomSheet({ title, subtitle, items, action, secondaryAction }: BottomSheetProps) {
   return (
     <div
       style={{
@@ -28,6 +22,10 @@ export function BottomSheet({
 
       {/* Sheet panel */}
       <div
+        role="dialog"
+        aria-modal="true"
+        aria-label={title ?? "Bottom sheet"}
+        aria-labelledby={title ? "bottom-sheet-title" : undefined}
         style={{
           flex: 1,
           backgroundColor: "var(--sandy-color-secondary)",
@@ -38,8 +36,9 @@ export function BottomSheet({
           boxShadow: "var(--sandy-shadow-lg)",
         }}
       >
-        {/* Drag handle */}
+        {/* Drag handle (decorative) */}
         <div
+          aria-hidden="true"
           style={{
             display: "flex",
             justifyContent: "center",
@@ -59,12 +58,15 @@ export function BottomSheet({
         {/* Title + Subtitle */}
         {title && (
           <h2
-            style={{
-              margin: 0,
-              fontSize: "var(--sandy-font-size-lg)",
-              fontWeight: "var(--sandy-font-heading-weight)",
-              lineHeight: "var(--sandy-line-height-tight)",
-            } as React.CSSProperties}
+            id="bottom-sheet-title"
+            style={
+              {
+                margin: 0,
+                fontSize: "var(--sandy-font-size-lg)",
+                fontWeight: "var(--sandy-font-heading-weight)",
+                lineHeight: "var(--sandy-line-height-tight)",
+              } as React.CSSProperties
+            }
           >
             {title}
           </h2>
@@ -111,30 +113,46 @@ export function BottomSheet({
                     style={{
                       fontSize: "var(--sandy-font-size-sm)",
                       color: "var(--sandy-color-foreground)",
+                      overflowWrap: "anywhere",
+                      minWidth: 0,
                     }}
                   >
                     {item.label}
                   </span>
                   <span
-                    style={{
-                      display: "flex",
-                      alignItems: "center",
-                      gap: "var(--sandy-spacing-xs)",
-                      fontSize: "var(--sandy-font-size-sm)",
-                      fontWeight: "var(--sandy-font-heading-weight)",
-                      color: item.value
-                        ? "var(--sandy-color-foreground)"
-                        : "var(--sandy-color-muted)",
-                    } as React.CSSProperties}
+                    style={
+                      {
+                        display: "flex",
+                        alignItems: "center",
+                        gap: "var(--sandy-spacing-xs)",
+                        fontSize: "var(--sandy-font-size-sm)",
+                        fontWeight: "var(--sandy-font-heading-weight)",
+                        color: item.value
+                          ? "var(--sandy-color-foreground)"
+                          : "var(--sandy-color-muted)",
+                      } as React.CSSProperties
+                    }
                   >
                     {item.value ?? ""}
-                    {item.href && renderIcon("chevron-right", { size: 16, color: "var(--sandy-color-muted)" })}
+                    {item.href && (
+                      <span aria-hidden="true" style={{ display: "inline-flex" }}>
+                        {renderIcon("chevron-right", {
+                          size: 16,
+                          color: "var(--sandy-color-muted)",
+                        })}
+                      </span>
+                    )}
                   </span>
                 </div>
               );
 
               return item.href ? (
-                <a key={itemKey} href={item.href} style={{ textDecoration: "none", color: "inherit" }}>
+                <a
+                  key={itemKey}
+                  href={item.href}
+                  aria-label={item.value ? `${item.label}: ${item.value}` : item.label}
+                  style={{ textDecoration: "none", color: "inherit" }}
+                >
                   {row}
                 </a>
               ) : (
@@ -160,17 +178,19 @@ export function BottomSheet({
             {action && (
               <a
                 href={action.href}
-                style={{
-                  display: "block",
-                  textAlign: "center",
-                  padding: "var(--sandy-spacing-sm) var(--sandy-spacing-md)",
-                  backgroundColor: "var(--sandy-color-primary)",
-                  color: "#fff",
-                  borderRadius: "var(--sandy-radius-md)",
-                  textDecoration: "none",
-                  fontWeight: "var(--sandy-font-heading-weight)",
-                  fontSize: "var(--sandy-font-size-md)",
-                } as React.CSSProperties}
+                style={
+                  {
+                    display: "block",
+                    textAlign: "center",
+                    padding: "var(--sandy-spacing-sm) var(--sandy-spacing-md)",
+                    backgroundColor: "var(--sandy-color-primary)",
+                    color: "#fff",
+                    borderRadius: "var(--sandy-radius-md)",
+                    textDecoration: "none",
+                    fontWeight: "var(--sandy-font-heading-weight)",
+                    fontSize: "var(--sandy-font-size-md)",
+                  } as React.CSSProperties
+                }
               >
                 {action.label}
               </a>
@@ -178,17 +198,19 @@ export function BottomSheet({
             {secondaryAction && (
               <a
                 href={secondaryAction.href}
-                style={{
-                  display: "block",
-                  textAlign: "center",
-                  padding: "var(--sandy-spacing-sm) var(--sandy-spacing-md)",
-                  backgroundColor: "transparent",
-                  color: "var(--sandy-color-muted)",
-                  borderRadius: "var(--sandy-radius-md)",
-                  textDecoration: "none",
-                  fontWeight: "var(--sandy-font-heading-weight)",
-                  fontSize: "var(--sandy-font-size-sm)",
-                } as React.CSSProperties}
+                style={
+                  {
+                    display: "block",
+                    textAlign: "center",
+                    padding: "var(--sandy-spacing-sm) var(--sandy-spacing-md)",
+                    backgroundColor: "transparent",
+                    color: "var(--sandy-color-muted)",
+                    borderRadius: "var(--sandy-radius-md)",
+                    textDecoration: "none",
+                    fontWeight: "var(--sandy-font-heading-weight)",
+                    fontSize: "var(--sandy-font-size-sm)",
+                  } as React.CSSProperties
+                }
               >
                 {secondaryAction.label}
               </a>

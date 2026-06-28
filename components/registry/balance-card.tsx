@@ -1,13 +1,7 @@
 import type { BalanceCardProps } from "@/lib/schemas/balance-card";
 import { renderIcon } from "@/lib/icons";
 
-export function BalanceCard({
-  label,
-  amount,
-  visible = true,
-  footnote,
-  action,
-}: BalanceCardProps) {
+export function BalanceCard({ label, amount, visible = true, footnote, action }: BalanceCardProps) {
   return (
     <div
       style={{
@@ -30,6 +24,7 @@ export function BalanceCard({
           {label}
         </p>
         <p
+          aria-label={visible ? amount : "Balance hidden"}
           style={
             {
               margin: 0,
@@ -38,6 +33,7 @@ export function BalanceCard({
               fontWeight: "var(--sandy-font-heading-weight)",
               letterSpacing: "var(--sandy-letter-spacing-tight)",
               lineHeight: "var(--sandy-line-height-tight)",
+              overflowWrap: "anywhere",
             } as React.CSSProperties
           }
         >
@@ -62,6 +58,7 @@ export function BalanceCard({
         <a
           href={action.href}
           title={action.label}
+          aria-label={action.label}
           style={{
             width: 40,
             height: 40,

@@ -20,11 +20,7 @@ export function applyBindings(
   return cloned;
 }
 
-function setNestedValue(
-  obj: unknown,
-  path: (string | number)[],
-  value: unknown,
-): void {
+function setNestedValue(obj: unknown, path: (string | number)[], value: unknown): void {
   if (path.length === 0) return;
 
   let current: unknown = obj;

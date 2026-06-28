@@ -77,12 +77,17 @@ export function ExportPanel({ onExportJSON, onExportReact, onExportHTML }: Expor
             <div className="p-2 space-y-1">
               <button
                 className="flex items-center gap-3 w-full px-3 py-2 rounded-md text-sm hover:bg-muted/50 transition-colors text-left"
-                onClick={() => { onExportJSON(); setOpen(false); }}
+                onClick={() => {
+                  onExportJSON();
+                  setOpen(false);
+                }}
               >
                 <Download className="size-4 text-muted-foreground" />
                 <div>
                   <div className="font-medium">Download JSON</div>
-                  <div className="text-xs text-muted-foreground">Save page definition as .json file</div>
+                  <div className="text-xs text-muted-foreground">
+                    Save page definition as .json file
+                  </div>
                 </div>
               </button>
               <button
@@ -92,7 +97,9 @@ export function ExportPanel({ onExportJSON, onExportReact, onExportHTML }: Expor
                 <Code className="size-4 text-muted-foreground" />
                 <div>
                   <div className="font-medium">React JSX</div>
-                  <div className="text-xs text-muted-foreground">Generate a React component file</div>
+                  <div className="text-xs text-muted-foreground">
+                    Generate a React component file
+                  </div>
                 </div>
               </button>
               <button
@@ -102,7 +109,9 @@ export function ExportPanel({ onExportJSON, onExportReact, onExportHTML }: Expor
                 <FileCode className="size-4 text-muted-foreground" />
                 <div>
                   <div className="font-medium">HTML Snapshot</div>
-                  <div className="text-xs text-muted-foreground">Standalone HTML with inlined theme</div>
+                  <div className="text-xs text-muted-foreground">
+                    Standalone HTML with inlined theme
+                  </div>
                 </div>
               </button>
             </div>
@@ -119,7 +128,11 @@ export function ExportPanel({ onExportJSON, onExportReact, onExportHTML }: Expor
                     className="h-6 px-2 gap-1 text-xs"
                     onClick={() => handleCopy(preview.code)}
                   >
-                    {copied ? <Check className="size-3 text-green-400" /> : <Copy className="size-3" />}
+                    {copied ? (
+                      <Check className="size-3 text-green-400" />
+                    ) : (
+                      <Copy className="size-3" />
+                    )}
                     {copied ? "Copied" : "Copy"}
                   </Button>
                   <Button
@@ -141,7 +154,10 @@ export function ExportPanel({ onExportJSON, onExportReact, onExportHTML }: Expor
                     variant="ghost"
                     size="sm"
                     className="h-6 w-6 p-0"
-                    onClick={() => { setPreview(null); setCopied(false); }}
+                    onClick={() => {
+                      setPreview(null);
+                      setCopied(false);
+                    }}
                   >
                     <X className="size-3" />
                   </Button>

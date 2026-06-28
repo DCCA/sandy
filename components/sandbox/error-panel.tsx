@@ -92,7 +92,10 @@ export function ErrorPanel({ errors }: ErrorPanelProps) {
                 <div className="overflow-hidden">
                   <ul className="px-3 pb-2 space-y-0.5">
                     {err.messages.map((msg, j) => (
-                      <li key={j} className="text-[11px] text-muted-foreground font-mono leading-relaxed">
+                      <li
+                        key={j}
+                        className="text-[11px] text-muted-foreground font-mono leading-relaxed"
+                      >
                         {msg}
                       </li>
                     ))}

@@ -1,6 +1,7 @@
 "use client";
 
 import type { PrimitiveNode } from "@/lib/composite/types";
+import { primitiveSchemas } from "@/lib/composite/primitives";
 
 const MAX_DEPTH = 2;
 
@@ -22,17 +23,45 @@ const gapSizes: Record<string, string> = {
 const paddingSizes: Record<string, string> = gapSizes;
 
 const headingStyles: Record<string, React.CSSProperties> = {
-  h1: { fontSize: "2rem", fontWeight: "var(--sandy-typography-headingWeight, 700)" as unknown as number, lineHeight: 1.2 },
-  h2: { fontSize: "1.5rem", fontWeight: "var(--sandy-typography-headingWeight, 700)" as unknown as number, lineHeight: 1.3 },
-  h3: { fontSize: "1.25rem", fontWeight: "var(--sandy-typography-headingWeight, 700)" as unknown as number, lineHeight: 1.4 },
-  h4: { fontSize: "1rem", fontWeight: "var(--sandy-typography-headingWeight, 700)" as unknown as number, lineHeight: 1.5 },
+  h1: {
+    fontSize: "2rem",
+    fontWeight: "var(--sandy-typography-headingWeight, 700)" as unknown as number,
+    lineHeight: 1.2,
+  },
+  h2: {
+    fontSize: "1.5rem",
+    fontWeight: "var(--sandy-typography-headingWeight, 700)" as unknown as number,
+    lineHeight: 1.3,
+  },
+  h3: {
+    fontSize: "1.25rem",
+    fontWeight: "var(--sandy-typography-headingWeight, 700)" as unknown as number,
+    lineHeight: 1.4,
+  },
+  h4: {
+    fontSize: "1rem",
+    fontWeight: "var(--sandy-typography-headingWeight, 700)" as unknown as number,
+    lineHeight: 1.5,
+  },
 };
 
 const badgeVariants: Record<string, React.CSSProperties> = {
-  default: { backgroundColor: "var(--sandy-color-muted, #f3f4f6)", color: "var(--sandy-color-foreground, #111)" },
-  success: { backgroundColor: "#dcfce7", color: "#166534" },
-  warning: { backgroundColor: "#fef9c3", color: "#854d0e" },
-  error: { backgroundColor: "#fce8e8", color: "#991b1b" },
+  default: {
+    backgroundColor: "var(--sandy-color-muted, #f3f4f6)",
+    color: "var(--sandy-color-foreground, #111)",
+  },
+  success: {
+    backgroundColor: "color-mix(in srgb, var(--sandy-color-success, #16a34a) 15%, white)",
+    color: "var(--sandy-color-success, #166534)",
+  },
+  warning: {
+    backgroundColor: "color-mix(in srgb, var(--sandy-color-warning, #ca8a04) 15%, white)",
+    color: "var(--sandy-color-warning, #854d0e)",
+  },
+  error: {
+    backgroundColor: "color-mix(in srgb, var(--sandy-color-error, #dc2626) 15%, white)",
+    color: "var(--sandy-color-error, #991b1b)",
+  },
 };
 
 const backgroundMap: Record<string, string> = {
@@ -222,32 +251,55 @@ function ContainerRenderer({
   );
 }
 
+function PrimitiveError({ type }: { type: string }) {
+  return (
+    <div
+      style={{
+        padding: "8px 12px",
+        borderRadius: "var(--sandy-radius-sm, 4px)",
+        border: "1px dashed #f59e0b",
+        color: "#b45309",
+        backgroundColor: "#fffbeb",
+        fontSize: "0.75rem",
+        fontFamily: "monospace",
+      }}
+    >
+      Invalid “{type}” primitive
+    </div>
+  );
+}
+
 export function NodeRenderer({ node, depth = 0 }: { node: PrimitiveNode; depth?: number }) {
   if (depth > MAX_DEPTH) return null;
 
+  // Validate (and apply defaults to) the node's props at render time so a
+  // corrupted/hand-edited definition degrades to a placeholder instead of
+  // rendering with unsafe coercions.
+  const schema = primitiveSchemas[node.type];
+  if (!schema) return null;
+  const parsed = schema.safeParse(node.props);
+  if (!parsed.success) {
+    return <PrimitiveError type={node.type} />;
+  }
+  const props = parsed.data as Record<string, unknown>;
+
   switch (node.type) {
     case "heading":
-      return <HeadingRenderer props={node.props} />;
+      return <HeadingRenderer props={props} />;
     case "paragraph":
-      return <ParagraphRenderer props={node.props} />;
+      return <ParagraphRenderer props={props} />;
     case "button":
-      return <ButtonRenderer props={node.props} />;
+      return <ButtonRenderer props={props} />;
     case "image":
-      return <ImageRenderer props={node.props} />;
+      return <ImageRenderer props={props} />;
     case "spacer":
-      return <SpacerRenderer props={node.props} />;
+      return <SpacerRenderer props={props} />;
     case "divider":
-      return <DividerRenderer props={node.props} />;
+      return <DividerRenderer props={props} />;
     case "badge":
-      return <BadgeRenderer props={node.props} />;
+      return <BadgeRenderer props={props} />;
     case "container":
-      return (
-        <ContainerRenderer
-          props={node.props}
-          nodeChildren={node.children}
-          depth={depth}
-        />
-      );
+      return <ContainerRenderer props={props} nodeChildren={node.children} depth={depth} />;
     default:
       return null;
   }

@@ -203,17 +203,15 @@ function FieldRenderer({
       return (
         <ObjectGroup
           field={field}
-          value={typeof value === "object" && value !== null ? (value as Record<string, unknown>) : {}}
+          value={
+            typeof value === "object" && value !== null ? (value as Record<string, unknown>) : {}
+          }
           onChange={onChange}
         />
       );
     case "array":
       return (
-        <ArrayField
-          field={field}
-          value={Array.isArray(value) ? value : []}
-          onChange={onChange}
-        />
+        <ArrayField field={field} value={Array.isArray(value) ? value : []} onChange={onChange} />
       );
   }
 }
@@ -312,13 +310,12 @@ function ArrayField({
       }
     >
       {value.map((item, idx) => {
-        const itemObj = typeof item === "object" && item !== null ? (item as Record<string, unknown>) : {};
+        const itemObj =
+          typeof item === "object" && item !== null ? (item as Record<string, unknown>) : {};
         return (
           <div key={idx} className="relative border border-border/20 rounded-md p-2 space-y-2">
             <div className="flex items-center justify-between mb-1">
-              <span className="text-[10px] font-mono text-muted-foreground/60">
-                #{idx + 1}
-              </span>
+              <span className="text-[10px] font-mono text-muted-foreground/60">#{idx + 1}</span>
               {canRemove && (
                 <Button
                   variant="ghost"
@@ -370,9 +367,7 @@ export function PropertyEditor({ section, registryItem, onChange }: PropertyEdit
         <div className="text-xs font-semibold text-muted-foreground">
           {registryItem.metadata.name}
         </div>
-        <div className="text-[10px] text-muted-foreground/60 font-mono">
-          {section.id}
-        </div>
+        <div className="text-[10px] text-muted-foreground/60 font-mono">{section.id}</div>
       </div>
       {fields.map((field) => (
         <div key={field.key}>

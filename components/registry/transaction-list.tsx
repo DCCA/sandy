@@ -2,10 +2,26 @@ import type { TransactionListProps } from "@/lib/schemas/transaction-list";
 import { renderIcon } from "@/lib/icons";
 
 const typeConfig: Record<string, { icon: string; bgColor: string; fgColor: string }> = {
-  sent: { icon: "arrow-up-right", bgColor: "var(--sandy-color-info)", fgColor: "var(--sandy-color-info)" },
-  received: { icon: "arrow-down-left", bgColor: "var(--sandy-color-success)", fgColor: "var(--sandy-color-success)" },
-  payment: { icon: "arrow-right", bgColor: "var(--sandy-color-info)", fgColor: "var(--sandy-color-info)" },
-  investment: { icon: "trending-up", bgColor: "var(--sandy-color-success)", fgColor: "var(--sandy-color-success)" },
+  sent: {
+    icon: "arrow-up-right",
+    bgColor: "var(--sandy-color-info)",
+    fgColor: "var(--sandy-color-info)",
+  },
+  received: {
+    icon: "arrow-down-left",
+    bgColor: "var(--sandy-color-success)",
+    fgColor: "var(--sandy-color-success)",
+  },
+  payment: {
+    icon: "arrow-right",
+    bgColor: "var(--sandy-color-info)",
+    fgColor: "var(--sandy-color-info)",
+  },
+  investment: {
+    icon: "trending-up",
+    bgColor: "var(--sandy-color-success)",
+    fgColor: "var(--sandy-color-success)",
+  },
 };
 
 export function TransactionList({
@@ -47,9 +63,15 @@ export function TransactionList({
           const config = typeConfig[tx.type ?? "payment"] ?? typeConfig.payment;
           const isReceived = tx.type === "received";
 
+          const rowLabel = [tx.title, tx.subtitle, tx.amount, tx.timestamp]
+            .filter(Boolean)
+            .join(", ");
+
           return (
             <div
               key={i}
+              role="group"
+              aria-label={rowLabel}
               style={{
                 display: "flex",
                 alignItems: "center",
@@ -58,6 +80,7 @@ export function TransactionList({
             >
               {/* Icon circle */}
               <div
+                aria-hidden="true"
                 style={{
                   width: 48,
                   height: 48,
@@ -81,6 +104,7 @@ export function TransactionList({
                       margin: 0,
                       fontSize: "var(--sandy-font-size-sm)",
                       fontWeight: "var(--sandy-font-heading-weight)",
+                      overflowWrap: "anywhere",
                     } as React.CSSProperties
                   }
                 >
@@ -137,18 +161,20 @@ export function TransactionList({
       {showAllLabel && showAllHref && (
         <a
           href={showAllHref}
-          style={{
-            display: "block",
-            textAlign: "center",
-            marginTop: "var(--sandy-spacing-lg)",
-            padding: "var(--sandy-spacing-sm) var(--sandy-spacing-md)",
-            backgroundColor: "var(--sandy-color-surface)",
-            borderRadius: "var(--sandy-radius-lg)",
-            color: "var(--sandy-color-primary)",
-            textDecoration: "none",
-            fontWeight: "var(--sandy-font-heading-weight)",
-            fontSize: "var(--sandy-font-size-sm)",
-          } as React.CSSProperties}
+          style={
+            {
+              display: "block",
+              textAlign: "center",
+              marginTop: "var(--sandy-spacing-lg)",
+              padding: "var(--sandy-spacing-sm) var(--sandy-spacing-md)",
+              backgroundColor: "var(--sandy-color-surface)",
+              borderRadius: "var(--sandy-radius-lg)",
+              color: "var(--sandy-color-primary)",
+              textDecoration: "none",
+              fontWeight: "var(--sandy-font-heading-weight)",
+              fontSize: "var(--sandy-font-size-sm)",
+            } as React.CSSProperties
+          }
         >
           {showAllLabel}
         </a>

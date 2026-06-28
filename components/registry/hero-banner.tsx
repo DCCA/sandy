@@ -2,7 +2,7 @@ import type { HeroBannerProps } from "@/lib/schemas/hero-banner";
 
 export function HeroBanner({ title, subtitle, cta, align = "left" }: HeroBannerProps) {
   return (
-    <div
+    <section
       style={{
         backgroundColor: "var(--sandy-color-primary)",
         color: "#fff",
@@ -10,28 +10,33 @@ export function HeroBanner({ title, subtitle, cta, align = "left" }: HeroBannerP
         fontFamily: "var(--sandy-font-family)",
         textAlign: align,
         padding: "var(--sandy-spacing-lg)",
+        overflowWrap: "break-word",
       }}
     >
       <h1
-        style={{
-          margin: 0,
-          marginBottom: "var(--sandy-spacing-sm)",
-          fontSize: "var(--sandy-font-size-2xl)",
-          fontWeight: "var(--sandy-font-heading-weight)",
-          lineHeight: "var(--sandy-line-height-tight)",
-        } as React.CSSProperties}
+        style={
+          {
+            margin: 0,
+            marginBottom: "var(--sandy-spacing-sm)",
+            fontSize: "var(--sandy-font-size-2xl)",
+            fontWeight: "var(--sandy-font-heading-weight)",
+            lineHeight: "var(--sandy-line-height-tight)",
+          } as React.CSSProperties
+        }
       >
         {title}
       </h1>
       {subtitle && (
         <p
-          style={{
-            margin: 0,
-            marginBottom: "var(--sandy-spacing-md)",
-            fontSize: "var(--sandy-font-size-lg)",
-            fontWeight: "var(--sandy-font-body-weight)",
-            opacity: 0.9,
-          } as React.CSSProperties}
+          style={
+            {
+              margin: 0,
+              marginBottom: "var(--sandy-spacing-md)",
+              fontSize: "var(--sandy-font-size-lg)",
+              fontWeight: "var(--sandy-font-body-weight)",
+              opacity: 0.9,
+            } as React.CSSProperties
+          }
         >
           {subtitle}
         </p>
@@ -39,20 +44,23 @@ export function HeroBanner({ title, subtitle, cta, align = "left" }: HeroBannerP
       {cta && (
         <a
           href={cta.href}
-          style={{
-            display: "inline-block",
-            padding: "var(--sandy-spacing-sm) var(--sandy-spacing-lg)",
-            fontSize: "var(--sandy-font-size-sm)",
-            fontWeight: "var(--sandy-font-heading-weight)",
-            backgroundColor: "#fff",
-            color: "var(--sandy-color-primary)",
-            borderRadius: "var(--sandy-radius-md)",
-            textDecoration: "none",
-          } as React.CSSProperties}
+          aria-label={`${cta.label}: ${title}`}
+          style={
+            {
+              display: "inline-block",
+              padding: "var(--sandy-spacing-sm) var(--sandy-spacing-lg)",
+              fontSize: "var(--sandy-font-size-sm)",
+              fontWeight: "var(--sandy-font-heading-weight)",
+              backgroundColor: "#fff",
+              color: "var(--sandy-color-primary)",
+              borderRadius: "var(--sandy-radius-md)",
+              textDecoration: "none",
+            } as React.CSSProperties
+          }
         >
           {cta.label}
         </a>
       )}
-    </div>
+    </section>
   );
 }
