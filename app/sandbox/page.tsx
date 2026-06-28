@@ -38,6 +38,10 @@ import { generateHTML } from "@/lib/export/html";
 import type { SandboxError, Page, Section } from "@/lib/registry/types";
 import type { DeepPartial, ThemeTokens } from "@/lib/theme/types";
 
+// Conservative ceiling for the encoded state we put in the URL. Browsers and
+// many servers/CDNs choke well before this, so we stop syncing before then.
+const MAX_URL_STATE_LENGTH = 8000;
+
 function createCompositeComponent(def: CompositeDefinition) {
   return function CompositeComp(props: Record<string, unknown>) {
     return <CompositeRenderer definition={def} props={props} />;
@@ -90,6 +94,7 @@ function SandboxContent() {
   const [composites, setComposites] = useState<CompositeDefinition[]>([]);
   const [builderOpen, setBuilderOpen] = useState(false);
   const [editingComposite, setEditingComposite] = useState<CompositeDefinition | null>(null);
+  const [urlWarning, setUrlWarning] = useState<string | null>(null);
   const previewRef = useRef<HTMLDivElement>(null);
 
   // Load composites from localStorage on mount
@@ -103,12 +108,18 @@ function SandboxContent() {
   }, []);
 
   // Parse, validate, derive state
-  const { errors, validatedSections, parsedSections, parsedTheme } = useMemo(() => {
+  const { errors, validatedSections, renderItems, parsedSections, parsedTheme } = useMemo(() => {
     const errs: SandboxError[] = [];
     const parsed = parseJSON(jsonText);
     if (!parsed.success) {
       errs.push({ type: "parse", messages: [parsed.error] });
-      return { errors: errs, validatedSections: [], parsedSections: [], parsedTheme: null };
+      return {
+        errors: errs,
+        validatedSections: [],
+        renderItems: [],
+        parsedSections: [],
+        parsedTheme: null,
+      };
     }
 
     let data = parsed.data;
@@ -124,6 +135,7 @@ function SandboxContent() {
     return {
       errors: pageResult.errors,
       validatedSections: pageResult.sections,
+      renderItems: pageResult.renderItems,
       parsedSections: pageData.sections ?? [],
       parsedTheme: pageData.theme?.brand ?? null,
     };
@@ -164,10 +176,25 @@ function SandboxContent() {
         const encoded = serializeState(data as Page);
         if (encoded) {
           const url = new URL(window.location.href);
-          url.searchParams.set("s", encoded);
           const hasOverrides = Object.keys(tokenOverrides).length > 0;
-          if (hasOverrides) {
-            url.searchParams.set("t", serializeTokens(tokenOverrides));
+          const tokenParam = hasOverrides ? serializeTokens(tokenOverrides) : "";
+          const projectedLength = encoded.length + tokenParam.length;
+
+          // Guard against share links that exceed practical browser URL limits.
+          if (projectedLength > MAX_URL_STATE_LENGTH) {
+            setUrlWarning(
+              "This page is too large to sync to the URL — sharing the link won't include unsaved changes. Use Export instead.",
+            );
+            url.searchParams.delete("s");
+            url.searchParams.delete("t");
+            window.history.replaceState(null, "", url.toString());
+            return;
+          }
+
+          setUrlWarning(null);
+          url.searchParams.set("s", encoded);
+          if (tokenParam) {
+            url.searchParams.set("t", tokenParam);
           } else {
             url.searchParams.delete("t");
           }
@@ -497,14 +524,18 @@ function SandboxContent() {
               )}
             </TabsContent>
           </Tabs>
-          <ErrorPanel errors={errors} />
+          <ErrorPanel
+            errors={
+              urlWarning ? [...errors, { type: "validation", messages: [urlWarning] }] : errors
+            }
+          />
         </div>
 
         {/* Right panel: Preview + Token Editor */}
         <div className="flex overflow-hidden">
           <div className="flex-1 overflow-hidden">
             <Preview
-              sections={validatedSections}
+              items={renderItems}
               themeTokens={mergedTokens}
               selectedSectionId={selectedSectionId}
               onSectionClick={setSelectedSectionId}

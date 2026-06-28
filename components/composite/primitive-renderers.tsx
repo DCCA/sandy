@@ -1,6 +1,7 @@
 "use client";
 
 import type { PrimitiveNode } from "@/lib/composite/types";
+import { primitiveSchemas } from "@/lib/composite/primitives";
 
 const MAX_DEPTH = 2;
 
@@ -241,26 +242,55 @@ function ContainerRenderer({
   );
 }
 
+function PrimitiveError({ type }: { type: string }) {
+  return (
+    <div
+      style={{
+        padding: "8px 12px",
+        borderRadius: "var(--sandy-radius-sm, 4px)",
+        border: "1px dashed #f59e0b",
+        color: "#b45309",
+        backgroundColor: "#fffbeb",
+        fontSize: "0.75rem",
+        fontFamily: "monospace",
+      }}
+    >
+      Invalid “{type}” primitive
+    </div>
+  );
+}
+
 export function NodeRenderer({ node, depth = 0 }: { node: PrimitiveNode; depth?: number }) {
   if (depth > MAX_DEPTH) return null;
 
+  // Validate (and apply defaults to) the node's props at render time so a
+  // corrupted/hand-edited definition degrades to a placeholder instead of
+  // rendering with unsafe coercions.
+  const schema = primitiveSchemas[node.type];
+  if (!schema) return null;
+  const parsed = schema.safeParse(node.props);
+  if (!parsed.success) {
+    return <PrimitiveError type={node.type} />;
+  }
+  const props = parsed.data as Record<string, unknown>;
+
   switch (node.type) {
     case "heading":
-      return <HeadingRenderer props={node.props} />;
+      return <HeadingRenderer props={props} />;
     case "paragraph":
-      return <ParagraphRenderer props={node.props} />;
+      return <ParagraphRenderer props={props} />;
     case "button":
-      return <ButtonRenderer props={node.props} />;
+      return <ButtonRenderer props={props} />;
     case "image":
-      return <ImageRenderer props={node.props} />;
+      return <ImageRenderer props={props} />;
     case "spacer":
-      return <SpacerRenderer props={node.props} />;
+      return <SpacerRenderer props={props} />;
     case "divider":
-      return <DividerRenderer props={node.props} />;
+      return <DividerRenderer props={props} />;
     case "badge":
-      return <BadgeRenderer props={node.props} />;
+      return <BadgeRenderer props={props} />;
     case "container":
-      return <ContainerRenderer props={node.props} nodeChildren={node.children} depth={depth} />;
+      return <ContainerRenderer props={props} nodeChildren={node.children} depth={depth} />;
     default:
       return null;
   }

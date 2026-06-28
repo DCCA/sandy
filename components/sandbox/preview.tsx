@@ -3,17 +3,39 @@
 import { useEffect, useRef } from "react";
 import { ErrorBoundary } from "react-error-boundary";
 import { Layout } from "lucide-react";
-import type { ValidatedSection } from "@/lib/registry/types";
+import type { SectionRenderItem } from "@/lib/registry/types";
 import type { ThemeTokens } from "@/lib/theme/types";
 import { applyTheme } from "@/lib/theme/css-vars";
 
 type PreviewProps = {
-  sections: ValidatedSection[];
+  items: SectionRenderItem[];
   themeTokens: ThemeTokens;
   selectedSectionId?: string | null;
   onSectionClick?: (id: string) => void;
   onContentRef?: (el: HTMLDivElement | null) => void;
 };
+
+function MissingSectionFallback({
+  componentName,
+  messages,
+}: {
+  componentName: string;
+  messages: string[];
+}) {
+  return (
+    <div className="flex flex-col items-center justify-center p-8 text-center">
+      <div className="mb-3 flex size-10 items-center justify-center rounded-full bg-amber-500/10">
+        <span className="text-lg text-amber-400">⚠</span>
+      </div>
+      <div className="mb-1 text-sm font-semibold text-amber-400">
+        {componentName || "Unknown component"}
+      </div>
+      <p className="max-w-md font-mono text-xs text-muted-foreground">
+        {messages[0] ?? "This section could not be rendered."}
+      </p>
+    </div>
+  );
+}
 
 function SectionErrorFallback({
   error,
@@ -57,7 +79,7 @@ function DeviceFrame({ children }: { children: React.ReactNode }) {
 }
 
 export function Preview({
-  sections,
+  items,
   themeTokens,
   selectedSectionId,
   onSectionClick,
@@ -71,7 +93,7 @@ export function Preview({
     }
   }, [themeTokens]);
 
-  if (sections.length === 0) {
+  if (items.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center h-full gap-3 text-muted-foreground">
         <Layout className="size-10 opacity-20" />
@@ -107,30 +129,41 @@ export function Preview({
               if (anchor) e.preventDefault();
             }}
           >
-            {sections.map((section, i) => {
+            {items.map((item, i) => {
+              const id = item.kind === "ok" ? item.section.id : item.id;
+              const isSelected = selectedSectionId === id;
+              const wrapperStyle: React.CSSProperties = {
+                padding: "var(--sandy-spacing-lg, 24px)",
+                outline: isSelected ? "2px solid var(--sandy-color-primary, #3b82f6)" : "none",
+                outlineOffset: "-2px",
+                cursor: onSectionClick ? "pointer" : undefined,
+                position: "relative",
+              };
+              const onClick = onSectionClick ? () => onSectionClick(id) : undefined;
+
+              if (item.kind === "error") {
+                return (
+                  <div key={id} style={wrapperStyle} onClick={onClick}>
+                    <MissingSectionFallback
+                      componentName={item.componentName}
+                      messages={item.messages}
+                    />
+                  </div>
+                );
+              }
+
+              const section = item.section;
               const Component = section.component;
               const label = `Section ${i + 1} (${section.componentName})`;
-              const isSelected = selectedSectionId === section.id;
               return (
                 <ErrorBoundary
-                  key={section.id}
+                  key={id}
                   fallbackRender={(props) => (
                     <SectionErrorFallback {...props} sectionLabel={label} />
                   )}
                   resetKeys={[section.id, JSON.stringify(section.props)]}
                 >
-                  <div
-                    style={{
-                      padding: "var(--sandy-spacing-lg, 24px)",
-                      outline: isSelected
-                        ? "2px solid var(--sandy-color-primary, #3b82f6)"
-                        : "none",
-                      outlineOffset: "-2px",
-                      cursor: onSectionClick ? "pointer" : undefined,
-                      position: "relative",
-                    }}
-                    onClick={onSectionClick ? () => onSectionClick(section.id) : undefined}
-                  >
+                  <div style={wrapperStyle} onClick={onClick}>
                     <Component {...section.props} />
                   </div>
                 </ErrorBoundary>

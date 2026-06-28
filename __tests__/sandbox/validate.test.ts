@@ -124,4 +124,36 @@ describe("validatePage", () => {
     expect(result.sections).toHaveLength(1);
     expect(result.errors).toHaveLength(1);
   });
+
+  it("builds ordered render items with in-place error placeholders", () => {
+    const result = validatePage({
+      version: "2.0",
+      sections: [
+        { id: "sec_1", component: "HeroBanner", props: { title: "Valid" } },
+        { id: "sec_2", component: "NonExistent", props: {} },
+        { id: "sec_3", component: "HeroBanner", props: { title: "Also valid" } },
+      ],
+    });
+    // Order preserved across valid + error items (graceful degradation).
+    expect(result.renderItems.map((it) => it.kind)).toEqual(["ok", "error", "ok"]);
+    const errorItem = result.renderItems[1];
+    expect(errorItem.kind).toBe("error");
+    if (errorItem.kind === "error") {
+      expect(errorItem.id).toBe("sec_2");
+      expect(errorItem.componentName).toBe("NonExistent");
+      expect(errorItem.messages[0]).toContain("Unknown component");
+    }
+    // valid sections still exposed separately for export
+    expect(result.sections).toHaveLength(2);
+  });
+
+  it("warns about an unknown major version without failing structurally", () => {
+    const result = validatePage({
+      version: "99.0",
+      sections: [{ id: "sec_1", component: "HeroBanner", props: { title: "Hi" } }],
+    });
+    expect(result.errors.some((e) => e.messages[0].includes("Unknown page version"))).toBe(true);
+    // the section itself is still valid
+    expect(result.sections).toHaveLength(1);
+  });
 });
