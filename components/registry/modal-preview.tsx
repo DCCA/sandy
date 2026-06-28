@@ -54,6 +54,9 @@ export function ModalPreview({
 
       {/* Modal */}
       <div
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="modal-preview-title"
         className="relative w-full"
         style={{
           maxWidth: sizeWidths[size] ?? sizeWidths.md,
@@ -64,27 +67,56 @@ export function ModalPreview({
           color: "var(--sandy-color-foreground)",
         }}
       >
+        <button
+          type="button"
+          aria-label="Close"
+          className="absolute flex items-center justify-center text-lg leading-none"
+          style={{
+            top: "var(--sandy-spacing-md)",
+            right: "var(--sandy-spacing-md)",
+            width: 28,
+            height: 28,
+            backgroundColor: "transparent",
+            border: "none",
+            color: "var(--sandy-color-muted)",
+            cursor: "pointer",
+            borderRadius: "var(--sandy-radius-sm)",
+          }}
+        >
+          <span aria-hidden="true">&times;</span>
+        </button>
         <h2
+          id="modal-preview-title"
           className="text-lg mb-2"
-          style={{ fontWeight: "var(--sandy-font-heading-weight)" } as React.CSSProperties}
+          style={
+            {
+              fontWeight: "var(--sandy-font-heading-weight)",
+              paddingRight: "var(--sandy-spacing-lg)",
+              overflowWrap: "break-word",
+            } as React.CSSProperties
+          }
         >
           {title}
         </h2>
-        <p className="text-sm mb-4" style={{ color: "var(--sandy-color-muted)" }}>
+        <p
+          className="text-sm mb-4"
+          style={{ color: "var(--sandy-color-muted)", overflowWrap: "break-word" }}
+        >
           {body}
         </p>
         {actions && actions.length > 0 && (
-          <div className="flex justify-end gap-2">
+          <div className="flex flex-wrap justify-end gap-2">
             {actions.map((action, i) => (
               <button
                 key={i}
                 type="button"
+                aria-label={action.label}
                 className="px-4 py-2 text-sm font-medium"
                 style={{
                   ...getActionStyles(action.variant ?? "primary"),
                   borderRadius: "var(--sandy-radius-sm)",
                   border: "none",
-                  cursor: "default",
+                  cursor: "pointer",
                 }}
               >
                 {action.label}

@@ -2,7 +2,7 @@ import type { NavBarProps } from "@/lib/schemas/nav-bar";
 
 export function NavBar({ logo, links = [], cta }: NavBarProps) {
   return (
-    <nav
+    <header
       style={{
         fontFamily: "var(--sandy-font-family)",
         color: "var(--sandy-color-foreground)",
@@ -12,6 +12,7 @@ export function NavBar({ logo, links = [], cta }: NavBarProps) {
         display: "flex",
         alignItems: "center",
         gap: "var(--sandy-spacing-md)",
+        flexWrap: "wrap",
       }}
     >
       {logo && (
@@ -30,22 +31,25 @@ export function NavBar({ logo, links = [], cta }: NavBarProps) {
           )}
         </div>
       )}
-      <div className="flex items-center gap-1 flex-1">
-        {links.map((link, i) => (
-          <a
-            key={i}
-            href={link.href}
-            className="text-sm px-3 py-1.5 rounded-md"
-            style={{
-              color: "var(--sandy-color-foreground)",
-              textDecoration: "none",
-              borderRadius: "var(--sandy-radius-sm)",
-            }}
-          >
-            {link.label}
-          </a>
-        ))}
-      </div>
+      <nav aria-label="Primary" className="flex-1 min-w-0">
+        <ul className="flex items-center gap-1 flex-wrap list-none p-0 m-0">
+          {links.map((link, i) => (
+            <li key={i}>
+              <a
+                href={link.href}
+                className="text-sm px-3 py-1.5 rounded-md inline-block"
+                style={{
+                  color: "var(--sandy-color-foreground)",
+                  textDecoration: "none",
+                  borderRadius: "var(--sandy-radius-sm)",
+                }}
+              >
+                {link.label}
+              </a>
+            </li>
+          ))}
+        </ul>
+      </nav>
       {cta && (
         <a
           href={cta.href}
@@ -63,6 +67,6 @@ export function NavBar({ logo, links = [], cta }: NavBarProps) {
           {cta.label}
         </a>
       )}
-    </nav>
+    </header>
   );
 }

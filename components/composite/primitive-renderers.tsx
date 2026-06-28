@@ -50,9 +50,18 @@ const badgeVariants: Record<string, React.CSSProperties> = {
     backgroundColor: "var(--sandy-color-muted, #f3f4f6)",
     color: "var(--sandy-color-foreground, #111)",
   },
-  success: { backgroundColor: "#dcfce7", color: "#166534" },
-  warning: { backgroundColor: "#fef9c3", color: "#854d0e" },
-  error: { backgroundColor: "#fce8e8", color: "#991b1b" },
+  success: {
+    backgroundColor: "color-mix(in srgb, var(--sandy-color-success, #16a34a) 15%, white)",
+    color: "var(--sandy-color-success, #166534)",
+  },
+  warning: {
+    backgroundColor: "color-mix(in srgb, var(--sandy-color-warning, #ca8a04) 15%, white)",
+    color: "var(--sandy-color-warning, #854d0e)",
+  },
+  error: {
+    backgroundColor: "color-mix(in srgb, var(--sandy-color-error, #dc2626) 15%, white)",
+    color: "var(--sandy-color-error, #991b1b)",
+  },
 };
 
 const backgroundMap: Record<string, string> = {

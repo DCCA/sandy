@@ -33,6 +33,8 @@ export function AvatarGroup({ avatars, label, maxVisible }: AvatarGroupProps) {
         {overflow > 0 && (
           <div
             className="size-10 rounded-full flex items-center justify-center text-xs"
+            role="img"
+            aria-label={`${overflow} more`}
             style={
               {
                 backgroundColor: "var(--sandy-color-secondary)",

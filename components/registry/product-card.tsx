@@ -11,10 +11,13 @@ export function ProductCard({ title, description, badge, imageUrl, action }: Pro
         boxShadow: "var(--sandy-shadow-sm)",
         fontFamily: "var(--sandy-font-family)",
         overflow: "hidden",
+        overflowWrap: "break-word",
       }}
     >
       {imageUrl ? (
         <div
+          role="img"
+          aria-label={title}
           style={{
             width: "100%",
             height: 160,
@@ -88,6 +91,7 @@ export function ProductCard({ title, description, badge, imageUrl, action }: Pro
         {action && (
           <a
             href={action.href}
+            aria-label={`${action.label}: ${title}`}
             style={
               {
                 fontSize: "var(--sandy-font-size-sm)",

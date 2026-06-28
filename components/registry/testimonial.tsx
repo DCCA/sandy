@@ -33,12 +33,20 @@ export function Testimonial({ quote, author, role, avatarUrl, rating }: Testimon
             fontStyle: "italic",
             lineHeight: "var(--sandy-line-height-relaxed)",
             fontWeight: "var(--sandy-font-body-weight)",
+            overflowWrap: "break-word",
           } as React.CSSProperties
         }
       >
         &ldquo;{quote}&rdquo;
       </blockquote>
-      <div style={{ display: "flex", alignItems: "center", gap: "var(--sandy-spacing-sm)" }}>
+      <cite
+        style={{
+          display: "flex",
+          alignItems: "center",
+          gap: "var(--sandy-spacing-sm)",
+          fontStyle: "normal",
+        }}
+      >
         {avatarUrl && (
           // eslint-disable-next-line @next/next/no-img-element
           <img
@@ -50,10 +58,11 @@ export function Testimonial({ quote, author, role, avatarUrl, rating }: Testimon
               borderRadius: "var(--sandy-radius-full)",
               objectFit: "cover",
               border: "var(--sandy-border-thick) solid var(--sandy-color-border)",
+              flexShrink: 0,
             }}
           />
         )}
-        <div>
+        <div style={{ minWidth: 0, overflowWrap: "break-word" }}>
           <div
             style={
               {
@@ -72,7 +81,7 @@ export function Testimonial({ quote, author, role, avatarUrl, rating }: Testimon
             </div>
           )}
         </div>
-      </div>
+      </cite>
     </div>
   );
 }

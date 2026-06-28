@@ -1,10 +1,10 @@
 import type { NoticeBoxProps } from "@/lib/schemas/notice-box";
 
-const typeConfig: Record<string, { bg: string; border: string; icon: string }> = {
-  info: { bg: "#eff6ff", border: "#3b82f6", icon: "ℹ" },
-  warning: { bg: "#fffbeb", border: "#f59e0b", icon: "⚠" },
-  error: { bg: "#fef2f2", border: "#ef4444", icon: "✕" },
-  success: { bg: "#f0fdf4", border: "#22c55e", icon: "✓" },
+const typeConfig: Record<string, { token: string; icon: string }> = {
+  info: { token: "var(--sandy-color-info)", icon: "ℹ" },
+  warning: { token: "var(--sandy-color-warning)", icon: "⚠" },
+  error: { token: "var(--sandy-color-error)", icon: "✕" },
+  success: { token: "var(--sandy-color-success)", icon: "✓" },
 };
 
 export function NoticeBox({ message, type = "info", title }: NoticeBoxProps) {
@@ -13,16 +13,18 @@ export function NoticeBox({ message, type = "info", title }: NoticeBoxProps) {
   return (
     <div
       className="flex gap-3"
+      role="note"
       style={{
-        backgroundColor: config.bg,
-        border: `1px solid ${config.border}`,
+        backgroundColor: `color-mix(in srgb, ${config.token} 12%, var(--sandy-color-background))`,
+        border: `1px solid ${config.token}`,
         borderRadius: "var(--sandy-radius-md)",
         padding: "var(--sandy-spacing-md)",
         fontFamily: "var(--sandy-font-family)",
         color: "var(--sandy-color-foreground)",
+        overflowWrap: "break-word",
       }}
     >
-      <span className="text-lg shrink-0" style={{ color: config.border }}>
+      <span className="text-lg shrink-0" aria-hidden="true" style={{ color: config.token }}>
         {config.icon}
       </span>
       <div>

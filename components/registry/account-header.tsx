@@ -37,7 +37,7 @@ export function AccountHeader({ greeting, userName, avatarUrl, actions = [] }: A
           // eslint-disable-next-line @next/next/no-img-element
           <img
             src={avatarUrl}
-            alt={userName}
+            alt={`${userName}'s avatar`}
             style={{ width: "100%", height: "100%", objectFit: "cover" }}
           />
         ) : (
@@ -65,9 +65,11 @@ export function AccountHeader({ greeting, userName, avatarUrl, actions = [] }: A
       {actions.length > 0 && (
         <div style={{ display: "flex", gap: "var(--sandy-spacing-sm)" }}>
           {actions.map((action, i) => (
-            <div
+            <button
               key={i}
+              type="button"
               title={action.label}
+              aria-label={action.label}
               style={{
                 width: 40,
                 height: 40,
@@ -82,7 +84,7 @@ export function AccountHeader({ greeting, userName, avatarUrl, actions = [] }: A
               }}
             >
               {renderIcon(action.icon, { size: 20, color: "var(--sandy-color-primary)" })}
-            </div>
+            </button>
           ))}
         </div>
       )}

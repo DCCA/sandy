@@ -11,18 +11,24 @@ export function Footer({ columns, bottomText }: FooterProps) {
         padding: "var(--sandy-spacing-lg)",
       }}
     >
-      <div
+      <nav
+        aria-label="Footer"
         style={{
           display: "grid",
           gap: "var(--sandy-spacing-lg)",
-          gridTemplateColumns: `repeat(${Math.min(columns.length, 4)}, 1fr)`,
+          gridTemplateColumns: "repeat(auto-fit, minmax(140px, 1fr))",
         }}
       >
         {columns.map((col, i) => (
-          <div key={i}>
+          <div key={i} style={{ minWidth: 0 }}>
             <h4
               className="text-sm mb-3"
-              style={{ fontWeight: "var(--sandy-font-heading-weight)" } as React.CSSProperties}
+              style={
+                {
+                  fontWeight: "var(--sandy-font-heading-weight)",
+                  overflowWrap: "anywhere",
+                } as React.CSSProperties
+              }
             >
               {col.heading}
             </h4>
@@ -38,6 +44,7 @@ export function Footer({ columns, bottomText }: FooterProps) {
                     style={{
                       color: "var(--sandy-color-muted)",
                       textDecoration: "none",
+                      overflowWrap: "anywhere",
                     }}
                   >
                     {link.label}
@@ -47,7 +54,7 @@ export function Footer({ columns, bottomText }: FooterProps) {
             </ul>
           </div>
         ))}
-      </div>
+      </nav>
       {bottomText && (
         <div
           className="text-xs mt-4 pt-4 text-center"

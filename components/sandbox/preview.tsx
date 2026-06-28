@@ -116,6 +116,7 @@ export function Preview({
       >
         <DeviceFrame>
           <div
+            className="sandy-preview"
             ref={(node) => {
               containerRef.current = node;
               onContentRef?.(node);

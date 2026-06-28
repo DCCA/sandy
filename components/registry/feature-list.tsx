@@ -1,12 +1,6 @@
 import type { FeatureListProps } from "@/lib/schemas/feature-list";
 
-const columnCounts: Record<string, number> = {
-  "1": 1,
-  "2": 2,
-  "3": 3,
-};
-
-export function FeatureList({ heading, features, columns = "3" }: FeatureListProps) {
+export function FeatureList({ heading, features }: FeatureListProps) {
   return (
     <div style={{ fontFamily: "var(--sandy-font-family)", color: "var(--sandy-color-foreground)" }}>
       {heading && (
@@ -27,7 +21,7 @@ export function FeatureList({ heading, features, columns = "3" }: FeatureListPro
         style={{
           display: "grid",
           gap: "var(--sandy-spacing-md)",
-          gridTemplateColumns: `repeat(${columnCounts[columns] ?? 3}, 1fr)`,
+          gridTemplateColumns: "repeat(auto-fit, minmax(160px, 1fr))",
         }}
       >
         {features.map((feature, i) => (
@@ -37,10 +31,13 @@ export function FeatureList({ heading, features, columns = "3" }: FeatureListPro
               backgroundColor: "var(--sandy-color-secondary)",
               borderRadius: "var(--sandy-radius-md)",
               padding: "var(--sandy-spacing-md)",
+              minWidth: 0,
+              overflowWrap: "break-word",
             }}
           >
             {feature.icon && (
               <span
+                aria-hidden="true"
                 style={{
                   fontSize: "var(--sandy-font-size-2xl)",
                   display: "block",

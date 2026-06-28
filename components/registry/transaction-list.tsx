@@ -63,9 +63,15 @@ export function TransactionList({
           const config = typeConfig[tx.type ?? "payment"] ?? typeConfig.payment;
           const isReceived = tx.type === "received";
 
+          const rowLabel = [tx.title, tx.subtitle, tx.amount, tx.timestamp]
+            .filter(Boolean)
+            .join(", ");
+
           return (
             <div
               key={i}
+              role="group"
+              aria-label={rowLabel}
               style={{
                 display: "flex",
                 alignItems: "center",
@@ -74,6 +80,7 @@ export function TransactionList({
             >
               {/* Icon circle */}
               <div
+                aria-hidden="true"
                 style={{
                   width: 48,
                   height: 48,
@@ -97,6 +104,7 @@ export function TransactionList({
                       margin: 0,
                       fontSize: "var(--sandy-font-size-sm)",
                       fontWeight: "var(--sandy-font-heading-weight)",
+                      overflowWrap: "anywhere",
                     } as React.CSSProperties
                   }
                 >

@@ -22,6 +22,10 @@ export function BottomSheet({ title, subtitle, items, action, secondaryAction }:
 
       {/* Sheet panel */}
       <div
+        role="dialog"
+        aria-modal="true"
+        aria-label={title ?? "Bottom sheet"}
+        aria-labelledby={title ? "bottom-sheet-title" : undefined}
         style={{
           flex: 1,
           backgroundColor: "var(--sandy-color-secondary)",
@@ -32,8 +36,9 @@ export function BottomSheet({ title, subtitle, items, action, secondaryAction }:
           boxShadow: "var(--sandy-shadow-lg)",
         }}
       >
-        {/* Drag handle */}
+        {/* Drag handle (decorative) */}
         <div
+          aria-hidden="true"
           style={{
             display: "flex",
             justifyContent: "center",
@@ -53,6 +58,7 @@ export function BottomSheet({ title, subtitle, items, action, secondaryAction }:
         {/* Title + Subtitle */}
         {title && (
           <h2
+            id="bottom-sheet-title"
             style={
               {
                 margin: 0,
@@ -107,6 +113,8 @@ export function BottomSheet({ title, subtitle, items, action, secondaryAction }:
                     style={{
                       fontSize: "var(--sandy-font-size-sm)",
                       color: "var(--sandy-color-foreground)",
+                      overflowWrap: "anywhere",
+                      minWidth: 0,
                     }}
                   >
                     {item.label}
@@ -126,8 +134,14 @@ export function BottomSheet({ title, subtitle, items, action, secondaryAction }:
                     }
                   >
                     {item.value ?? ""}
-                    {item.href &&
-                      renderIcon("chevron-right", { size: 16, color: "var(--sandy-color-muted)" })}
+                    {item.href && (
+                      <span aria-hidden="true" style={{ display: "inline-flex" }}>
+                        {renderIcon("chevron-right", {
+                          size: 16,
+                          color: "var(--sandy-color-muted)",
+                        })}
+                      </span>
+                    )}
                   </span>
                 </div>
               );
@@ -136,6 +150,7 @@ export function BottomSheet({ title, subtitle, items, action, secondaryAction }:
                 <a
                   key={itemKey}
                   href={item.href}
+                  aria-label={item.value ? `${item.label}: ${item.value}` : item.label}
                   style={{ textDecoration: "none", color: "inherit" }}
                 >
                   {row}

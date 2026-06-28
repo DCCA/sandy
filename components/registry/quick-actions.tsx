@@ -7,11 +7,13 @@ export function QuickActions({ actions }: QuickActionsProps) {
       style={{
         fontFamily: "var(--sandy-font-family)",
         color: "var(--sandy-color-foreground)",
-        display: "flex",
-        justifyContent: "space-between",
+        display: "grid",
+        gridTemplateColumns: "repeat(auto-fit, minmax(80px, 1fr))",
+        gap: "var(--sandy-spacing-sm)",
       }}
     >
       {actions.map((action, i) => {
+        const ariaLabel = action.badge ? `${action.label}, ${action.badge}` : action.label;
         const content = (
           <div
             style={{
@@ -19,11 +21,10 @@ export function QuickActions({ actions }: QuickActionsProps) {
               flexDirection: "column",
               alignItems: "center",
               gap: 6,
-              flex: 1,
             }}
           >
             {/* Icon button with optional badge */}
-            <div style={{ position: "relative" }}>
+            <div style={{ position: "relative" }} aria-hidden="true">
               <div
                 style={{
                   width: 72,
@@ -70,6 +71,7 @@ export function QuickActions({ actions }: QuickActionsProps) {
                 textAlign: "center" as const,
                 color: "var(--sandy-color-foreground)",
                 marginTop: action.badge ? 4 : 0,
+                overflowWrap: "anywhere",
               }}
             >
               {action.label}
@@ -81,14 +83,24 @@ export function QuickActions({ actions }: QuickActionsProps) {
           <a
             key={i}
             href={action.href}
-            style={{ textDecoration: "none", color: "inherit", flex: 1 }}
+            aria-label={ariaLabel}
+            style={{ textDecoration: "none", color: "inherit" }}
           >
             {content}
           </a>
         ) : (
-          <div key={i} style={{ flex: 1 }}>
+          <button
+            key={i}
+            type="button"
+            aria-label={ariaLabel}
+            style={{
+              all: "unset",
+              cursor: "pointer",
+              display: "block",
+            }}
+          >
             {content}
-          </div>
+          </button>
         );
       })}
     </div>

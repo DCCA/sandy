@@ -8,7 +8,7 @@ export function InfoCardGrid({ cards }: InfoCardGridProps) {
         fontFamily: "var(--sandy-font-family)",
         color: "var(--sandy-color-foreground)",
         display: "grid",
-        gridTemplateColumns: "repeat(2, 1fr)",
+        gridTemplateColumns: "repeat(auto-fit, minmax(140px, 1fr))",
         gap: "var(--sandy-spacing-sm)",
       }}
     >
@@ -32,6 +32,7 @@ export function InfoCardGrid({ cards }: InfoCardGridProps) {
                 margin: 0,
                 fontSize: "var(--sandy-font-size-sm)",
                 fontWeight: "var(--sandy-font-heading-weight)",
+                overflowWrap: "anywhere",
               } as React.CSSProperties
             }
           >
@@ -59,6 +60,7 @@ export function InfoCardGrid({ cards }: InfoCardGridProps) {
                   marginTop: "var(--sandy-spacing-sm)",
                   fontSize: "var(--sandy-font-size-lg)",
                   fontWeight: "var(--sandy-font-heading-weight)",
+                  overflowWrap: "anywhere",
                 } as React.CSSProperties
               }
             >
@@ -91,6 +93,7 @@ export function InfoCardGrid({ cards }: InfoCardGridProps) {
               {card.action && (
                 <a
                   href={card.action.href}
+                  aria-label={`${card.action.label}: ${card.title}`}
                   style={
                     {
                       fontSize: "var(--sandy-font-size-xs)",
@@ -99,6 +102,7 @@ export function InfoCardGrid({ cards }: InfoCardGridProps) {
                       fontWeight: "var(--sandy-font-heading-weight)",
                       display: "inline-block",
                       marginTop: 2,
+                      overflowWrap: "anywhere",
                     } as React.CSSProperties
                   }
                 >
@@ -107,7 +111,10 @@ export function InfoCardGrid({ cards }: InfoCardGridProps) {
               )}
             </div>
             {card.action && (
-              <span style={{ color: "var(--sandy-color-primary)", flexShrink: 0 }}>
+              <span
+                aria-hidden="true"
+                style={{ color: "var(--sandy-color-primary)", flexShrink: 0 }}
+              >
                 {renderIcon("arrow-right", { size: 18, color: "var(--sandy-color-primary)" })}
               </span>
             )}

@@ -24,6 +24,7 @@ export function BalanceCard({ label, amount, visible = true, footnote, action }:
           {label}
         </p>
         <p
+          aria-label={visible ? amount : "Balance hidden"}
           style={
             {
               margin: 0,
@@ -32,6 +33,7 @@ export function BalanceCard({ label, amount, visible = true, footnote, action }:
               fontWeight: "var(--sandy-font-heading-weight)",
               letterSpacing: "var(--sandy-letter-spacing-tight)",
               lineHeight: "var(--sandy-line-height-tight)",
+              overflowWrap: "anywhere",
             } as React.CSSProperties
           }
         >
@@ -56,6 +58,7 @@ export function BalanceCard({ label, amount, visible = true, footnote, action }:
         <a
           href={action.href}
           title={action.label}
+          aria-label={action.label}
           style={{
             width: 40,
             height: 40,

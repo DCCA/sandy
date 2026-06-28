@@ -1,27 +1,29 @@
 import type { PromoBannerProps } from "@/lib/schemas/promo-banner";
 
-const variantStyles: Record<string, { bg: string; border: string }> = {
-  info: { bg: "#eff6ff", border: "#3b82f6" },
-  warning: { bg: "#fffbeb", border: "#f59e0b" },
-  success: { bg: "#f0fdf4", border: "#22c55e" },
+const variantToken: Record<string, string> = {
+  info: "var(--sandy-color-info)",
+  warning: "var(--sandy-color-warning)",
+  success: "var(--sandy-color-success)",
 };
 
 export function PromoBanner({ title, description, href, variant = "info" }: PromoBannerProps) {
-  const styles = variantStyles[variant] ?? variantStyles.info;
+  const token = variantToken[variant] ?? variantToken.info;
 
   return (
     <a
       href={href}
+      aria-label={title}
       style={{
         display: "block",
         width: "100%",
         textDecoration: "none",
-        backgroundColor: styles.bg,
-        borderLeft: `4px solid ${styles.border}`,
+        backgroundColor: `color-mix(in srgb, ${token} 12%, var(--sandy-color-background))`,
+        borderLeft: `4px solid ${token}`,
         borderRadius: "var(--sandy-radius-md)",
         padding: "var(--sandy-spacing-md)",
         fontFamily: "var(--sandy-font-family)",
         color: "var(--sandy-color-foreground)",
+        overflowWrap: "break-word",
       }}
     >
       <h3

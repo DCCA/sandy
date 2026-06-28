@@ -13,6 +13,7 @@ export type ThemeTokens = {
     info: string;
     surface: string;
     overlay: string;
+    focusRing: string;
   };
   radius: {
     sm: number;

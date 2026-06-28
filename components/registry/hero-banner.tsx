@@ -2,7 +2,7 @@ import type { HeroBannerProps } from "@/lib/schemas/hero-banner";
 
 export function HeroBanner({ title, subtitle, cta, align = "left" }: HeroBannerProps) {
   return (
-    <div
+    <section
       style={{
         backgroundColor: "var(--sandy-color-primary)",
         color: "#fff",
@@ -10,6 +10,7 @@ export function HeroBanner({ title, subtitle, cta, align = "left" }: HeroBannerP
         fontFamily: "var(--sandy-font-family)",
         textAlign: align,
         padding: "var(--sandy-spacing-lg)",
+        overflowWrap: "break-word",
       }}
     >
       <h1
@@ -43,6 +44,7 @@ export function HeroBanner({ title, subtitle, cta, align = "left" }: HeroBannerP
       {cta && (
         <a
           href={cta.href}
+          aria-label={`${cta.label}: ${title}`}
           style={
             {
               display: "inline-block",
@@ -59,6 +61,6 @@ export function HeroBanner({ title, subtitle, cta, align = "left" }: HeroBannerP
           {cta.label}
         </a>
       )}
-    </div>
+    </section>
   );
 }
