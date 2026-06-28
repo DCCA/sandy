@@ -26,6 +26,7 @@ If you are evaluating Sandy, start with:
 - **Page templates** — 6 pre-built page compositions (Banking Home, Full Banner, Bottom Sheet, etc.)
 - **SVG icon system** — 15 Lucide-style line icons with emoji fallback
 - **URL state sharing** — every sandbox state is serializable to a shareable URL
+- **Generate from prompt** _(local)_ — describe a screen in plain language and Sandy generates a validated page envelope, on your Claude subscription (no API key)
 - **Safety by default** — no eval, no arbitrary JSX, registry-only rendering with error boundaries
 
 ## Quick Start
@@ -36,6 +37,23 @@ npm run dev
 ```
 
 Open [http://localhost:3000/sandbox](http://localhost:3000/sandbox) to start.
+
+### Generate from prompt (local, subscription-powered)
+
+The toolbar's **Generate** action turns a natural-language description into a validated page
+envelope. It runs on your existing **Claude subscription** via the Claude Code CLI — no metered
+API key, no per-token billing — so it's a **local-only** feature (the deployed site hides it).
+
+```bash
+# once: install Claude Code, then mint a subscription token
+claude setup-token            # https://docs.claude.com/claude-code
+cp .env.example .env.local    # paste the token into CLAUDE_CODE_OAUTH_TOKEN
+npm run dev                   # restart; the Generate button now appears
+```
+
+The model only ever emits JSON for the controlled component registry, and every generated page is
+re-validated through the same render gate as hand-authored JSON — generation never bypasses
+Sandy's registry-only safety boundary.
 
 ## Commands
 

@@ -33,6 +33,7 @@ import { pageTemplates } from "@/lib/registry/templates";
 import { exportComposite, parseImportedComposites } from "@/lib/composite/io";
 import { downloadJSON } from "@/lib/export/json";
 import { ExportPanel } from "./export-panel";
+import { GeneratePanel } from "./generate-panel";
 import { SandyLogo } from "@/components/sandy-logo";
 
 type ToolbarProps = {
@@ -57,6 +58,8 @@ type ToolbarProps = {
   onEditComposite?: (def: CompositeDefinition) => void;
   onDeleteComposite?: (id: string) => void;
   onImportComposites?: (defs: CompositeDefinition[]) => void;
+  generateAvailable?: boolean;
+  onGenerate?: (prompt: string) => Promise<string | null>;
 };
 
 export const Toolbar = memo(function Toolbar({
@@ -81,6 +84,8 @@ export const Toolbar = memo(function Toolbar({
   onEditComposite,
   onDeleteComposite,
   onImportComposites,
+  generateAvailable,
+  onGenerate,
 }: ToolbarProps) {
   const componentKeys = getRegistryKeys();
   const [copied, setCopied] = useState(false);
@@ -166,6 +171,9 @@ export const Toolbar = memo(function Toolbar({
           ))}
         </SelectContent>
       </Select>
+
+      {/* Generate from prompt (local, subscription-powered) */}
+      {generateAvailable && onGenerate && <GeneratePanel onGenerate={onGenerate} />}
 
       {/* Theme selector */}
       <Select value={selectedTheme} onValueChange={(v) => v && onThemeChange(v)}>

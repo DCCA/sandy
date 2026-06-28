@@ -95,6 +95,7 @@ function SandboxContent() {
   const [builderOpen, setBuilderOpen] = useState(false);
   const [editingComposite, setEditingComposite] = useState<CompositeDefinition | null>(null);
   const [urlWarning, setUrlWarning] = useState<string | null>(null);
+  const [generateAvailable, setGenerateAvailable] = useState(false);
   const previewRef = useRef<HTMLDivElement>(null);
 
   // Load composites from localStorage on mount
@@ -105,6 +106,22 @@ function SandboxContent() {
       registerComposite(def, comp);
     }
     setComposites(defs);
+  }, []);
+
+  // Probe whether prompt generation is available in this environment (local only).
+  useEffect(() => {
+    let cancelled = false;
+    fetch("/api/generate")
+      .then((res) => (res.ok ? res.json() : { available: false }))
+      .then((data) => {
+        if (!cancelled) setGenerateAvailable(Boolean(data?.available));
+      })
+      .catch(() => {
+        if (!cancelled) setGenerateAvailable(false);
+      });
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
   // Parse, validate, derive state
@@ -289,6 +306,39 @@ function SandboxContent() {
       setSelectedSectionId(null);
     },
     [selectedTheme, setJsonText],
+  );
+
+  const handleGenerate = useCallback(
+    async (prompt: string): Promise<string | null> => {
+      try {
+        const res = await fetch("/api/generate", {
+          method: "POST",
+          headers: { "content-type": "application/json" },
+          body: JSON.stringify({ prompt }),
+        });
+        const data = await res.json().catch(() => null);
+        if (!res.ok) {
+          return data?.error ?? `Generation failed (${res.status}).`;
+        }
+        if (!data?.page) {
+          return "Generator returned no page.";
+        }
+        // Adopt the generated brand so the preview tokens and the toolbar
+        // selector match the new JSON (the generated page may pick a brand).
+        // Set it directly — the theme-sync effect then reconciles idempotently
+        // (no isToolbarUpdate flag, which could leak and swallow a later edit).
+        const brand = data.page?.theme?.brand;
+        if (typeof brand === "string") {
+          setSelectedTheme(brand);
+        }
+        setJsonText(JSON.stringify(data.page, null, 2));
+        setSelectedSectionId(null);
+        return null;
+      } catch {
+        return "Could not reach the generator.";
+      }
+    },
+    [setJsonText],
   );
 
   const handleMoveSection = useCallback(
@@ -500,6 +550,8 @@ function SandboxContent() {
         onEditComposite={handleEditComposite}
         onDeleteComposite={handleDeleteComposite}
         onImportComposites={handleImportComposites}
+        generateAvailable={generateAvailable}
+        onGenerate={handleGenerate}
       />
       <div className="grid grid-cols-[2fr_3fr] flex-1 overflow-hidden">
         {/* Left panel: Section List + Tabs (Editor/Properties) + Errors */}

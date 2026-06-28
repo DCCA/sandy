@@ -239,6 +239,9 @@ const icons: Record<string, SvgIconDef> = {
   ),
 };
 
+/** The icon names Sandy can render (others fall back to raw text). */
+export const iconNames: string[] = Object.keys(icons);
+
 export function renderIcon(name: string, opts?: IconProps): ReactNode {
   const size = opts?.size ?? 20;
   const color = opts?.color ?? "currentColor";
