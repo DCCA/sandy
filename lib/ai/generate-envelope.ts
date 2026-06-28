@@ -13,48 +13,68 @@
  */
 import { execFile, execFileSync } from "node:child_process";
 import { tmpdir } from "node:os";
+import { toJSONSchema } from "zod";
 import { getRegistryKeys, getRegistryItem } from "@/lib/registry";
-import { schemaToFields, type FieldDescriptor } from "@/lib/schema-introspect";
+import { iconNames } from "@/lib/icons";
 import { validatePage, PAGE_VERSION } from "@/lib/sandbox/validate";
 import type { PageValidationResult } from "@/lib/registry/types";
+
+type JsonSchemaNode = {
+  type?: string;
+  enum?: unknown[];
+  properties?: Record<string, JsonSchemaNode>;
+  required?: string[];
+  items?: JsonSchemaNode;
+};
 
 export type ComponentCatalogEntry = {
   key: string;
   description?: string;
-  fields: FieldDescriptor[];
+  schema: JsonSchemaNode;
 };
 
-/** Build a catalog of every renderable component from the live registry. */
+/**
+ * Build a catalog of every renderable component from the live registry. Field
+ * shapes come from each component's own Zod schema (via `toJSONSchema`) so the
+ * model is told the exact prop names, types, enums, and array item types.
+ */
 export function buildComponentCatalog(): ComponentCatalogEntry[] {
   return getRegistryKeys().map((key) => {
     const item = getRegistryItem(key);
     return {
       key,
       description: item?.metadata.description,
-      fields: item ? schemaToFields(item.schema) : [],
+      schema: item ? (toJSONSchema(item.schema) as JsonSchemaNode) : { type: "object" },
     };
   });
 }
 
-function describeFields(fields: FieldDescriptor[]): string {
-  return fields
-    .map((field) => {
-      const req = field.required ? "*" : "";
-      switch (field.kind) {
-        case "string": {
-          const en = field.enum && field.enum.length > 0 ? ` enum[${field.enum.join("|")}]` : "";
-          return `${field.key}${req}:string${en}`;
-        }
-        case "boolean":
-          return `${field.key}${req}:boolean`;
-        case "number":
-          return `${field.key}${req}:number`;
-        case "object":
-          return `${field.key}${req}:{ ${describeFields(field.fields)} }`;
-        case "array":
-          return `${field.key}${req}:[{ ${describeFields(field.itemFields)} }]`;
-      }
-    })
+/** Compact type description for a single JSON Schema node. */
+function describeType(node: JsonSchemaNode): string {
+  if (node.enum && node.enum.length > 0) return `enum[${node.enum.join("|")}]`;
+  switch (node.type) {
+    case "string":
+      return "string";
+    case "number":
+    case "integer":
+      return "number";
+    case "boolean":
+      return "boolean";
+    case "array":
+      return `[${node.items ? describeType(node.items) : "any"}]`;
+    case "object":
+      return `{ ${describeObject(node)} }`;
+    default:
+      return node.type ?? "any";
+  }
+}
+
+/** Render an object node's properties as `name*:type` (\* marks required). */
+function describeObject(node: JsonSchemaNode): string {
+  if (!node.properties) return "";
+  const required = new Set(node.required ?? []);
+  return Object.entries(node.properties)
+    .map(([key, child]) => `${key}${required.has(key) ? "*" : ""}:${describeType(child)}`)
     .join(", ");
 }
 
@@ -63,8 +83,8 @@ export function formatCatalog(catalog: ComponentCatalogEntry[]): string {
   return catalog
     .map((entry) => {
       const desc = entry.description ? ` — ${entry.description}` : "";
-      const fields = entry.fields.length > 0 ? describeFields(entry.fields) : "(no props)";
-      return `- ${entry.key}${desc}\n  props: ${fields}`;
+      const props = describeObject(entry.schema) || "(no props)";
+      return `- ${entry.key}${desc}\n  props: { ${props} }`;
     })
     .join("\n");
 }
@@ -128,6 +148,7 @@ export function buildSystemPrompt(
     `- Each section id is unique (e.g. "sec_1", "sec_2", ...).`,
     `- component MUST be one of the catalog keys below (exact spelling).`,
     `- props MUST use ONLY the field names listed for that component, with the given types. "*" marks a required field. Do not invent extra fields.`,
+    `- Any "icon" field MUST be one of: ${iconNames.join(", ")}. Do not invent icon names (unknown icons render as raw text).`,
     `- Choose components and content that best satisfy the user's request; order sections sensibly.`,
     ``,
     `COMPONENT CATALOG:`,

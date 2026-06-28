@@ -10,6 +10,7 @@ import {
   type ClaudeRunner,
 } from "@/lib/ai/generate-envelope";
 import { getRegistryKeys } from "@/lib/registry";
+import { iconNames } from "@/lib/icons";
 
 describe("buildComponentCatalog", () => {
   it("covers every registered component key", () => {
@@ -20,9 +21,9 @@ describe("buildComponentCatalog", () => {
   it("derives real field names from each component schema", () => {
     const catalog = buildComponentCatalog();
     const accountHeader = catalog.find((c) => c.key === "AccountHeader");
-    const fieldKeys = accountHeader?.fields.map((f) => f.key) ?? [];
-    expect(fieldKeys).toContain("greeting");
-    expect(fieldKeys).toContain("userName");
+    const props = accountHeader?.schema.properties ?? {};
+    expect(Object.keys(props)).toContain("greeting");
+    expect(Object.keys(props)).toContain("userName");
   });
 });
 
@@ -56,19 +57,39 @@ describe("formatCatalog / buildSystemPrompt", () => {
     expect(prompt).toContain('"2.0"');
   });
 
-  it("marks required fields and renders enums", () => {
+  it("constrains icon fields to the supported icon set", () => {
+    const prompt = buildSystemPrompt();
+    expect(prompt).toContain('Any "icon" field MUST be one of');
+    for (const name of iconNames) expect(prompt).toContain(name);
+  });
+
+  it("renders arrays of primitives with their item type (regression: not [{}])", () => {
+    // PricingTable.tiers[].features is string[]; the model must be told [string],
+    // otherwise it emits objects and fails validation.
+    const prompt = buildSystemPrompt();
+    expect(prompt).toMatch(/features\*?:\[string\]/);
+    expect(prompt).not.toContain("features*:[{  }]");
+  });
+
+  it("marks required fields, renders enums and array item types", () => {
     const text = formatCatalog([
       {
         key: "Demo",
         description: "demo",
-        fields: [
-          { kind: "string", key: "title", label: "Title", required: true },
-          { kind: "string", key: "variant", label: "Variant", required: false, enum: ["a", "b"] },
-        ],
+        schema: {
+          type: "object",
+          properties: {
+            title: { type: "string" },
+            variant: { type: "string", enum: ["a", "b"] },
+            tags: { type: "array", items: { type: "string" } },
+          },
+          required: ["title"],
+        },
       },
     ]);
     expect(text).toContain("title*:string");
-    expect(text).toContain("variant:string enum[a|b]");
+    expect(text).toContain("variant:enum[a|b]");
+    expect(text).toContain("tags:[string]");
   });
 });
 
