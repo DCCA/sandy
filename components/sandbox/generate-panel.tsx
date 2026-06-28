@@ -55,10 +55,21 @@ export function GeneratePanel({ onGenerate }: GeneratePanelProps) {
         size="sm"
         className="h-8 px-2 gap-1.5 text-xs"
         onClick={() => setOpen((prev) => !prev)}
+        disabled={submitting}
+        aria-busy={submitting}
         title="Generate a page from a prompt"
       >
-        <Sparkles className="size-3.5" />
-        <span>Generate</span>
+        {submitting ? (
+          <>
+            <Loader2 className="size-3.5 animate-spin" />
+            <span>Generating…</span>
+          </>
+        ) : (
+          <>
+            <Sparkles className="size-3.5" />
+            <span>Generate</span>
+          </>
+        )}
       </Button>
 
       {open && (
