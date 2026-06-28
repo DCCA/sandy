@@ -14,13 +14,22 @@ import { ComponentBuilder } from "@/components/sandbox/component-builder";
 import { getRegistryItem, defaultPage } from "@/lib/registry";
 import { registerComposite, unregisterComposite } from "@/lib/registry/composite-registry";
 import { pageTemplates } from "@/lib/registry/templates";
-import { loadComposites, saveComposite, deleteComposite as deleteCompositeFromStorage } from "@/lib/composite/storage";
+import {
+  loadComposites,
+  saveComposite,
+  deleteComposite as deleteCompositeFromStorage,
+} from "@/lib/composite/storage";
 import { CompositeRenderer } from "@/components/composite/composite-renderer";
 import type { CompositeDefinition } from "@/lib/composite/types";
 import { useHistory } from "@/lib/sandbox/use-history";
 import { parseJSON } from "@/lib/sandbox/parse";
 import { validatePage, isLegacyEnvelope, migrateEnvelopeToPage } from "@/lib/sandbox/validate";
-import { serializeState, deserializeState, serializeTokens, deserializeTokens } from "@/lib/sandbox/serialize";
+import {
+  serializeState,
+  deserializeState,
+  serializeTokens,
+  deserializeTokens,
+} from "@/lib/sandbox/serialize";
 import { getThemePreset, defaultTheme } from "@/lib/theme/presets";
 import { mergeTokens } from "@/lib/theme/merge-tokens";
 import { downloadJSON } from "@/lib/export/json";
@@ -43,7 +52,7 @@ function SandboxContent() {
   const initialState = useMemo(() => {
     const encoded = searchParams.get("s");
     const tokenParam = searchParams.get("t");
-    const initialTokenOverrides = tokenParam ? deserializeTokens(tokenParam) ?? {} : {};
+    const initialTokenOverrides = tokenParam ? (deserializeTokens(tokenParam) ?? {}) : {};
 
     if (encoded) {
       const restored = deserializeState(encoded);
@@ -64,9 +73,18 @@ function SandboxContent() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const { value: jsonText, setValue: setJsonText, undo, redo, canUndo, canRedo } = useHistory(initialState.json);
+  const {
+    value: jsonText,
+    setValue: setJsonText,
+    undo,
+    redo,
+    canUndo,
+    canRedo,
+  } = useHistory(initialState.json);
   const [selectedTheme, setSelectedTheme] = useState(initialState.theme);
-  const [tokenOverrides, setTokenOverrides] = useState<DeepPartial<ThemeTokens>>(initialState.tokenOverrides);
+  const [tokenOverrides, setTokenOverrides] = useState<DeepPartial<ThemeTokens>>(
+    initialState.tokenOverrides,
+  );
   const [tokenEditorOpen, setTokenEditorOpen] = useState(false);
   const [selectedSectionId, setSelectedSectionId] = useState<string | null>(null);
   const [composites, setComposites] = useState<CompositeDefinition[]>([]);
@@ -182,133 +200,160 @@ function SandboxContent() {
   }, [undo, redo]);
 
   const theme = getThemePreset(selectedTheme) ?? defaultTheme;
-  const mergedTokens = useMemo(() => mergeTokens(theme.tokens, tokenOverrides), [theme.tokens, tokenOverrides]);
+  const mergedTokens = useMemo(
+    () => mergeTokens(theme.tokens, tokenOverrides),
+    [theme.tokens, tokenOverrides],
+  );
 
   // Generate next section ID based on existing sections
   const nextSectionId = useCallback((sections: Section[]): string => {
-    const nums = sections
-      .map((s) => {
-        const m = s.id.match(/^sec_(\d+)$/);
-        return m ? parseInt(m[1], 10) : 0;
-      });
+    const nums = sections.map((s) => {
+      const m = s.id.match(/^sec_(\d+)$/);
+      return m ? parseInt(m[1], 10) : 0;
+    });
     const max = nums.length > 0 ? Math.max(...nums) : 0;
     return `sec_${max + 1}`;
   }, []);
 
-  const handleAddSection = useCallback((componentKey: string) => {
-    const item = getRegistryItem(componentKey);
-    if (!item) return;
-    isToolbarUpdate.current = true;
-    setJsonText((prev) => {
-      try {
-        let data = JSON.parse(prev);
-        if (isLegacyEnvelope(data)) {
-          data = migrateEnvelopeToPage(data);
+  const handleAddSection = useCallback(
+    (componentKey: string) => {
+      const item = getRegistryItem(componentKey);
+      if (!item) return;
+      isToolbarUpdate.current = true;
+      setJsonText((prev) => {
+        try {
+          let data = JSON.parse(prev);
+          if (isLegacyEnvelope(data)) {
+            data = migrateEnvelopeToPage(data);
+          }
+          const sections: Section[] = data.sections ?? [];
+          const newSection: Section = {
+            id: nextSectionId(sections),
+            component: componentKey,
+            props: structuredClone(item.example.props),
+          };
+          data.sections = [...sections, newSection];
+          return JSON.stringify(data, null, 2);
+        } catch {
+          return prev;
         }
-        const sections: Section[] = data.sections ?? [];
-        const newSection: Section = {
-          id: nextSectionId(sections),
-          component: componentKey,
-          props: { ...item.example.props },
-        };
-        data.sections = [...sections, newSection];
-        return JSON.stringify(data, null, 2);
-      } catch {
-        return prev;
-      }
-    });
-  }, [nextSectionId, setJsonText]);
+      });
+    },
+    [nextSectionId, setJsonText],
+  );
 
-  const handleLoadTemplate = useCallback((templateId: string) => {
-    const tpl = pageTemplates.find((t) => t.id === templateId);
-    if (!tpl) return;
-    isToolbarUpdate.current = true;
-    const page = { ...tpl.page, theme: { brand: selectedTheme, mode: "light" as const }, meta: { viewport: "mobile" as const } };
-    setJsonText(JSON.stringify(page, null, 2));
-    setSelectedSectionId(null);
-  }, [selectedTheme, setJsonText]);
-
-  const handleMoveSection = useCallback((id: string, direction: "up" | "down") => {
-    setJsonText((prev) => {
-      try {
-        const data = JSON.parse(prev);
-        const sections: Section[] = data.sections ?? [];
-        const idx = sections.findIndex((s: Section) => s.id === id);
-        if (idx < 0) return prev;
-        const swapIdx = direction === "up" ? idx - 1 : idx + 1;
-        if (swapIdx < 0 || swapIdx >= sections.length) return prev;
-        const next = [...sections];
-        [next[idx], next[swapIdx]] = [next[swapIdx], next[idx]];
-        data.sections = next;
-        return JSON.stringify(data, null, 2);
-      } catch {
-        return prev;
-      }
-    });
-  }, [setJsonText]);
-
-  const handleReorderSections = useCallback((orderedIds: string[]) => {
-    setJsonText((prev) => {
-      try {
-        const data = JSON.parse(prev);
-        const sections: Section[] = data.sections ?? [];
-        const byId = new Map(sections.map((s) => [s.id, s]));
-        const reordered = orderedIds.map((id) => byId.get(id)).filter(Boolean) as Section[];
-        if (reordered.length !== sections.length) return prev;
-        data.sections = reordered;
-        return JSON.stringify(data, null, 2);
-      } catch {
-        return prev;
-      }
-    });
-  }, [setJsonText]);
-
-  const handleDeleteSection = useCallback((id: string) => {
-    setJsonText((prev) => {
-      try {
-        const data = JSON.parse(prev);
-        const sections: Section[] = data.sections ?? [];
-        if (sections.length <= 1) return prev;
-        data.sections = sections.filter((s: Section) => s.id !== id);
-        return JSON.stringify(data, null, 2);
-      } catch {
-        return prev;
-      }
-    });
-    if (selectedSectionId === id) {
+  const handleLoadTemplate = useCallback(
+    (templateId: string) => {
+      const tpl = pageTemplates.find((t) => t.id === templateId);
+      if (!tpl) return;
+      isToolbarUpdate.current = true;
+      const page = {
+        ...tpl.page,
+        theme: { brand: selectedTheme, mode: "light" as const },
+        meta: { viewport: "mobile" as const },
+      };
+      setJsonText(JSON.stringify(page, null, 2));
       setSelectedSectionId(null);
-    }
-  }, [selectedSectionId, setJsonText]);
+    },
+    [selectedTheme, setJsonText],
+  );
 
-  const handleSectionPropsChange = useCallback((sectionId: string, newProps: Record<string, unknown>) => {
-    setJsonText((prev) => {
-      try {
-        const data = JSON.parse(prev);
-        const sections: Section[] = data.sections ?? [];
-        const idx = sections.findIndex((s: Section) => s.id === sectionId);
-        if (idx < 0) return prev;
-        data.sections[idx] = { ...data.sections[idx], props: newProps };
-        return JSON.stringify(data, null, 2);
-      } catch {
-        return prev;
-      }
-    });
-  }, [setJsonText]);
+  const handleMoveSection = useCallback(
+    (id: string, direction: "up" | "down") => {
+      setJsonText((prev) => {
+        try {
+          const data = JSON.parse(prev);
+          const sections: Section[] = data.sections ?? [];
+          const idx = sections.findIndex((s: Section) => s.id === id);
+          if (idx < 0) return prev;
+          const swapIdx = direction === "up" ? idx - 1 : idx + 1;
+          if (swapIdx < 0 || swapIdx >= sections.length) return prev;
+          const next = [...sections];
+          [next[idx], next[swapIdx]] = [next[swapIdx], next[idx]];
+          data.sections = next;
+          return JSON.stringify(data, null, 2);
+        } catch {
+          return prev;
+        }
+      });
+    },
+    [setJsonText],
+  );
 
-  const handleThemeChange = useCallback((id: string) => {
-    isToolbarUpdate.current = true;
-    setSelectedTheme(id);
-    setTokenOverrides({});
-    setJsonText((prev) => {
-      try {
-        const data = JSON.parse(prev);
-        data.theme = { ...data.theme, brand: id };
-        return JSON.stringify(data, null, 2);
-      } catch {
-        return prev;
+  const handleReorderSections = useCallback(
+    (orderedIds: string[]) => {
+      setJsonText((prev) => {
+        try {
+          const data = JSON.parse(prev);
+          const sections: Section[] = data.sections ?? [];
+          const byId = new Map(sections.map((s) => [s.id, s]));
+          const reordered = orderedIds.map((id) => byId.get(id)).filter(Boolean) as Section[];
+          if (reordered.length !== sections.length) return prev;
+          data.sections = reordered;
+          return JSON.stringify(data, null, 2);
+        } catch {
+          return prev;
+        }
+      });
+    },
+    [setJsonText],
+  );
+
+  const handleDeleteSection = useCallback(
+    (id: string) => {
+      setJsonText((prev) => {
+        try {
+          const data = JSON.parse(prev);
+          const sections: Section[] = data.sections ?? [];
+          if (sections.length <= 1) return prev;
+          data.sections = sections.filter((s: Section) => s.id !== id);
+          return JSON.stringify(data, null, 2);
+        } catch {
+          return prev;
+        }
+      });
+      if (selectedSectionId === id) {
+        setSelectedSectionId(null);
       }
-    });
-  }, [setJsonText]);
+    },
+    [selectedSectionId, setJsonText],
+  );
+
+  const handleSectionPropsChange = useCallback(
+    (sectionId: string, newProps: Record<string, unknown>) => {
+      setJsonText((prev) => {
+        try {
+          const data = JSON.parse(prev);
+          const sections: Section[] = data.sections ?? [];
+          const idx = sections.findIndex((s: Section) => s.id === sectionId);
+          if (idx < 0) return prev;
+          data.sections[idx] = { ...data.sections[idx], props: newProps };
+          return JSON.stringify(data, null, 2);
+        } catch {
+          return prev;
+        }
+      });
+    },
+    [setJsonText],
+  );
+
+  const handleThemeChange = useCallback(
+    (id: string) => {
+      isToolbarUpdate.current = true;
+      setSelectedTheme(id);
+      setTokenOverrides({});
+      setJsonText((prev) => {
+        try {
+          const data = JSON.parse(prev);
+          data.theme = { ...data.theme, brand: id };
+          return JSON.stringify(data, null, 2);
+        } catch {
+          return prev;
+        }
+      });
+    },
+    [setJsonText],
+  );
 
   const handleFormat = useCallback(() => {
     setJsonText((prev) => {
@@ -432,7 +477,11 @@ function SandboxContent() {
               </TabsList>
             </div>
             <TabsContent value="editor" className="flex-1 overflow-hidden m-0">
-              <Editor value={jsonText} onChange={setJsonText} sectionCount={parsedSections.length} />
+              <Editor
+                value={jsonText}
+                onChange={setJsonText}
+                sectionCount={parsedSections.length}
+              />
             </TabsContent>
             <TabsContent value="properties" className="flex-1 overflow-hidden m-0">
               {selectedSection ? (
@@ -459,7 +508,9 @@ function SandboxContent() {
               themeTokens={mergedTokens}
               selectedSectionId={selectedSectionId}
               onSectionClick={setSelectedSectionId}
-              onContentRef={(el) => { previewRef.current = el; }}
+              onContentRef={(el) => {
+                previewRef.current = el;
+              }}
             />
           </div>
           <TokenEditor
@@ -477,7 +528,10 @@ function SandboxContent() {
           themeTokens={mergedTokens}
           editingDefinition={editingComposite}
           onSave={handleSaveComposite}
-          onClose={() => { setBuilderOpen(false); setEditingComposite(null); }}
+          onClose={() => {
+            setBuilderOpen(false);
+            setEditingComposite(null);
+          }}
         />
       )}
     </div>

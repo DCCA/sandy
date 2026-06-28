@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useRef } from "react";
+import { useCallback, useEffect, useRef } from "react";
 import dynamic from "next/dynamic";
 
 const MonacoEditor = dynamic(() => import("@monaco-editor/react"), {
@@ -42,8 +42,15 @@ export function Editor({ value, onChange, sectionCount }: EditorProps) {
         onChange(val ?? "");
       }, 300);
     },
-    [onChange]
+    [onChange],
   );
+
+  // Clear any pending debounce on unmount to avoid setting state after unmount.
+  useEffect(() => {
+    return () => {
+      if (timerRef.current) clearTimeout(timerRef.current);
+    };
+  }, []);
 
   return (
     <div className="flex flex-col h-full">
