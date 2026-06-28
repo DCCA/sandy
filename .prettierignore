@@ -6,3 +6,6 @@ public/fonts
 *.woff2
 
 CLAUDE.md
+
+test-results
+playwright-report
