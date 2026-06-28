@@ -1,9 +1,11 @@
 "use client";
 
-import { useState, useCallback } from "react";
-import { Paintbrush, ChevronDown, ChevronRight, RotateCcw } from "lucide-react";
+import { useState, useCallback, useRef } from "react";
+import { Paintbrush, ChevronDown, ChevronRight, RotateCcw, Download, Upload } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import type { ThemeTokens, DeepPartial } from "@/lib/theme/types";
+import { tokensToDTCGString, dtcgToOverrides } from "@/lib/theme/dtcg";
+import { downloadJSON } from "@/lib/export/json";
 
 type TokenEditorProps = {
   tokens: ThemeTokens;
@@ -211,6 +213,29 @@ export function TokenEditor({
   isOpen,
   onToggle,
 }: TokenEditorProps) {
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  // Export the *effective* tokens (base + current overrides) as a W3C DTCG
+  // .tokens.json file for use in Figma / Style Dictionary / Tokens Studio.
+  const handleExportDTCG = useCallback(() => {
+    downloadJSON(tokensToDTCGString(tokens), "sandy-theme.tokens.json");
+  }, [tokens]);
+
+  const handleImportDTCG = useCallback(
+    async (e: React.ChangeEvent<HTMLInputElement>) => {
+      const file = e.target.files?.[0];
+      e.target.value = ""; // allow re-importing the same file
+      if (!file) return;
+      try {
+        const parsed = dtcgToOverrides(JSON.parse(await file.text()));
+        if (parsed) onOverrideChange(parsed);
+      } catch {
+        // Ignore unreadable/invalid files.
+      }
+    },
+    [onOverrideChange],
+  );
+
   const handleColor = useCallback(
     (key: keyof ThemeTokens["color"], value: string) => {
       onOverrideChange({ ...overrides, color: { ...overrides.color, [key]: value } });
@@ -315,17 +340,45 @@ export function TokenEditor({
           {/* Header */}
           <div className="flex items-center justify-between px-3 py-2 border-b border-border/30">
             <span className="text-xs font-semibold text-muted-foreground">Design Tokens</span>
-            {hasOverrides && (
+            <div className="flex items-center gap-0.5">
               <Button
                 variant="ghost"
                 size="sm"
                 className="h-5 px-1.5 text-[10px] gap-1"
-                onClick={onReset}
+                onClick={handleExportDTCG}
+                title="Export as W3C DTCG .tokens.json"
               >
-                <RotateCcw className="size-3" />
-                Reset
+                <Download className="size-3" />
+                DTCG
               </Button>
-            )}
+              <Button
+                variant="ghost"
+                size="sm"
+                className="h-5 px-1.5 text-[10px] gap-1"
+                onClick={() => fileInputRef.current?.click()}
+                title="Import DTCG .tokens.json"
+              >
+                <Upload className="size-3" />
+              </Button>
+              {hasOverrides && (
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="h-5 px-1.5 text-[10px] gap-1"
+                  onClick={onReset}
+                >
+                  <RotateCcw className="size-3" />
+                  Reset
+                </Button>
+              )}
+            </div>
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept=".json,application/json"
+              className="hidden"
+              onChange={handleImportDTCG}
+            />
           </div>
 
           {/* Sections */}

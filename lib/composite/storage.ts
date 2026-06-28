@@ -2,7 +2,7 @@ import type { CompositeDefinition } from "./types";
 
 const STORAGE_KEY = "sandy-composites";
 
-function isValidDefinition(d: unknown): d is CompositeDefinition {
+export function isValidDefinition(d: unknown): d is CompositeDefinition {
   if (typeof d !== "object" || d === null) return false;
   const obj = d as Record<string, unknown>;
   return (

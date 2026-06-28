@@ -447,6 +447,19 @@ function SandboxContent() {
     setEditingComposite(null);
   }, []);
 
+  const handleImportComposites = useCallback((defs: CompositeDefinition[]) => {
+    setComposites((prev) => {
+      const byId = new Map(prev.map((d) => [d.id, d]));
+      for (const def of defs) {
+        const comp = createCompositeComponent(def);
+        registerComposite(def, comp);
+        saveComposite(def);
+        byId.set(def.id, def);
+      }
+      return [...byId.values()];
+    });
+  }, []);
+
   const handleEditComposite = useCallback((def: CompositeDefinition) => {
     setEditingComposite(def);
     setBuilderOpen(true);
@@ -486,6 +499,7 @@ function SandboxContent() {
         onCreateComponent={handleOpenBuilder}
         onEditComposite={handleEditComposite}
         onDeleteComposite={handleDeleteComposite}
+        onImportComposites={handleImportComposites}
       />
       <div className="grid grid-cols-[2fr_3fr] flex-1 overflow-hidden">
         {/* Left panel: Section List + Tabs (Editor/Properties) + Errors */}

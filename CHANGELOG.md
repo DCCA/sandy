@@ -8,6 +8,10 @@ follow [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Added
 
+- W3C DTCG design-token import/export (`.tokens.json`) in the token editor, for
+  interop with Figma, Style Dictionary, and Tokens Studio.
+- Composite (custom component) import/export as portable `.json` bundles, so
+  user-built components are no longer trapped in one browser's localStorage.
 - Per-section graceful degradation: unknown/invalid sections render an in-place
   placeholder instead of disappearing, preserving page order.
 - Functional light/dark `theme.mode` with per-brand variants (dark for

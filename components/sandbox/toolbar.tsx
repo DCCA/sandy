@@ -23,11 +23,15 @@ import {
   Trash2,
   Undo2,
   Redo2,
+  Download,
+  Upload,
 } from "lucide-react";
 import type { CompositeDefinition } from "@/lib/composite/types";
 import { themePresets } from "@/lib/theme/presets";
 import { getRegistryKeys, getRegistryItem } from "@/lib/registry";
 import { pageTemplates } from "@/lib/registry/templates";
+import { exportComposite, parseImportedComposites } from "@/lib/composite/io";
+import { downloadJSON } from "@/lib/export/json";
 import { ExportPanel } from "./export-panel";
 import { SandyLogo } from "@/components/sandy-logo";
 
@@ -52,6 +56,7 @@ type ToolbarProps = {
   onCreateComponent?: () => void;
   onEditComposite?: (def: CompositeDefinition) => void;
   onDeleteComposite?: (id: string) => void;
+  onImportComposites?: (defs: CompositeDefinition[]) => void;
 };
 
 export const Toolbar = memo(function Toolbar({
@@ -75,10 +80,23 @@ export const Toolbar = memo(function Toolbar({
   onCreateComponent,
   onEditComposite,
   onDeleteComposite,
+  onImportComposites,
 }: ToolbarProps) {
   const componentKeys = getRegistryKeys();
   const [copied, setCopied] = useState(false);
   const copyTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const compositeFileInput = useRef<HTMLInputElement>(null);
+
+  const handleImportComposites = useCallback(
+    async (e: React.ChangeEvent<HTMLInputElement>) => {
+      const file = e.target.files?.[0];
+      e.target.value = "";
+      if (!file || !onImportComposites) return;
+      const defs = parseImportedComposites(await file.text());
+      if (defs.length > 0) onImportComposites(defs);
+    },
+    [onImportComposites],
+  );
 
   useEffect(() => {
     return () => {
@@ -206,6 +224,20 @@ export const Toolbar = memo(function Toolbar({
                 <Button
                   variant="ghost"
                   size="sm"
+                  className="h-4 w-4 p-0"
+                  onClick={() =>
+                    downloadJSON(
+                      exportComposite(def),
+                      `${def.name.replace(/\s+/g, "-").toLowerCase()}.composite.json`,
+                    )
+                  }
+                  title={`Export ${def.name}`}
+                >
+                  <Download className="size-2.5" />
+                </Button>
+                <Button
+                  variant="ghost"
+                  size="sm"
                   className="h-4 w-4 p-0 text-red-400 hover:text-red-300"
                   onClick={() => onDeleteComposite(def.id)}
                   title={`Delete ${def.name}`}
@@ -215,6 +247,28 @@ export const Toolbar = memo(function Toolbar({
               </div>
             ))}
           </div>
+        )}
+
+        {onImportComposites && (
+          <>
+            <Button
+              variant="ghost"
+              size="sm"
+              className="h-7 px-2 gap-1 text-xs"
+              onClick={() => compositeFileInput.current?.click()}
+              title="Import a custom component (.composite.json)"
+            >
+              <Upload className="size-3.5" />
+              <span className="hidden xl:inline">Import</span>
+            </Button>
+            <input
+              ref={compositeFileInput}
+              type="file"
+              accept=".json,application/json"
+              className="hidden"
+              onChange={handleImportComposites}
+            />
+          </>
         )}
 
         <Separator orientation="vertical" className="h-5 mx-0.5" />

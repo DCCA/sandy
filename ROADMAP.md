@@ -153,13 +153,17 @@ Cheap, high-confidence fixes that prevent regressions.
 
 Pick based on product direction:
 
-- **Schema-driven prop editor** — auto-generate a form from each component's Zod
-  schema (rjsf/JSONForms/Uniforms-style; Uniforms already supports Zod). Highest
-  UX leverage for non-JSON users.
-- **DTCG token import/export** (`.tokens.json`) for Figma / Tokens Studio interop
-  and standard codegen.
-- **Composite import/export** + make composites shareable (embed definitions in
-  the share payload or export as `.json`).
+- **Schema-driven prop editor** ✅ _already shipped_ — the Properties tab
+  auto-generates a form from each component's Zod schema (`lib/schema-introspect.ts`
+  - `components/sandbox/property-editor.tsx`).
+- **DTCG token import/export** ✅ _shipped_ — export/import `.tokens.json` from the
+  token editor (`lib/theme/dtcg.ts`) for Figma / Style Dictionary / Tokens Studio.
+- **Composite import/export** ✅ _shipped_ — export/import custom components as
+  portable `.json` bundles (`lib/composite/io.ts`).
+- **Codegen** ✅ _already shipped_ — "copy as JSON/React/HTML" via the export panel.
+
+Still open (larger, architectural — deferred):
+
 - **Data binding / templating** — `${}` / `$data` / `$when` / `$index` expression
   layer (Adaptive Cards Templating); author layout once, bind data separately.
   Stays within Sandy's "no code in JSON" stance.
@@ -167,8 +171,7 @@ Pick based on product direction:
   as data, aligned with the no-eval/no-function-props rules.
 - **Implement the inert `slots`** — nested/section composition (Puck `zones`,
   Craft.js `linkedNodes`).
-- **Codegen polish** — extend "copy as React/HTML" with framework variants and an
-  embeddable iframe/preview URL.
+- **Codegen polish** — framework variants and an embeddable iframe/preview URL.
 
 ---
 
