@@ -165,19 +165,32 @@ export type ClaudeRunner = (input: {
   signal?: AbortSignal;
 }) => Promise<string>;
 
-/** Default runner: spawns `claude -p ... --output-format json --json-schema ...`. */
-export const runClaudeCli: ClaudeRunner = ({ prompt, schema, systemPrompt, model, signal }) => {
+/** Build the `claude` CLI argv. The prompt is placed after `--` so it is always
+ * a positional, even if it starts with a dash (otherwise the CLI parses it as a
+ * flag — both a failure mode and an argument-injection surface). */
+export function buildClaudeArgs(input: {
+  prompt: string;
+  schema: Record<string, unknown>;
+  systemPrompt: string;
+  model?: string;
+}): string[] {
   const args = [
     "-p",
-    prompt,
     "--output-format",
     "json",
     "--json-schema",
-    JSON.stringify(schema),
+    JSON.stringify(input.schema),
     "--append-system-prompt",
-    systemPrompt,
+    input.systemPrompt,
   ];
-  if (model) args.push("--model", model);
+  if (input.model) args.push("--model", input.model);
+  args.push("--", input.prompt);
+  return args;
+}
+
+/** Default runner: spawns `claude -p ... --output-format json --json-schema ...`. */
+export const runClaudeCli: ClaudeRunner = ({ prompt, schema, systemPrompt, model, signal }) => {
+  const args = buildClaudeArgs({ prompt, schema, systemPrompt, model });
 
   return new Promise<string>((resolve, reject) => {
     execFile(
@@ -187,7 +200,10 @@ export const runClaudeCli: ClaudeRunner = ({ prompt, schema, systemPrompt, model
       { cwd: tmpdir(), env: process.env, timeout: 120_000, maxBuffer: 16 * 1024 * 1024, signal },
       (error, stdout) => {
         if (error) {
-          reject(error);
+          // The raw error embeds the full command line (system prompt) and the
+          // subprocess stderr — log it server-side, surface a generic message.
+          console.error("[generate] claude CLI failed:", error);
+          reject(new Error("The generation process failed. Check the server logs."));
           return;
         }
         resolve(stdout);

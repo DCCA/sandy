@@ -7,6 +7,7 @@ import {
   parseClaudeResult,
   generateEnvelope,
   isGenerationAvailable,
+  buildClaudeArgs,
   type ClaudeRunner,
 } from "@/lib/ai/generate-envelope";
 import { getRegistryKeys } from "@/lib/registry";
@@ -90,6 +91,23 @@ describe("formatCatalog / buildSystemPrompt", () => {
     expect(text).toContain("title*:string");
     expect(text).toContain("variant:enum[a|b]");
     expect(text).toContain("tags:[string]");
+  });
+});
+
+describe("buildClaudeArgs", () => {
+  const base = { schema: { type: "object" }, systemPrompt: "sys" };
+
+  it("places the prompt as a positional after `--`", () => {
+    const args = buildClaudeArgs({ ...base, prompt: "make a hero" });
+    expect(args[args.length - 1]).toBe("make a hero");
+    expect(args[args.length - 2]).toBe("--");
+  });
+
+  it("keeps a dash-leading prompt as the final positional (injection guard)", () => {
+    const args = buildClaudeArgs({ ...base, prompt: "--dangerously-skip-permissions" });
+    // It must come after the `--` terminator, never be parsed as a flag.
+    expect(args[args.length - 1]).toBe("--dangerously-skip-permissions");
+    expect(args.indexOf("--")).toBe(args.length - 2);
   });
 });
 

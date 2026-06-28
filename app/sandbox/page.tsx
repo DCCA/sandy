@@ -323,9 +323,14 @@ function SandboxContent() {
         if (!data?.page) {
           return "Generator returned no page.";
         }
-        // Mirror other toolbar-driven JSON writes so the theme-sync effect
-        // doesn't clobber a generated theme.
-        isToolbarUpdate.current = true;
+        // Adopt the generated brand so the preview tokens and the toolbar
+        // selector match the new JSON (the generated page may pick a brand).
+        // Set it directly — the theme-sync effect then reconciles idempotently
+        // (no isToolbarUpdate flag, which could leak and swallow a later edit).
+        const brand = data.page?.theme?.brand;
+        if (typeof brand === "string") {
+          setSelectedTheme(brand);
+        }
         setJsonText(JSON.stringify(data.page, null, 2));
         setSelectedSectionId(null);
         return null;
