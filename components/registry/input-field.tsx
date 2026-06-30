@@ -1,14 +1,5 @@
 import type { InputFieldProps } from "@/lib/schemas/input-field";
-
-function slugify(value: string) {
-  return (
-    value
-      .toLowerCase()
-      .trim()
-      .replace(/[^a-z0-9]+/g, "-")
-      .replace(/^-+|-+$/g, "") || "field"
-  );
-}
+import { slugify } from "@/lib/utils";
 
 export function InputField({
   label,
@@ -19,7 +10,7 @@ export function InputField({
   error,
 }: InputFieldProps) {
   const hasError = !!error;
-  const fieldId = `input-${slugify(label)}`;
+  const fieldId = `input-${slugify(label, "-", "field")}`;
   const errorId = `${fieldId}-error`;
   const helperId = `${fieldId}-helper`;
   const describedBy = hasError ? errorId : helperText ? helperId : undefined;

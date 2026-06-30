@@ -1,7 +1,7 @@
 "use client";
 
-import { useState, useMemo, useCallback } from "react";
-import { ChevronDown, ChevronRight, Plus, Trash2 } from "lucide-react";
+import { useMemo, useCallback } from "react";
+import { Plus, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Select,
@@ -10,6 +10,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { CollapsibleSection } from "./collapsible-section";
 import { schemaToFields, type FieldDescriptor } from "@/lib/schema-introspect";
 import type { Section, RegistryItem } from "@/lib/registry/types";
 
@@ -18,47 +19,6 @@ type PropertyEditorProps = {
   registryItem: RegistryItem;
   onChange: (sectionId: string, newProps: Record<string, unknown>) => void;
 };
-
-// --- Reusable field components (follows TokenEditor styling) ---
-
-function CollapsibleSection({
-  title,
-  defaultOpen = true,
-  children,
-  actions,
-}: {
-  title: string;
-  defaultOpen?: boolean;
-  children: React.ReactNode;
-  actions?: React.ReactNode;
-}) {
-  const [open, setOpen] = useState(defaultOpen);
-  return (
-    <div className="border-b border-border/30 last:border-0">
-      <button
-        type="button"
-        onClick={() => setOpen(!open)}
-        className="flex items-center gap-2 w-full px-3 py-2 text-xs font-semibold text-muted-foreground hover:text-foreground transition-colors"
-      >
-        {open ? <ChevronDown className="size-3" /> : <ChevronRight className="size-3" />}
-        <span className="flex-1 text-left">{title}</span>
-        {actions && (
-          <span onClick={(e) => e.stopPropagation()} className="flex items-center gap-0.5">
-            {actions}
-          </span>
-        )}
-      </button>
-      <div
-        className="grid transition-all duration-200"
-        style={{ gridTemplateRows: open ? "1fr" : "0fr" }}
-      >
-        <div className="overflow-hidden">
-          <div className="px-3 pb-3 space-y-2">{children}</div>
-        </div>
-      </div>
-    </div>
-  );
-}
 
 function FieldLabel({ label, required }: { label: string; required: boolean }) {
   return (

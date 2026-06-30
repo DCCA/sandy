@@ -1,8 +1,9 @@
 "use client";
 
-import { useState, useCallback, useRef } from "react";
-import { Paintbrush, ChevronDown, ChevronRight, RotateCcw, Download, Upload } from "lucide-react";
+import { useCallback, useRef } from "react";
+import { Paintbrush, RotateCcw, Download, Upload } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { CollapsibleSection } from "./collapsible-section";
 import type { ThemeTokens, DeepPartial } from "@/lib/theme/types";
 import { tokensToDTCGString, dtcgToOverrides } from "@/lib/theme/dtcg";
 import { downloadJSON } from "@/lib/export/json";
@@ -77,38 +78,6 @@ const OPACITY_LABELS: { key: keyof ThemeTokens["opacity"]; label: string }[] = [
   { key: "hover", label: "Hover" },
   { key: "overlay", label: "Overlay" },
 ];
-
-function Section({
-  title,
-  defaultOpen = true,
-  children,
-}: {
-  title: string;
-  defaultOpen?: boolean;
-  children: React.ReactNode;
-}) {
-  const [open, setOpen] = useState(defaultOpen);
-  return (
-    <div className="border-b border-border/30 last:border-0">
-      <button
-        type="button"
-        onClick={() => setOpen(!open)}
-        className="flex items-center gap-2 w-full px-3 py-2 text-xs font-semibold text-muted-foreground hover:text-foreground transition-colors"
-      >
-        {open ? <ChevronDown className="size-3" /> : <ChevronRight className="size-3" />}
-        {title}
-      </button>
-      <div
-        className="grid transition-all duration-200"
-        style={{ gridTemplateRows: open ? "1fr" : "0fr" }}
-      >
-        <div className="overflow-hidden">
-          <div className="px-3 pb-3 space-y-2">{children}</div>
-        </div>
-      </div>
-    </div>
-  );
-}
 
 function Subsection({ title, children }: { title: string; children: React.ReactNode }) {
   return (
@@ -382,7 +351,7 @@ export function TokenEditor({
           </div>
 
           {/* Sections */}
-          <Section title="Colors">
+          <CollapsibleSection title="Colors">
             {COLOR_LABELS.map(({ key, label }) => (
               <ColorInput
                 key={key}
@@ -396,9 +365,9 @@ export function TokenEditor({
               value={tokens.color.overlay}
               onChange={(v) => handleColor("overlay", v)}
             />
-          </Section>
+          </CollapsibleSection>
 
-          <Section title="Typography" defaultOpen={false}>
+          <CollapsibleSection title="Typography" defaultOpen={false}>
             <Subsection title="Base">
               <TextInput
                 label="Font"
@@ -460,9 +429,9 @@ export function TokenEditor({
                 />
               ))}
             </Subsection>
-          </Section>
+          </CollapsibleSection>
 
-          <Section title="Radius">
+          <CollapsibleSection title="Radius">
             {RADIUS_LABELS.map(({ key, label }) => (
               <NumberInput
                 key={key}
@@ -472,9 +441,9 @@ export function TokenEditor({
                 max={key === "full" ? 999 : 48}
               />
             ))}
-          </Section>
+          </CollapsibleSection>
 
-          <Section title="Spacing">
+          <CollapsibleSection title="Spacing">
             {SPACING_LABELS.map(({ key, label }) => (
               <NumberInput
                 key={key}
@@ -484,9 +453,9 @@ export function TokenEditor({
                 max={96}
               />
             ))}
-          </Section>
+          </CollapsibleSection>
 
-          <Section title="Shadows" defaultOpen={false}>
+          <CollapsibleSection title="Shadows" defaultOpen={false}>
             <TextInput
               label="Small"
               value={tokens.shadow.sm}
@@ -502,9 +471,9 @@ export function TokenEditor({
               value={tokens.shadow.lg}
               onChange={(v) => handleShadow("lg", v)}
             />
-          </Section>
+          </CollapsibleSection>
 
-          <Section title="Opacity" defaultOpen={false}>
+          <CollapsibleSection title="Opacity" defaultOpen={false}>
             {OPACITY_LABELS.map(({ key, label }) => (
               <NumberInput
                 key={key}
@@ -517,9 +486,9 @@ export function TokenEditor({
                 suffix=""
               />
             ))}
-          </Section>
+          </CollapsibleSection>
 
-          <Section title="Borders" defaultOpen={false}>
+          <CollapsibleSection title="Borders" defaultOpen={false}>
             <TextInput
               label="Thin"
               value={tokens.border.thin}
@@ -530,7 +499,7 @@ export function TokenEditor({
               value={tokens.border.thick}
               onChange={(v) => handleBorder("thick", v)}
             />
-          </Section>
+          </CollapsibleSection>
         </div>
       )}
     </div>
