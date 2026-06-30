@@ -1,5 +1,6 @@
 "use client";
 
+// ponytail: kept as a design-system palette primitive - intentionally unused, not dead code.
 import { Tooltip as TooltipPrimitive } from "@base-ui/react/tooltip";
 
 import { cn } from "@/lib/utils";

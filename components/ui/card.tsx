@@ -1,3 +1,4 @@
+// ponytail: kept as a design-system palette primitive - intentionally unused, not dead code.
 import * as React from "react";
 
 import { cn } from "@/lib/utils";
