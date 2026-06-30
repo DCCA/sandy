@@ -1,6 +1,6 @@
 # Sandy — keikaku status
 
-_Last updated: 2026-06-28_
+_Last updated: 2026-06-30_
 
 ## Goal
 
@@ -16,8 +16,11 @@ only `registry lookup → Zod validate → render`.
 - Latest strategic decision (`docs/generative-ui.md`): **adopt generative UI, narrowly** —
   generate Sandy's existing Zod Page envelope, re-validated through the render gate. Phase 1 =
   "prompt-to-envelope."
-- Stack healthy: Next.js 16.1.6 (clears CVE-2025-55182), Zod 4.3.6 (`z.toJSONSchema` in use),
-  React 19.2.3. No AI dependency yet; no `app/api/` yet.
+- Stack hardened (2026-06-30): Next.js 16.2.9, React 19.2.7, Zod 4.4.3; `npm audit` **clean
+  (0 vulnerabilities)**; deps current via Dependabot, with `eslint` 10 / `typescript` 6 held
+  back deliberately (see ignore rules in `.github/dependabot.yml`). `CLAUDE.md` refreshed to
+  the current architecture (Page v2.0, composite builder, gen-UI, export); codebase trimmed
+  by a repo-wide ponytail over-engineering audit.
 
 ## Current initiative
 
@@ -60,6 +63,52 @@ theming-aware generation (Phase 4). Smaller polish: wire an `AbortController`/ca
 generation can be cancelled instead of waiting out the 120s timeout (noted in review).
 
 ## Session log
+
+### 2026-06-30 — Housekeeping: docs refresh, dep hygiene, 0 CVEs, ponytail cleanup
+
+**Where we were:** Gen-UI Phase 1 shipped (2026-06-28). But `CLAUDE.md` had drifted behind the
+code (still documented a single-component Envelope v1.0; no mention of the composite builder,
+gen-UI route, export, or the test stack). Several open Dependabot PRs, 16 `npm audit`
+vulnerabilities, and stale remote branches were outstanding.
+
+**What we did:**
+
+- **Refreshed `CLAUDE.md`** to the real architecture: Page v2.0 (`sections[]`) model, composite
+  component builder, prompt-to-Page gen-UI route, JSON/HTML/React export, Vitest/Playwright/jest-axe
+  test stack, DTCG + custom themes (PR #12).
+- **Resolved every open PR + pruned stale branches.** Merged the GitHub Actions bumps (checkout@v7,
+  setup-node@v6, upload-artifact@v7 — clears the Node 20 deprecation; #3/#4/#5, #4 needed a manual
+  `ci.yml` rebase), production deps (next 16.2.9, react 19.2.7, zod 4.4.3, lucide 1.22; #7, #16),
+  and the safe dev-deps (#14/#15). Deleted 2 squash-merged `claude/*` branches.
+- **Stopped the recurring broken dev-deps PR.** Its group kept failing on `eslint` 9→10 (ESLint 10
+  removed `context.getFilename()`, which the `eslint-plugin-react` bundled by `eslint-config-next`
+  still calls) plus an untested `typescript` 5→6. Landed the safe subset and added Dependabot
+  `ignore` rules for both majors with reasons (#14).
+- **`npm audit`: 16 → 0** (#17). 12 cleared by `npm audit fix` (transitive only); the last 2
+  (postcss <8.5.10 in `next`, dompurify ≤3.4.10 in `monaco-editor`) fixed via `overrides`
+  (postcss ^8.5.10, dompurify ^3.4.11) — avoiding the `--force` fix that would downgrade `next` to 9.3.3.
+- **Ponytail over-engineering audit, applied** (#18, ~-240 source lines): deleted dead
+  `clearCompositeRegistry`, deduped `CollapsibleSection` + `slugify` into shared modules, merged
+  `exportComposites`, un-exported internal-only symbols, dropped dead `@testing-library/jest-dom`,
+  moved the `shadcn` CLI to devDependencies. Visually verified the token + property editors.
+- **Restored the 3 shadcn primitives** (Card/Tooltip/Badge) the audit had removed, kept as an
+  intentional design-system palette (#19), each marked with a `// ponytail:` keep comment (#20).
+
+**Decisions:**
+
+- **Hold `eslint` 9 and `typescript` 5** via Dependabot ignore rules — ESLint 10 breaks linting
+  through `eslint-config-next`; TS 6 is an untested major. Lift each once upstream/ a migration is ready.
+- **Fix bundled-dep CVEs with `overrides`, not `npm audit fix --force`** — the forced fix downgrades
+  `next` to 9.3.3, which is unacceptable.
+- **Keep the shadcn Card/Tooltip/Badge primitives** as design-system surface (reversing the audit's
+  delete), marked so a future audit won't re-flag them.
+
+**Pending / next:**
+
+- [ ] Lift the Dependabot `eslint`/`typescript` major holds once `eslint-config-next` supports
+      ESLint 10 and a deliberate TS 6 migration is done.
+- [ ] (carried) Gen-UI Phase 2 evals + telemetry; streaming preview (Phase 3); theming-aware
+      generation (Phase 4); cancel/AbortController polish for in-flight generation.
 
 ### 2026-06-28 — Generative UI Phase 1: prompt-to-envelope, shipped
 
