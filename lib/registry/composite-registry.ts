@@ -53,9 +53,3 @@ export function getCompositeItem(key: string): RegistryItem | undefined {
 export function getCompositeKeys(): string[] {
   return Object.keys(compositeRegistry);
 }
-
-export function clearCompositeRegistry(): void {
-  for (const key of Object.keys(compositeRegistry)) {
-    delete compositeRegistry[key];
-  }
-}

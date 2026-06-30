@@ -9,6 +9,7 @@ import { BuilderBindings } from "./builder-bindings";
 import { NodeRenderer } from "@/components/composite/primitive-renderers";
 import { getDefaultProps, primitiveSchemas } from "@/lib/composite/primitives";
 import { applyTheme } from "@/lib/theme/css-vars";
+import { slugify } from "@/lib/utils";
 import {
   Select,
   SelectContent,
@@ -34,15 +35,6 @@ type ComponentBuilderProps = {
 
 function nextNodeId(): string {
   return `node_${crypto.randomUUID().slice(0, 8)}`;
-}
-
-function toSlug(name: string): string {
-  return (
-    name
-      .toLowerCase()
-      .replace(/[^a-z0-9]+/g, "_")
-      .replace(/^_|_$/g, "") || "custom_component"
-  );
 }
 
 // --- Inline node prop editor (reuses property-editor patterns) ---
@@ -216,7 +208,9 @@ export function ComponentBuilder({
 
   const handleSave = useCallback(() => {
     if (!name.trim() || nodes.length === 0) return;
-    const id = editingDefinition?.id ?? `custom_${toSlug(name)}_${Date.now().toString(36)}`;
+    const id =
+      editingDefinition?.id ??
+      `custom_${slugify(name, "_", "custom_component")}_${Date.now().toString(36)}`;
     const def: CompositeDefinition = {
       id,
       name: name.trim(),
