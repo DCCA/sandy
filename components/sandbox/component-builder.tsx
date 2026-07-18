@@ -9,7 +9,7 @@ import { BuilderBindings } from "./builder-bindings";
 import { NodeRenderer } from "@/components/composite/primitive-renderers";
 import { getDefaultProps, primitiveSchemas } from "@/lib/composite/primitives";
 import { applyTheme } from "@/lib/theme/css-vars";
-import { slugify } from "@/lib/utils";
+import { newCompositeId } from "@/lib/composite/identity";
 import {
   Select,
   SelectContent,
@@ -32,6 +32,8 @@ type ComponentBuilderProps = {
   editingDefinition: CompositeDefinition | null;
   /** How many sections on the current page use this component, so edits can warn before breaking them. */
   sectionsUsing: number;
+  /** Categories already in use, offered as suggestions rather than a fixed taxonomy. */
+  knownCategories: string[];
   onSave: (def: CompositeDefinition) => void;
   onClose: () => void;
 };
@@ -149,11 +151,13 @@ export function ComponentBuilder({
   themeTokens,
   editingDefinition,
   sectionsUsing,
+  knownCategories,
   onSave,
   onClose,
 }: ComponentBuilderProps) {
   const [name, setName] = useState(editingDefinition?.name ?? "");
   const [description, setDescription] = useState(editingDefinition?.description ?? "");
+  const [category, setCategory] = useState(editingDefinition?.category ?? "");
   const [nodes, setNodes] = useState<PrimitiveNode[]>(editingDefinition?.nodes ?? []);
   const [bindings, setBindings] = useState<PropBinding[]>(editingDefinition?.propBindings ?? []);
   const [selectedNodeId, setSelectedNodeId] = useState<string | null>(null);
@@ -212,19 +216,21 @@ export function ComponentBuilder({
 
   const handleSave = useCallback(() => {
     if (!name.trim() || nodes.length === 0) return;
-    const id =
-      editingDefinition?.id ??
-      `custom_${slugify(name, "_", "custom_component")}_${Date.now().toString(36)}`;
+    // Reuse the existing id when editing: sections reference it, so a rename must not
+    // change the key.
+    const id = editingDefinition?.id ?? newCompositeId(name);
     const def: CompositeDefinition = {
       id,
       name: name.trim(),
       description: description.trim() || undefined,
+      category: category.trim() || undefined,
       nodes,
       propBindings: bindings,
+      createdAt: editingDefinition?.createdAt,
       version: "1.0",
     };
     onSave(def);
-  }, [name, description, nodes, bindings, editingDefinition, onSave]);
+  }, [name, description, category, nodes, bindings, editingDefinition, onSave]);
 
   const canSave = name.trim().length > 0 && nodes.length > 0;
 
@@ -314,6 +320,22 @@ export function ComponentBuilder({
             placeholder="Optional description"
             className="h-7 flex-1 min-w-0 rounded bg-muted/30 border border-border/50 px-2 text-xs text-foreground outline-none focus:border-accent/50"
           />
+        </div>
+        <div className="flex items-center gap-2 w-52">
+          <label className="text-xs text-muted-foreground shrink-0">Category</label>
+          <input
+            type="text"
+            value={category}
+            onChange={(e) => setCategory(e.target.value)}
+            placeholder="Uncategorized"
+            list="sandy-composite-categories"
+            className="h-7 flex-1 min-w-0 rounded bg-muted/30 border border-border/50 px-2 text-xs text-foreground outline-none focus:border-accent/50"
+          />
+          <datalist id="sandy-composite-categories">
+            {knownCategories.map((c) => (
+              <option key={c} value={c} />
+            ))}
+          </datalist>
         </div>
       </div>
 

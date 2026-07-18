@@ -119,6 +119,10 @@ function ButtonRenderer({ props }: { props: Record<string, unknown> }) {
 
   const baseStyle: React.CSSProperties = {
     display: "inline-block",
+    // Composites stack their nodes in a column flex, whose default align-items:stretch
+    // would blow an inline primitive out to the full width of the component.
+    alignSelf: "flex-start",
+    width: "fit-content",
     padding: "var(--sandy-spacing-sm, 8px) var(--sandy-spacing-md, 16px)",
     borderRadius: "var(--sandy-radius-md, 8px)",
     fontSize: "0.875rem",
@@ -197,6 +201,9 @@ function BadgeRenderer({ props }: { props: Record<string, unknown> }) {
     <span
       style={{
         display: "inline-block",
+        // See ButtonRenderer: the parent column flex would otherwise stretch this.
+        alignSelf: "flex-start",
+        width: "fit-content",
         padding: "2px 8px",
         borderRadius: "var(--sandy-radius-sm, 4px)",
         fontSize: "0.75rem",

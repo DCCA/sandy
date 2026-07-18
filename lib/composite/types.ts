@@ -22,7 +22,16 @@ export type CompositeDefinition = {
   id: string;
   name: string;
   description?: string;
+  /** Free-text grouping shown in the library. Absent means "Uncategorized". */
+  category?: string;
   nodes: PrimitiveNode[];
   propBindings: PropBinding[];
+  /**
+   * Epoch millis. Optional because components saved before the library existed have
+   * neither - the library treats a missing timestamp as oldest rather than dropping
+   * the component.
+   */
+  createdAt?: number;
+  updatedAt?: number;
   version: "1.0";
 };

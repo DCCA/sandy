@@ -48,15 +48,26 @@ export function saveComposites(defs: CompositeDefinition[]): void {
   }
 }
 
-export function saveComposite(def: CompositeDefinition): void {
+/** Persists the definition and returns it with its timestamps stamped, so callers can
+ * keep component state in sync with what was actually written. */
+export function saveComposite(def: CompositeDefinition): CompositeDefinition {
   const { definitions } = loadComposites();
   const idx = definitions.findIndex((d) => d.id === def.id);
+  const now = Date.now();
+  // Preserve the original creation time across edits so "recently updated" and
+  // "when did I make this" stay distinct.
+  const stamped: CompositeDefinition = {
+    ...def,
+    createdAt: def.createdAt ?? definitions[idx]?.createdAt ?? now,
+    updatedAt: now,
+  };
   if (idx >= 0) {
-    definitions[idx] = def;
+    definitions[idx] = stamped;
   } else {
-    definitions.push(def);
+    definitions.push(stamped);
   }
   saveComposites(definitions);
+  return stamped;
 }
 
 export function deleteComposite(id: string): void {
