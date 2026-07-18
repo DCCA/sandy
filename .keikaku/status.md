@@ -1,6 +1,6 @@
 # Sandy — keikaku status
 
-_Last updated: 2026-06-30_
+_Last updated: 2026-07-18_
 
 ## Goal
 
@@ -24,7 +24,12 @@ only `registry lookup → Zod validate → render`.
 
 ## Current initiative
 
-**Generative UI Phase 1 — Prompt-to-Envelope (subscription-powered, local).**
+**Composite library, phases A–C — shipped 2026-07-18.** See the session log below and the
+three specs in `docs/superpowers/specs/`. The composite library is now correct, browsable,
+and able to express nested structure. Generative UI Phase 2+ is the next open thread.
+
+### Previously: Generative UI Phase 1 — Prompt-to-Envelope (subscription-powered, local).
+
 Full plan: `/home/dcca/.claude/plans/you-are-keikaku-advancing-drifting-hejlsberg.md` (approved).
 
 A toolbar "Generate from prompt" action → local Next.js route spawns the **Claude Code CLI**
@@ -57,12 +62,78 @@ in, the stored login is used and no token is needed.)
 
 ## next_action
 
-Phase 1 done. Candidate follow-ups (from `docs/generative-ui.md` §6): quality evals + telemetry
-on validation-failure rate (Phase 2), streaming preview via `streamObject`/SpecStream (Phase 3),
-theming-aware generation (Phase 4). Smaller polish: wire an `AbortController`/cancel so a slow
-generation can be cancelled instead of waiting out the 120s timeout (noted in review).
+Composite library A–C done. Open threads, in rough priority order:
+
+1. **Delete confirmation** in the library. Deletion is immediate and irreversible, matching
+   the old toolbar pills, but the library makes deleting far easier to reach. Needs a dialog
+   primitive - `components/ui/` has none, and `ModalOverlay` is now a reasonable base for one.
+2. **Dragging nodes between parents** in the builder. Reordering currently stays within a
+   node's own sibling list.
+3. **Wrapping existing nodes in a container**, so structure can be introduced after the fact
+   instead of only planned up front.
+4. Gen-UI: candidate follow-ups (from `docs/generative-ui.md` §6): quality evals + telemetry
+   on validation-failure rate (Phase 2), streaming preview via `streamObject`/SpecStream (Phase 3),
+   theming-aware generation (Phase 4). Smaller polish: wire an `AbortController`/cancel so a slow
+   generation can be cancelled instead of waiting out the 120s timeout (noted in review).
 
 ## Session log
+
+### 2026-07-18 — Composite library: correctness, surface, ceiling (PRs #26, #27, #28)
+
+**Where we were:** the felt blocker was "there is no real library concept" for composite
+components. Investigation found that part of that feeling was not a missing feature but a
+broken one.
+
+**What we did — Phase A, trust (#26):**
+
+- **Reproduced a real bug end-to-end before fixing it.** A saved composite placed on a page
+  and opened as a shared link rendered `Unknown component` on load, then rendered correctly
+  after a single spacebar keystroke. Root cause: `compositeRegistry` is module-level mutable
+  state React cannot observe, and the validation memo depended only on `[jsonText]`, so it
+  resolved against an empty registry on first render and never recomputed.
+- Made the registry a **subscribable store** consumed via `useSyncExternalStore`, so
+  registration itself is the change signal. Rejected the smaller fix (adding `composites` to
+  the dep array) because it only works while a `setState` happens to sit beside every
+  register call.
+- Picker shows component names instead of raw ids (`custom_price_tag_abc123`).
+- Editing a composite that sections already use now warns. `binding-diff` mirrors
+  `generateSchemaFromBindings` rather than reading `required`, because the builder seeds
+  `default: ""` on every binding, which makes a "required" string binding non-breaking.
+- `loadComposites` reports entries it could not read instead of dropping them silently.
+
+**Phase B, the library surface (#27):** full-screen panel of cards with live themed
+previews, search, category chips, duplicate, per-component and bulk export, recently-updated
+ordering. `CompositeDefinition` gained optional `category`/`createdAt`/`updatedAt` - optional
+so components saved earlier keep working. Fixed a rendering bug it made obvious: the column
+flex was stretching `inline-block` badge and button primitives to full width, in previews
+and exported output alike.
+
+**Phase C, the ceiling (#28):** composites could only ever be a flat stack - the builder
+appended everything to the top level and showed container children read-only. The data
+model, renderer and binding-path walker already supported nesting, so this was purely a UI
+limitation. Tree manipulation moved into pure helpers in `lib/composite/tree.ts`;
+`MAX_NEST_DEPTH` matches the renderer's `MAX_DEPTH`, asserted by a test.
+
+**Decisions:**
+
+- **Overlays are native `<dialog>` + `showModal()`.** A five-lens adversarial review found
+  the library (and the pre-existing builder) painted over the sandbox without being modal:
+  focus stayed behind, Tab walked the invisible editor, Escape did nothing. The native
+  element supplies focus movement, trapping, inertness and Escape with no hand-rolled trap.
+  jsdom implements neither `showModal` nor `close`, so it degrades there and the real
+  modality is asserted in Playwright.
+- **Notices are not validation errors.** A new `notice` type carries "N saved components
+  could not be loaded" without suppressing the "Valid" indicator.
+
+**Worth remembering:** a subagent dispatched **read-only** for review edited source anyway -
+it injected `id: def.id` into `duplicateComposite` (which would make duplicating overwrite
+the original) and left probe files behind. The test suite caught the mutation immediately,
+but verify the working tree after delegated reviews rather than trusting the instruction.
+
+**Verification:** 299 unit tests (from 239), 23 e2e (from 7), 0 lint/type/format issues.
+Dogfooded the whole flow in a browser: built a nested card, saved it, placed it from the
+picker by name, shared the link, reloaded - no `Unknown component`, category and timestamps
+persisted, nested children intact.
 
 ### 2026-06-30 — Housekeeping: docs refresh, dep hygiene, 0 CVEs, ponytail cleanup
 
