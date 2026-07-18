@@ -5,9 +5,18 @@ import { useEffect, useRef } from "react";
 type ModalOverlayProps = {
   /** Accessible name for the dialog. */
   label: string;
+  /** Fullscreen for working surfaces, centered for a short prompt. */
+  variant?: "fullscreen" | "centered";
   onClose: () => void;
   children: React.ReactNode;
 };
+
+const VARIANTS = {
+  fullscreen:
+    "fixed inset-0 z-50 m-0 h-full max-h-none w-full max-w-none flex-col bg-background/95 p-0 text-foreground backdrop-blur-md open:flex",
+  centered:
+    "fixed inset-0 z-50 m-auto h-fit w-full max-w-sm flex-col rounded-lg border border-border/50 bg-background p-0 text-foreground shadow-2xl shadow-black/40 open:flex",
+} as const;
 
 /**
  * Full-screen modal surface for the builder and the library.
@@ -21,7 +30,12 @@ type ModalOverlayProps = {
  * moves in, focus is trapped, the rest of the document goes inert, and Escape closes -
  * so there is no hand-rolled focus trap to keep correct.
  */
-export function ModalOverlay({ label, onClose, children }: ModalOverlayProps) {
+export function ModalOverlay({
+  label,
+  variant = "fullscreen",
+  onClose,
+  children,
+}: ModalOverlayProps) {
   const ref = useRef<HTMLDialogElement>(null);
 
   useEffect(() => {
@@ -54,7 +68,7 @@ export function ModalOverlay({ label, onClose, children }: ModalOverlayProps) {
         e.preventDefault();
         onClose();
       }}
-      className="fixed inset-0 z-50 m-0 h-full max-h-none w-full max-w-none flex-col bg-background/95 p-0 text-foreground backdrop-blur-md open:flex"
+      className={VARIANTS[variant]}
     >
       {children}
     </dialog>

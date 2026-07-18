@@ -81,6 +81,11 @@ test.describe("component library", () => {
 
   test("deleting removes the component from the library", async ({ page }) => {
     await library.getByTitle("Delete Loose Widget").click();
+    // Deletion is guarded by a confirmation.
+    await page
+      .getByRole("dialog", { name: /Delete "Loose Widget"/ })
+      .getByRole("button", { name: "Delete", exact: true })
+      .click();
 
     await expect(page.getByRole("heading", { level: 3, name: "Loose Widget" })).toHaveCount(0);
     await expect(library.getByRole("heading", { level: 3 })).toHaveCount(2);

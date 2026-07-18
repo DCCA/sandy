@@ -158,8 +158,37 @@ describe("ComponentLibrary", () => {
     fireEvent.click(screen.getByTitle("Export Alpha Card"));
     expect(props.onExportOne).toHaveBeenCalledWith(alpha);
 
+    // Delete is guarded: the card button only opens a confirmation.
     fireEvent.click(screen.getByTitle("Delete Alpha Card"));
+    expect(props.onDelete).not.toHaveBeenCalled();
+  });
+
+  it("deletes only after the confirmation is accepted", () => {
+    const { props } = renderLibrary();
+
+    fireEvent.click(screen.getByTitle("Delete Alpha Card"));
+    expect(screen.getByText(/Delete "Alpha Card"\?/)).toBeDefined();
+
+    fireEvent.click(screen.getByRole("button", { name: "Delete" }));
     expect(props.onDelete).toHaveBeenCalledWith("alpha");
+  });
+
+  it("does not delete when the confirmation is cancelled", () => {
+    const { props } = renderLibrary();
+
+    fireEvent.click(screen.getByTitle("Delete Alpha Card"));
+    fireEvent.click(screen.getByRole("button", { name: "Cancel" }));
+
+    expect(props.onDelete).not.toHaveBeenCalled();
+    expect(screen.queryByText(/Delete "Alpha Card"\?/)).toBeNull();
+  });
+
+  it("warns when the component is used by sections on the current page", () => {
+    renderLibrary({ usageById: { alpha: 2 } });
+
+    fireEvent.click(screen.getByTitle("Delete Alpha Card"));
+
+    expect(screen.getByText(/2 sections on the current page/)).toBeDefined();
   });
 
   it("fires the header actions", () => {
