@@ -52,9 +52,18 @@ Search filters name, description and category together. Category chips filter al
 Sort is most-recently-updated first. Empty states distinguish "you have nothing yet" from
 "nothing matches this search", because those need different offers.
 
-The overlay is a **named region** (`aria-label="Component library"`) rather than a bare
-div: it renders on top of the sandbox without unmounting it, so assistive technology and
-tests both need a way to scope to this surface instead of matching the page underneath.
+The overlay is a **real modal**, via `components/sandbox/modal-overlay.tsx`. A multi-lens
+review caught that the original `fixed inset-0` div painted over the sandbox without being
+modal at all: focus stayed on the toolbar button behind it, Tab walked the invisible editor
+and toolbar underneath with no visible focus ring, Escape did nothing, and a screen reader
+read the whole covered page as if it were still on screen. The component builder had the
+same defect, so the fix is shared by both rather than applied twice.
+
+It uses a native `<dialog>` opened with `showModal()`, which gets focus movement, focus
+trapping, background inertness and Escape-to-close from the browser - there is no
+hand-rolled focus trap to keep correct. jsdom implements neither `showModal` nor `close`,
+so the component degrades to a non-modal open dialog there and the real modality is
+asserted in Playwright instead.
 
 ### Toolbar
 

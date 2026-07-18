@@ -6,6 +6,7 @@ import { Copy, Download, Pencil, Plus, Puzzle, Trash2, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { CompositeRenderer } from "@/components/composite/composite-renderer";
 import { applyTheme } from "@/lib/theme/css-vars";
+import { ModalOverlay } from "./modal-overlay";
 import type { CompositeDefinition } from "@/lib/composite/types";
 import type { ThemeTokens } from "@/lib/theme/types";
 
@@ -182,10 +183,16 @@ export function ComponentLibrary({
     return ["All", ...[...seen].sort((a, b) => a.localeCompare(b))];
   }, [composites]);
 
+  // Deleting the last component in a category removes its chip, but the selected
+  // category is plain state and would keep filtering everything out - leaving an empty
+  // grid with no visible filter to explain it. Treat a category that no longer exists
+  // as no filter, so the stale state is unreachable rather than merely recoverable.
+  const activeCategory = categories.includes(category) ? category : "All";
+
   const visible = useMemo(() => {
     const query = search.trim().toLowerCase();
     return composites
-      .filter((def) => category === "All" || categoryOf(def) === category)
+      .filter((def) => activeCategory === "All" || categoryOf(def) === activeCategory)
       .filter((def) => {
         if (!query) return true;
         return [def.name, def.description ?? "", categoryOf(def)].some((field) =>
@@ -193,23 +200,21 @@ export function ComponentLibrary({
         );
       })
       .sort((a, b) => (b.updatedAt ?? 0) - (a.updatedAt ?? 0));
-  }, [composites, search, category]);
+  }, [composites, search, activeCategory]);
 
   const isEmptyLibrary = composites.length === 0;
 
   return (
-    // A named region rather than a bare div: the library overlays the sandbox without
-    // unmounting it, so assistive tech (and tests) need a way to scope to this surface
-    // instead of matching the page still rendered underneath.
-    <section
-      aria-label="Component library"
-      className="fixed inset-0 z-50 flex flex-col bg-background/95 backdrop-blur-md"
-    >
+    <ModalOverlay label="Component library" onClose={onClose}>
       {/* Header */}
       <div className="flex shrink-0 items-center gap-3 border-b border-border/50 px-4 py-2.5">
         <h2 className="text-sm font-semibold">Component Library</h2>
-        <span className="text-xs text-muted-foreground">
-          {composites.length} {composites.length === 1 ? "component" : "components"}
+        {/* Live so that typing in the search field announces the result count, instead
+            of the user having to leave the input and browse the grid to find out. */}
+        <span className="text-xs text-muted-foreground" role="status" aria-live="polite">
+          {visible.length === composites.length
+            ? `${composites.length} ${composites.length === 1 ? "component" : "components"}`
+            : `${visible.length} of ${composites.length} components`}
         </span>
         <div className="flex-1" />
         <Button
@@ -265,7 +270,7 @@ export function ComponentLibrary({
               <button
                 key={cat}
                 type="button"
-                aria-pressed={category === cat}
+                aria-pressed={activeCategory === cat}
                 onClick={() => setCategory(cat)}
                 className={`rounded-full px-2.5 py-1 text-[11px] transition-colors ${
                   category === cat
@@ -330,6 +335,6 @@ export function ComponentLibrary({
           </div>
         )}
       </div>
-    </section>
+    </ModalOverlay>
   );
 }

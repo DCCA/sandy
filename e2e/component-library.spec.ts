@@ -43,7 +43,7 @@ test.describe("component library", () => {
     );
     await page.goto("/sandbox");
     await page.getByTitle("Open component library").click();
-    library = page.getByRole("region", { name: "Component library" });
+    library = page.getByRole("dialog", { name: "Component library" });
   });
 
   test("lists every saved component, most recently updated first", async () => {
@@ -99,5 +99,31 @@ test.describe("component library", () => {
     const download = await downloadPromise;
 
     expect(download.suggestedFilename()).toBe("sandy-components.json");
+  });
+
+  test("is a real modal: Escape closes it and focus moves inside", async ({ page }) => {
+    await expect(library).toBeVisible();
+
+    // Focus must land inside the dialog, not stay on the covered toolbar button.
+    const focusedInside = await page.evaluate(() => {
+      const dialog = document.querySelector("dialog[aria-label='Component library']");
+      return !!dialog && dialog.contains(document.activeElement);
+    });
+    expect(focusedInside).toBe(true);
+
+    await page.keyboard.press("Escape");
+    await expect(library).toBeHidden();
+  });
+
+  test("makes the sandbox behind it inert", async ({ page }) => {
+    // showModal() puts the dialog in the top layer, so controls underneath stop being
+    // reachable - previously Tab walked the invisible toolbar and Monaco editor.
+    const toolbarReachable = await page.evaluate(() => {
+      const btn = document.querySelector("button[aria-label='Open component library']");
+      if (!(btn instanceof HTMLElement)) return "missing";
+      btn.focus();
+      return document.activeElement === btn;
+    });
+    expect(toolbarReachable).toBe(false);
   });
 });

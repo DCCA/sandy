@@ -219,6 +219,9 @@ export const Toolbar = memo(function Toolbar({
             className="h-7 px-2 gap-1.5 text-xs"
             onClick={onOpenLibrary}
             title="Open component library"
+            // Below xl the label is hidden and only the count renders, which would make
+            // the accessible name just "3". An explicit label wins over content.
+            aria-label="Open component library"
           >
             <LibraryBig className="size-3.5" />
             <span className="hidden xl:inline">Library</span>

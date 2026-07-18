@@ -10,6 +10,7 @@ import { NodeRenderer } from "@/components/composite/primitive-renderers";
 import { getDefaultProps, primitiveSchemas } from "@/lib/composite/primitives";
 import { applyTheme } from "@/lib/theme/css-vars";
 import { newCompositeId } from "@/lib/composite/identity";
+import { ModalOverlay } from "./modal-overlay";
 import {
   Select,
   SelectContent,
@@ -244,7 +245,7 @@ export function ComponentBuilder({
   const breakingEdit = sectionsUsing > 0 && bindingImpact !== null && isBreaking(bindingImpact);
 
   return (
-    <div className="fixed inset-0 z-50 bg-background/95 backdrop-blur-md flex flex-col">
+    <ModalOverlay label="Component builder" onClose={onClose}>
       {/* Header */}
       <div className="flex items-center gap-3 px-4 py-2.5 border-b border-border/50 shrink-0">
         <span className="text-sm font-semibold">Component Builder</span>
@@ -398,6 +399,6 @@ export function ComponentBuilder({
           <BuilderBindings bindings={bindings} nodes={nodes} onChange={setBindings} />
         </div>
       </div>
-    </div>
+    </ModalOverlay>
   );
 }
