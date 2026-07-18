@@ -14,16 +14,28 @@ export function isValidDefinition(d: unknown): d is CompositeDefinition {
   );
 }
 
-export function loadComposites(): CompositeDefinition[] {
-  if (typeof window === "undefined") return [];
+export type LoadResult = {
+  definitions: CompositeDefinition[];
+  /**
+   * How many stored entries failed validation. These are a saved component the user
+   * can no longer see, so the count is reported rather than swallowed - and note that
+   * the next saveComposite() rewrites the whole blob, erasing them for good.
+   */
+  droppedCount: number;
+};
+
+export function loadComposites(): LoadResult {
+  const empty: LoadResult = { definitions: [], droppedCount: 0 };
+  if (typeof window === "undefined") return empty;
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
-    if (!raw) return [];
+    if (!raw) return empty;
     const parsed = JSON.parse(raw);
-    if (!Array.isArray(parsed)) return [];
-    return parsed.filter(isValidDefinition);
+    if (!Array.isArray(parsed)) return empty;
+    const definitions = parsed.filter(isValidDefinition);
+    return { definitions, droppedCount: parsed.length - definitions.length };
   } catch {
-    return [];
+    return empty;
   }
 }
 
@@ -37,17 +49,17 @@ export function saveComposites(defs: CompositeDefinition[]): void {
 }
 
 export function saveComposite(def: CompositeDefinition): void {
-  const existing = loadComposites();
-  const idx = existing.findIndex((d) => d.id === def.id);
+  const { definitions } = loadComposites();
+  const idx = definitions.findIndex((d) => d.id === def.id);
   if (idx >= 0) {
-    existing[idx] = def;
+    definitions[idx] = def;
   } else {
-    existing.push(def);
+    definitions.push(def);
   }
-  saveComposites(existing);
+  saveComposites(definitions);
 }
 
 export function deleteComposite(id: string): void {
-  const existing = loadComposites();
-  saveComposites(existing.filter((d) => d.id !== id));
+  const { definitions } = loadComposites();
+  saveComposites(definitions.filter((d) => d.id !== id));
 }

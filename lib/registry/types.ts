@@ -49,7 +49,9 @@ export type Envelope = {
 export type Viewport = "mobile" | "tablet" | "desktop";
 
 export type SandboxError = {
-  type: "parse" | "validation" | "runtime";
+  // "notice" is for things the user should know that aren't wrong with their JSON -
+  // a truncated share link, saved components that couldn't be read.
+  type: "parse" | "validation" | "runtime" | "notice";
   messages: string[];
   sectionId?: string;
   sectionLabel?: string;

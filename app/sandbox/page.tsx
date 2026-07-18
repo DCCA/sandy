@@ -1,6 +1,14 @@
 "use client";
 
-import { useState, useCallback, useMemo, useEffect, useRef, Suspense } from "react";
+import {
+  useState,
+  useCallback,
+  useMemo,
+  useEffect,
+  useRef,
+  useSyncExternalStore,
+  Suspense,
+} from "react";
 import { useSearchParams } from "next/navigation";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Editor } from "@/components/sandbox/editor";
@@ -12,7 +20,12 @@ import { SectionList } from "@/components/sandbox/section-list";
 import { PropertyEditor } from "@/components/sandbox/property-editor";
 import { ComponentBuilder } from "@/components/sandbox/component-builder";
 import { getRegistryItem, defaultPage } from "@/lib/registry";
-import { registerComposite, unregisterComposite } from "@/lib/registry/composite-registry";
+import {
+  registerComposite,
+  unregisterComposite,
+  subscribeToComposites,
+  getCompositeVersion,
+} from "@/lib/registry/composite-registry";
 import { pageTemplates } from "@/lib/registry/templates";
 import {
   loadComposites,
@@ -95,18 +108,36 @@ function SandboxContent() {
   const [builderOpen, setBuilderOpen] = useState(false);
   const [editingComposite, setEditingComposite] = useState<CompositeDefinition | null>(null);
   const [urlWarning, setUrlWarning] = useState<string | null>(null);
+  const [storageWarning, setStorageWarning] = useState<string | null>(null);
   const [generateAvailable, setGenerateAvailable] = useState(false);
   const previewRef = useRef<HTMLDivElement>(null);
 
   // Load composites from localStorage on mount
   useEffect(() => {
-    const defs = loadComposites();
-    for (const def of defs) {
+    const { definitions, droppedCount } = loadComposites();
+    for (const def of definitions) {
       const comp = createCompositeComponent(def);
       registerComposite(def, comp);
     }
-    setComposites(defs);
+    setComposites(definitions);
+    if (droppedCount > 0) {
+      setStorageWarning(
+        `${droppedCount} saved component${droppedCount === 1 ? "" : "s"} could not be loaded and ${
+          droppedCount === 1 ? "is" : "are"
+        } not shown.`,
+      );
+    }
   }, []);
+
+  // The composite registry is mutable module state React can't see. Subscribing to it
+  // makes registration a real dependency of the validation memo below, so restoring a
+  // saved component (or editing one) re-validates the page instead of leaving a stale
+  // "Unknown component" result behind.
+  const registryVersion = useSyncExternalStore(
+    subscribeToComposites,
+    getCompositeVersion,
+    () => 0, // server snapshot: the registry is client-only
+  );
 
   // Probe whether prompt generation is available in this environment (local only).
   useEffect(() => {
@@ -159,7 +190,21 @@ function SandboxContent() {
         parsedTheme: pageData.theme?.brand ?? null,
         parsedMode: pageData.theme?.mode ?? null,
       };
-    }, [jsonText]);
+      // registryVersion is deliberately a dependency without appearing in the body:
+      // validatePage reads the mutable composite registry, so a registration must
+      // invalidate this memo. eslint can't see that indirection.
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [jsonText, registryVersion]);
+
+  // The in-use warning must survive a broken edit. parsedSections collapses to [] on any
+  // parse error, which is exactly when the user is mid-typing - so remember the last
+  // sections that did parse and count usage against those.
+  const parseFailed = errors.some((err) => err.type === "parse");
+  const lastGoodSections = useRef<typeof parsedSections>([]);
+  useEffect(() => {
+    if (!parseFailed) lastGoodSections.current = parsedSections;
+  }, [parsedSections, parseFailed]);
+  const sectionsForUsage = parseFailed ? lastGoodSections.current : parsedSections;
 
   // Derive selected section + registry item
   const selectedSection = useMemo(() => {
@@ -498,14 +543,17 @@ function SandboxContent() {
   }, []);
 
   const handleImportComposites = useCallback((defs: CompositeDefinition[]) => {
+    // Registering and persisting are side effects, so they belong in the handler rather
+    // than inside the setState updater: React runs updaters during render and invokes
+    // them twice under StrictMode, which would double-register and notify the composite
+    // store mid-render.
+    for (const def of defs) {
+      registerComposite(def, createCompositeComponent(def));
+      saveComposite(def);
+    }
     setComposites((prev) => {
       const byId = new Map(prev.map((d) => [d.id, d]));
-      for (const def of defs) {
-        const comp = createCompositeComponent(def);
-        registerComposite(def, comp);
-        saveComposite(def);
-        byId.set(def.id, def);
-      }
+      for (const def of defs) byId.set(def.id, def);
       return [...byId.values()];
     });
   }, []);
@@ -597,9 +645,11 @@ function SandboxContent() {
             </TabsContent>
           </Tabs>
           <ErrorPanel
-            errors={
-              urlWarning ? [...errors, { type: "validation", messages: [urlWarning] }] : errors
-            }
+            errors={[
+              ...errors,
+              ...(urlWarning ? [{ type: "notice" as const, messages: [urlWarning] }] : []),
+              ...(storageWarning ? [{ type: "notice" as const, messages: [storageWarning] }] : []),
+            ]}
           />
         </div>
 
@@ -630,6 +680,11 @@ function SandboxContent() {
         <ComponentBuilder
           themeTokens={mergedTokens}
           editingDefinition={editingComposite}
+          sectionsUsing={
+            editingComposite
+              ? sectionsForUsage.filter((s) => s.component === editingComposite.id).length
+              : 0
+          }
           onSave={handleSaveComposite}
           onClose={() => {
             setBuilderOpen(false);

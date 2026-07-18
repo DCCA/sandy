@@ -18,6 +18,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { schemaToFields, type FieldDescriptor } from "@/lib/schema-introspect";
+import { diffBindings, isBreaking } from "@/lib/composite/binding-diff";
 import type {
   PrimitiveNode,
   PrimitiveType,
@@ -29,6 +30,8 @@ import type { ThemeTokens } from "@/lib/theme/types";
 type ComponentBuilderProps = {
   themeTokens: ThemeTokens;
   editingDefinition: CompositeDefinition | null;
+  /** How many sections on the current page use this component, so edits can warn before breaking them. */
+  sectionsUsing: number;
   onSave: (def: CompositeDefinition) => void;
   onClose: () => void;
 };
@@ -145,6 +148,7 @@ function InlineField({
 export function ComponentBuilder({
   themeTokens,
   editingDefinition,
+  sectionsUsing,
   onSave,
   onClose,
 }: ComponentBuilderProps) {
@@ -224,6 +228,15 @@ export function ComponentBuilder({
 
   const canSave = name.trim().length > 0 && nodes.length > 0;
 
+  // Editing a component that's already placed: show what this edit does to those
+  // sections. Dropped props lose their stored value silently; newly required props
+  // make the existing sections fail validation outright.
+  const bindingImpact = useMemo(
+    () => (editingDefinition ? diffBindings(editingDefinition.propBindings, bindings) : null),
+    [editingDefinition, bindings],
+  );
+  const breakingEdit = sectionsUsing > 0 && bindingImpact !== null && isBreaking(bindingImpact);
+
   return (
     <div className="fixed inset-0 z-50 bg-background/95 backdrop-blur-md flex flex-col">
       {/* Header */}
@@ -243,6 +256,42 @@ export function ComponentBuilder({
           <X className="size-4" />
         </Button>
       </div>
+
+      {/* In-use warning */}
+      {breakingEdit && bindingImpact && (
+        <div
+          role="status"
+          className="flex items-start gap-2 px-4 py-2 border-b border-amber-500/20 bg-amber-500/10 shrink-0"
+        >
+          <span className="text-amber-400 text-sm leading-none mt-0.5">⚠</span>
+          <div className="text-xs text-amber-200/90 leading-relaxed">
+            <span className="font-semibold">
+              {sectionsUsing} section{sectionsUsing === 1 ? "" : "s"} on this page use
+              {sectionsUsing === 1 ? "s" : ""} this component.
+            </span>{" "}
+            {bindingImpact.droppedProps.length > 0 && (
+              <>
+                Unbinding <span className="font-mono">{bindingImpact.droppedProps.join(", ")}</span>{" "}
+                stops {bindingImpact.droppedProps.length === 1 ? "its" : "their"} saved value from
+                being applied (it stays in your JSON).{" "}
+              </>
+            )}
+            {bindingImpact.newRequiredProps.length > 0 && (
+              <>
+                Requiring{" "}
+                <span className="font-mono">{bindingImpact.newRequiredProps.join(", ")}</span> makes{" "}
+                {sectionsUsing === 1 ? "it" : "them"} fail validation until filled in.{" "}
+              </>
+            )}
+            {bindingImpact.retypedProps.length > 0 && (
+              <>
+                Changing <span className="font-mono">{bindingImpact.retypedProps.join(", ")}</span>{" "}
+                may reject {bindingImpact.retypedProps.length === 1 ? "its" : "their"} saved value.
+              </>
+            )}
+          </div>
+        </div>
+      )}
 
       {/* Name / Description */}
       <div className="flex items-center gap-3 px-4 py-2 border-b border-border/50 shrink-0">
