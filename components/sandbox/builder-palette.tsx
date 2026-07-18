@@ -26,12 +26,20 @@ const primitives: { type: PrimitiveType; label: string; icon: React.ReactNode }[
 
 type BuilderPaletteProps = {
   onAdd: (type: PrimitiveType) => void;
+  /** Container id new primitives will go into, or null for the top level. */
+  insertingInto?: string | null;
 };
 
-export function BuilderPalette({ onAdd }: BuilderPaletteProps) {
+export function BuilderPalette({ onAdd, insertingInto = null }: BuilderPaletteProps) {
   return (
     <div>
-      <div className="text-xs font-semibold text-muted-foreground mb-2">Primitives</div>
+      <div className="mb-2 flex items-baseline gap-1.5">
+        <span className="text-xs font-semibold text-muted-foreground">Primitives</span>
+        {/* Where a click will put the node - otherwise nesting is invisible guesswork */}
+        <span className="text-[10px] text-muted-foreground/60">
+          {insertingInto ? "into selected container" : "at top level"}
+        </span>
+      </div>
       <div className="grid grid-cols-4 gap-1.5">
         {primitives.map(({ type, label, icon }) => (
           <Button
