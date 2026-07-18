@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback, useRef, useEffect, memo } from "react";
+import { useState, useCallback, useRef, useEffect, useSyncExternalStore, memo } from "react";
 import {
   Select,
   SelectContent,
@@ -29,6 +29,7 @@ import {
 import type { CompositeDefinition } from "@/lib/composite/types";
 import { themePresets } from "@/lib/theme/presets";
 import { getRegistryKeys, getRegistryItem } from "@/lib/registry";
+import { subscribeToComposites, getCompositeVersion } from "@/lib/registry/composite-registry";
 import { pageTemplates } from "@/lib/registry/templates";
 import { exportComposite, parseImportedComposites } from "@/lib/composite/io";
 import { downloadJSON } from "@/lib/export/json";
@@ -87,6 +88,9 @@ export const Toolbar = memo(function Toolbar({
   generateAvailable,
   onGenerate,
 }: ToolbarProps) {
+  // This component is memo()'d and reads the mutable composite registry during render,
+  // so it has to subscribe rather than rely on a prop happening to change alongside it.
+  useSyncExternalStore(subscribeToComposites, getCompositeVersion, () => 0);
   const componentKeys = getRegistryKeys();
   const [copied, setCopied] = useState(false);
   const copyTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -137,7 +141,8 @@ export const Toolbar = memo(function Toolbar({
             return (
               <SelectItem key={key} value={key}>
                 <div className="flex flex-col py-0.5">
-                  <span className="font-medium">{key}</span>
+                  {/* Composite keys are opaque ids (custom_price_tag_abc123); show the name the user typed. */}
+                  <span className="font-medium">{item?.metadata.name ?? key}</span>
                   {item?.metadata.description && (
                     <span className="text-[10px] text-muted-foreground leading-tight">
                       {item.metadata.description}

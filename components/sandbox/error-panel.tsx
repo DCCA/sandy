@@ -12,18 +12,21 @@ const errorBorderColors: Record<SandboxError["type"], string> = {
   parse: "border-l-red-500",
   validation: "border-l-amber-500",
   runtime: "border-l-red-600",
+  notice: "border-l-sky-500",
 };
 
 const errorLabels: Record<SandboxError["type"], string> = {
   parse: "Parse Error",
   validation: "Validation Error",
   runtime: "Runtime Error",
+  notice: "Notice",
 };
 
 const errorDotColors: Record<SandboxError["type"], string> = {
   parse: "bg-red-500",
   validation: "bg-amber-500",
   runtime: "bg-red-600",
+  notice: "bg-sky-500",
 };
 
 export function ErrorPanel({ errors }: ErrorPanelProps) {
@@ -41,7 +44,11 @@ export function ErrorPanel({ errors }: ErrorPanelProps) {
     });
   }, []);
 
-  if (errors.length === 0) {
+  // A notice is something the user should know, not something wrong with their JSON,
+  // so it must not take the "Valid" indicator away - it shows alongside it.
+  const hasProblems = errors.some((err) => err.type !== "notice");
+
+  if (!hasProblems && errors.length === 0) {
     return (
       <div className="px-3 py-2 border-t border-border/50 text-xs flex items-center gap-2 font-mono shrink-0">
         <span className="size-2 rounded-full bg-green-500 animate-pulse" />
@@ -52,6 +59,12 @@ export function ErrorPanel({ errors }: ErrorPanelProps) {
 
   return (
     <div className="border-t border-border/50 overflow-auto max-h-[220px] transition-all duration-200 shrink-0">
+      {!hasProblems && (
+        <div className="px-3 py-2 text-xs flex items-center gap-2 font-mono border-b border-border/50">
+          <span className="size-2 rounded-full bg-green-500 animate-pulse" />
+          <span className="text-green-400/80">Valid</span>
+        </div>
+      )}
       <div className="p-2 space-y-1.5">
         {errors.map((err, i) => {
           const key = err.sectionId ? `${err.type}-${err.sectionId}` : `${err.type}-${i}`;
