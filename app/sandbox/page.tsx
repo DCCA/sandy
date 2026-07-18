@@ -32,6 +32,10 @@ import {
   saveComposite,
   deleteComposite as deleteCompositeFromStorage,
 } from "@/lib/composite/storage";
+import { duplicateComposite } from "@/lib/composite/identity";
+import { exportComposite, exportComposites } from "@/lib/composite/io";
+import { slugify } from "@/lib/utils";
+import { ComponentLibrary } from "@/components/sandbox/component-library";
 import { CompositeRenderer } from "@/components/composite/composite-renderer";
 import type { CompositeDefinition } from "@/lib/composite/types";
 import { useHistory } from "@/lib/sandbox/use-history";
@@ -106,6 +110,7 @@ function SandboxContent() {
   const [selectedSectionId, setSelectedSectionId] = useState<string | null>(null);
   const [composites, setComposites] = useState<CompositeDefinition[]>([]);
   const [builderOpen, setBuilderOpen] = useState(false);
+  const [libraryOpen, setLibraryOpen] = useState(false);
   const [editingComposite, setEditingComposite] = useState<CompositeDefinition | null>(null);
   const [urlWarning, setUrlWarning] = useState<string | null>(null);
   const [storageWarning, setStorageWarning] = useState<string | null>(null);
@@ -205,6 +210,11 @@ function SandboxContent() {
     if (!parseFailed) lastGoodSections.current = parsedSections;
   }, [parsedSections, parseFailed]);
   const sectionsForUsage = parseFailed ? lastGoodSections.current : parsedSections;
+
+  const knownCategories = useMemo(
+    () => [...new Set(composites.map((d) => d.category).filter((c): c is string => !!c))].sort(),
+    [composites],
+  );
 
   // Derive selected section + registry item
   const selectedSection = useMemo(() => {
@@ -526,34 +536,58 @@ function SandboxContent() {
   }, []);
 
   const handleSaveComposite = useCallback((def: CompositeDefinition) => {
-    const comp = createCompositeComponent(def);
-    registerComposite(def, comp);
-    saveComposite(def);
+    registerComposite(def, createCompositeComponent(def));
+    // Keep state on the stamped version so "recently updated" ordering is right
+    // without waiting for a reload.
+    const stamped = saveComposite(def);
     setComposites((prev) => {
-      const idx = prev.findIndex((d) => d.id === def.id);
+      const idx = prev.findIndex((d) => d.id === stamped.id);
       if (idx >= 0) {
         const next = [...prev];
-        next[idx] = def;
+        next[idx] = stamped;
         return next;
       }
-      return [...prev, def];
+      return [...prev, stamped];
     });
     setBuilderOpen(false);
     setEditingComposite(null);
   }, []);
+
+  const handleDuplicateComposite = useCallback(
+    (def: CompositeDefinition) => {
+      // Registering and persisting stay out of the setState updater: React runs
+      // updaters during render and twice under StrictMode.
+      const copy = duplicateComposite(
+        def,
+        composites.map((d) => d.name),
+      );
+      registerComposite(copy, createCompositeComponent(copy));
+      const stamped = saveComposite(copy);
+      setComposites((prev) => [...prev, stamped]);
+    },
+    [composites],
+  );
+
+  const handleExportOneComposite = useCallback((def: CompositeDefinition) => {
+    downloadJSON(exportComposite(def), `${slugify(def.name, "-", "component")}.composite.json`);
+  }, []);
+
+  const handleExportAllComposites = useCallback(() => {
+    downloadJSON(exportComposites(composites), "sandy-components.json");
+  }, [composites]);
 
   const handleImportComposites = useCallback((defs: CompositeDefinition[]) => {
     // Registering and persisting are side effects, so they belong in the handler rather
     // than inside the setState updater: React runs updaters during render and invokes
     // them twice under StrictMode, which would double-register and notify the composite
     // store mid-render.
-    for (const def of defs) {
+    const stamped = defs.map((def) => {
       registerComposite(def, createCompositeComponent(def));
-      saveComposite(def);
-    }
+      return saveComposite(def);
+    });
     setComposites((prev) => {
       const byId = new Map(prev.map((d) => [d.id, d]));
-      for (const def of defs) byId.set(def.id, def);
+      for (const def of stamped) byId.set(def.id, def);
       return [...byId.values()];
     });
   }, []);
@@ -595,8 +629,7 @@ function SandboxContent() {
         onTokenEditorToggle={handleTokenEditorToggle}
         composites={composites}
         onCreateComponent={handleOpenBuilder}
-        onEditComposite={handleEditComposite}
-        onDeleteComposite={handleDeleteComposite}
+        onOpenLibrary={() => setLibraryOpen(true)}
         onImportComposites={handleImportComposites}
         generateAvailable={generateAvailable}
         onGenerate={handleGenerate}
@@ -680,6 +713,7 @@ function SandboxContent() {
         <ComponentBuilder
           themeTokens={mergedTokens}
           editingDefinition={editingComposite}
+          knownCategories={knownCategories}
           sectionsUsing={
             editingComposite
               ? sectionsForUsage.filter((s) => s.component === editingComposite.id).length
@@ -690,6 +724,26 @@ function SandboxContent() {
             setBuilderOpen(false);
             setEditingComposite(null);
           }}
+        />
+      )}
+
+      {libraryOpen && (
+        <ComponentLibrary
+          composites={composites}
+          themeTokens={mergedTokens}
+          onEdit={(def) => {
+            setLibraryOpen(false);
+            handleEditComposite(def);
+          }}
+          onDuplicate={handleDuplicateComposite}
+          onDelete={handleDeleteComposite}
+          onExportOne={handleExportOneComposite}
+          onExportAll={handleExportAllComposites}
+          onCreate={() => {
+            setLibraryOpen(false);
+            handleOpenBuilder();
+          }}
+          onClose={() => setLibraryOpen(false)}
         />
       )}
     </div>

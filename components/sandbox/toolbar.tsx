@@ -19,11 +19,9 @@ import {
   Plus,
   FileText,
   Puzzle,
-  Pencil,
-  Trash2,
+  LibraryBig,
   Undo2,
   Redo2,
-  Download,
   Upload,
 } from "lucide-react";
 import type { CompositeDefinition } from "@/lib/composite/types";
@@ -31,8 +29,7 @@ import { themePresets } from "@/lib/theme/presets";
 import { getRegistryKeys, getRegistryItem } from "@/lib/registry";
 import { subscribeToComposites, getCompositeVersion } from "@/lib/registry/composite-registry";
 import { pageTemplates } from "@/lib/registry/templates";
-import { exportComposite, parseImportedComposites } from "@/lib/composite/io";
-import { downloadJSON } from "@/lib/export/json";
+import { parseImportedComposites } from "@/lib/composite/io";
 import { ExportPanel } from "./export-panel";
 import { GeneratePanel } from "./generate-panel";
 import { SandyLogo } from "@/components/sandy-logo";
@@ -56,8 +53,7 @@ type ToolbarProps = {
   onTokenEditorToggle: () => void;
   composites?: CompositeDefinition[];
   onCreateComponent?: () => void;
-  onEditComposite?: (def: CompositeDefinition) => void;
-  onDeleteComposite?: (id: string) => void;
+  onOpenLibrary?: () => void;
   onImportComposites?: (defs: CompositeDefinition[]) => void;
   generateAvailable?: boolean;
   onGenerate?: (prompt: string) => Promise<string | null>;
@@ -82,8 +78,7 @@ export const Toolbar = memo(function Toolbar({
   onTokenEditorToggle,
   composites = [],
   onCreateComponent,
-  onEditComposite,
-  onDeleteComposite,
+  onOpenLibrary,
   onImportComposites,
   generateAvailable,
   onGenerate,
@@ -216,50 +211,26 @@ export const Toolbar = memo(function Toolbar({
           </Button>
         )}
 
-        {/* Custom components management */}
-        {composites.length > 0 && onEditComposite && onDeleteComposite && (
-          <div className="flex items-center gap-0.5">
-            {composites.map((def) => (
-              <div
-                key={def.id}
-                className="flex items-center gap-0.5 px-1.5 py-0.5 rounded bg-muted/30 text-[10px] font-mono"
-              >
-                <span className="truncate max-w-[80px]">{def.name}</span>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  className="h-4 w-4 p-0"
-                  onClick={() => onEditComposite(def)}
-                  title={`Edit ${def.name}`}
-                >
-                  <Pencil className="size-2.5" />
-                </Button>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  className="h-4 w-4 p-0"
-                  onClick={() =>
-                    downloadJSON(
-                      exportComposite(def),
-                      `${def.name.replace(/\s+/g, "-").toLowerCase()}.composite.json`,
-                    )
-                  }
-                  title={`Export ${def.name}`}
-                >
-                  <Download className="size-2.5" />
-                </Button>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  className="h-4 w-4 p-0 text-red-400 hover:text-red-300"
-                  onClick={() => onDeleteComposite(def.id)}
-                  title={`Delete ${def.name}`}
-                >
-                  <Trash2 className="size-2.5" />
-                </Button>
-              </div>
-            ))}
-          </div>
+        {/* Library */}
+        {onOpenLibrary && (
+          <Button
+            variant="ghost"
+            size="sm"
+            className="h-7 px-2 gap-1.5 text-xs"
+            onClick={onOpenLibrary}
+            title="Open component library"
+            // Below xl the label is hidden and only the count renders, which would make
+            // the accessible name just "3". An explicit label wins over content.
+            aria-label="Open component library"
+          >
+            <LibraryBig className="size-3.5" />
+            <span className="hidden xl:inline">Library</span>
+            {composites.length > 0 && (
+              <span className="rounded bg-muted/60 px-1 text-[10px] font-mono leading-4">
+                {composites.length}
+              </span>
+            )}
+          </Button>
         )}
 
         {onImportComposites && (

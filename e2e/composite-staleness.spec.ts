@@ -60,6 +60,7 @@ test.describe("saved composites resolve without a keystroke", () => {
     await expect(preview.getByText("Composite Rendered OK")).toBeVisible();
 
     // Open the builder for the placed composite and add a new primitive to it.
+    await page.getByTitle("Open component library").click();
     await page.getByTitle("Edit Price Tag").click();
     await page.getByRole("button", { name: "Badge" }).click();
     await page.getByRole("button", { name: "Save", exact: true }).click();
@@ -71,7 +72,9 @@ test.describe("saved composites resolve without a keystroke", () => {
 
   test("the Add Section picker shows the composite's name, not its raw id", async ({ page }) => {
     await page.goto("/sandbox");
-    await expect(page.getByTitle("Edit Price Tag")).toBeVisible();
+    // The library button carries a count, so it only reads 1 once the saved
+    // composite has been loaded and registered.
+    await expect(page.getByTitle("Open component library")).toContainText("1");
 
     await page.getByText("Add Section").click();
     await page.getByRole("option").last().scrollIntoViewIfNeeded();
@@ -91,6 +94,7 @@ test("editing a composite in use warns before breaking placed sections", async (
   );
   await page.goto(`/sandbox?s=${encodeState(pageUsingComposite)}`);
 
+  await page.getByTitle("Open component library").click();
   await page.getByTitle("Edit Price Tag").click();
 
   // No warning until the edit actually breaks something.

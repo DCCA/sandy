@@ -15,14 +15,19 @@ type CompositeBundle = {
   composites: CompositeDefinition[];
 };
 
-/** Serialize a composite into a portable bundle string. */
-export function exportComposite(def: CompositeDefinition): string {
+/** Serialize composites into a portable bundle string. */
+export function exportComposites(defs: CompositeDefinition[]): string {
   const bundle: CompositeBundle = {
     $schema: "sandy-composite",
     version: COMPOSITE_FILE_VERSION,
-    composites: [def],
+    composites: defs,
   };
   return JSON.stringify(bundle, null, 2);
+}
+
+/** Serialize a single composite into a portable bundle string. */
+export function exportComposite(def: CompositeDefinition): string {
+  return exportComposites([def]);
 }
 
 function isPrimitiveNode(n: unknown): n is PrimitiveNode {
