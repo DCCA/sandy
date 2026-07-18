@@ -11,6 +11,7 @@ import { getDefaultProps, primitiveSchemas } from "@/lib/composite/primitives";
 import { applyTheme } from "@/lib/theme/css-vars";
 import { newCompositeId } from "@/lib/composite/identity";
 import { ModalOverlay } from "./modal-overlay";
+import { ConfirmDialog } from "./confirm-dialog";
 import {
   findNode,
   insertNode,
@@ -171,6 +172,7 @@ export function ComponentBuilder({
   const [nodes, setNodes] = useState<PrimitiveNode[]>(editingDefinition?.nodes ?? []);
   const [bindings, setBindings] = useState<PropBinding[]>(editingDefinition?.propBindings ?? []);
   const [selectedNodeId, setSelectedNodeId] = useState<string | null>(null);
+  const [confirmDiscard, setConfirmDiscard] = useState(false);
   const previewRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -245,6 +247,20 @@ export function ComponentBuilder({
 
   const canSave = name.trim().length > 0 && nodes.length > 0;
 
+  // Escape now closes this surface (it is a real modal), which makes discarding work a
+  // single reflexive keystroke. Only prompt when there is something to lose.
+  const isDirty =
+    name !== (editingDefinition?.name ?? "") ||
+    description !== (editingDefinition?.description ?? "") ||
+    category !== (editingDefinition?.category ?? "") ||
+    JSON.stringify(nodes) !== JSON.stringify(editingDefinition?.nodes ?? []) ||
+    JSON.stringify(bindings) !== JSON.stringify(editingDefinition?.propBindings ?? []);
+
+  const requestClose = useCallback(() => {
+    if (isDirty) setConfirmDiscard(true);
+    else onClose();
+  }, [isDirty, onClose]);
+
   // Editing a component that's already placed: show what this edit does to those
   // sections. Dropped props lose their stored value silently; newly required props
   // make the existing sections fail validation outright.
@@ -255,160 +271,186 @@ export function ComponentBuilder({
   const breakingEdit = sectionsUsing > 0 && bindingImpact !== null && isBreaking(bindingImpact);
 
   return (
-    <ModalOverlay label="Component builder" onClose={onClose}>
-      {/* Header */}
-      <div className="flex items-center gap-3 px-4 py-2.5 border-b border-border/50 shrink-0">
-        <span className="text-sm font-semibold">Component Builder</span>
-        <div className="flex-1" />
-        <Button
-          variant="secondary"
-          size="sm"
-          className="h-7 px-3 text-xs"
-          onClick={handleSave}
-          disabled={!canSave}
-        >
-          Save
-        </Button>
-        <Button variant="ghost" size="sm" className="h-7 w-7 p-0" onClick={onClose}>
-          <X className="size-4" />
-        </Button>
-      </div>
+    <>
+      <ModalOverlay label="Component builder" onClose={requestClose}>
+        {/* Header */}
+        <div className="flex items-center gap-3 px-4 py-2.5 border-b border-border/50 shrink-0">
+          <span className="text-sm font-semibold">Component Builder</span>
+          <div className="flex-1" />
+          <Button
+            variant="secondary"
+            size="sm"
+            className="h-7 px-3 text-xs"
+            onClick={handleSave}
+            disabled={!canSave}
+          >
+            Save
+          </Button>
+          <Button
+            variant="ghost"
+            size="sm"
+            className="h-7 w-7 p-0"
+            onClick={requestClose}
+            title="Close component builder"
+          >
+            <X className="size-4" />
+          </Button>
+        </div>
 
-      {/* In-use warning */}
-      {breakingEdit && bindingImpact && (
-        <div
-          role="status"
-          className="flex items-start gap-2 px-4 py-2 border-b border-amber-500/20 bg-amber-500/10 shrink-0"
-        >
-          <span className="text-amber-400 text-sm leading-none mt-0.5">⚠</span>
-          <div className="text-xs text-amber-200/90 leading-relaxed">
-            <span className="font-semibold">
-              {sectionsUsing} section{sectionsUsing === 1 ? "" : "s"} on this page use
-              {sectionsUsing === 1 ? "s" : ""} this component.
-            </span>{" "}
-            {bindingImpact.droppedProps.length > 0 && (
-              <>
-                Unbinding <span className="font-mono">{bindingImpact.droppedProps.join(", ")}</span>{" "}
-                stops {bindingImpact.droppedProps.length === 1 ? "its" : "their"} saved value from
-                being applied (it stays in your JSON).{" "}
-              </>
-            )}
-            {bindingImpact.newRequiredProps.length > 0 && (
-              <>
-                Requiring{" "}
-                <span className="font-mono">{bindingImpact.newRequiredProps.join(", ")}</span> makes{" "}
-                {sectionsUsing === 1 ? "it" : "them"} fail validation until filled in.{" "}
-              </>
-            )}
-            {bindingImpact.retypedProps.length > 0 && (
-              <>
-                Changing <span className="font-mono">{bindingImpact.retypedProps.join(", ")}</span>{" "}
-                may reject {bindingImpact.retypedProps.length === 1 ? "its" : "their"} saved value.
-              </>
-            )}
+        {/* In-use warning */}
+        {breakingEdit && bindingImpact && (
+          <div
+            role="status"
+            className="flex items-start gap-2 px-4 py-2 border-b border-amber-500/20 bg-amber-500/10 shrink-0"
+          >
+            <span className="text-amber-400 text-sm leading-none mt-0.5">⚠</span>
+            <div className="text-xs text-amber-200/90 leading-relaxed">
+              <span className="font-semibold">
+                {sectionsUsing} section{sectionsUsing === 1 ? "" : "s"} on this page use
+                {sectionsUsing === 1 ? "s" : ""} this component.
+              </span>{" "}
+              {bindingImpact.droppedProps.length > 0 && (
+                <>
+                  Unbinding{" "}
+                  <span className="font-mono">{bindingImpact.droppedProps.join(", ")}</span> stops{" "}
+                  {bindingImpact.droppedProps.length === 1 ? "its" : "their"} saved value from being
+                  applied (it stays in your JSON).{" "}
+                </>
+              )}
+              {bindingImpact.newRequiredProps.length > 0 && (
+                <>
+                  Requiring{" "}
+                  <span className="font-mono">{bindingImpact.newRequiredProps.join(", ")}</span>{" "}
+                  makes {sectionsUsing === 1 ? "it" : "them"} fail validation until filled in.{" "}
+                </>
+              )}
+              {bindingImpact.retypedProps.length > 0 && (
+                <>
+                  Changing{" "}
+                  <span className="font-mono">{bindingImpact.retypedProps.join(", ")}</span> may
+                  reject {bindingImpact.retypedProps.length === 1 ? "its" : "their"} saved value.
+                </>
+              )}
+            </div>
+          </div>
+        )}
+
+        {/* Name / Description */}
+        <div className="flex items-center gap-3 px-4 py-2 border-b border-border/50 shrink-0">
+          <div className="flex items-center gap-2 flex-1">
+            <label className="text-xs text-muted-foreground shrink-0">Name</label>
+            <input
+              type="text"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              placeholder="My Component"
+              className="h-7 flex-1 min-w-0 rounded bg-muted/30 border border-border/50 px-2 text-xs text-foreground outline-none focus:border-accent/50"
+            />
+          </div>
+          <div className="flex items-center gap-2 flex-1">
+            <label className="text-xs text-muted-foreground shrink-0">Description</label>
+            <input
+              type="text"
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+              placeholder="Optional description"
+              className="h-7 flex-1 min-w-0 rounded bg-muted/30 border border-border/50 px-2 text-xs text-foreground outline-none focus:border-accent/50"
+            />
+          </div>
+          <div className="flex items-center gap-2 w-52">
+            <label className="text-xs text-muted-foreground shrink-0">Category</label>
+            <input
+              type="text"
+              value={category}
+              onChange={(e) => setCategory(e.target.value)}
+              placeholder="Uncategorized"
+              list="sandy-composite-categories"
+              className="h-7 flex-1 min-w-0 rounded bg-muted/30 border border-border/50 px-2 text-xs text-foreground outline-none focus:border-accent/50"
+            />
+            <datalist id="sandy-composite-categories">
+              {knownCategories.map((c) => (
+                <option key={c} value={c} />
+              ))}
+            </datalist>
           </div>
         </div>
-      )}
 
-      {/* Name / Description */}
-      <div className="flex items-center gap-3 px-4 py-2 border-b border-border/50 shrink-0">
-        <div className="flex items-center gap-2 flex-1">
-          <label className="text-xs text-muted-foreground shrink-0">Name</label>
-          <input
-            type="text"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            placeholder="My Component"
-            className="h-7 flex-1 min-w-0 rounded bg-muted/30 border border-border/50 px-2 text-xs text-foreground outline-none focus:border-accent/50"
-          />
-        </div>
-        <div className="flex items-center gap-2 flex-1">
-          <label className="text-xs text-muted-foreground shrink-0">Description</label>
-          <input
-            type="text"
-            value={description}
-            onChange={(e) => setDescription(e.target.value)}
-            placeholder="Optional description"
-            className="h-7 flex-1 min-w-0 rounded bg-muted/30 border border-border/50 px-2 text-xs text-foreground outline-none focus:border-accent/50"
-          />
-        </div>
-        <div className="flex items-center gap-2 w-52">
-          <label className="text-xs text-muted-foreground shrink-0">Category</label>
-          <input
-            type="text"
-            value={category}
-            onChange={(e) => setCategory(e.target.value)}
-            placeholder="Uncategorized"
-            list="sandy-composite-categories"
-            className="h-7 flex-1 min-w-0 rounded bg-muted/30 border border-border/50 px-2 text-xs text-foreground outline-none focus:border-accent/50"
-          />
-          <datalist id="sandy-composite-categories">
-            {knownCategories.map((c) => (
-              <option key={c} value={c} />
-            ))}
-          </datalist>
-        </div>
-      </div>
+        {/* Main content */}
+        <div className="flex-1 grid grid-cols-[300px_1fr_280px] overflow-hidden">
+          {/* Left: Palette + Node Tree + Node Props */}
+          <div className="border-r border-border/50 overflow-y-auto p-3 space-y-4">
+            <BuilderPalette onAdd={handleAddPrimitive} insertingInto={insertParent?.id ?? null} />
+            <BuilderNodeTree
+              nodes={nodes}
+              selectedNodeId={selectedNodeId}
+              onSelect={setSelectedNodeId}
+              onMove={handleMoveNode}
+              onDelete={handleDeleteNode}
+            />
+            {selectedNode && (
+              <NodePropEditor node={selectedNode} onChange={handleNodePropsChange} />
+            )}
+          </div>
 
-      {/* Main content */}
-      <div className="flex-1 grid grid-cols-[300px_1fr_280px] overflow-hidden">
-        {/* Left: Palette + Node Tree + Node Props */}
-        <div className="border-r border-border/50 overflow-y-auto p-3 space-y-4">
-          <BuilderPalette onAdd={handleAddPrimitive} insertingInto={insertParent?.id ?? null} />
-          <BuilderNodeTree
-            nodes={nodes}
-            selectedNodeId={selectedNodeId}
-            onSelect={setSelectedNodeId}
-            onMove={handleMoveNode}
-            onDelete={handleDeleteNode}
-          />
-          {selectedNode && <NodePropEditor node={selectedNode} onChange={handleNodePropsChange} />}
-        </div>
-
-        {/* Center: Live Preview */}
-        <div className="overflow-auto p-6 dot-grid flex justify-center">
-          <div className="w-full max-w-lg h-fit">
-            <div className="rounded-lg overflow-hidden shadow-2xl shadow-black/20 border border-white/[0.04]">
-              <div className="h-7 bg-[#171717] border-b border-white/[0.04] flex items-center px-3 gap-1.5">
-                <span className="size-2.5 rounded-full bg-white/10" />
-                <span className="size-2.5 rounded-full bg-white/10" />
-                <span className="size-2.5 rounded-full bg-white/10" />
-              </div>
-              <div
-                ref={previewRef}
-                style={{
-                  backgroundColor: "var(--sandy-color-background, #fff)",
-                  color: "var(--sandy-color-foreground, #111)",
-                  padding: "var(--sandy-spacing-lg, 24px)",
-                }}
-              >
-                {nodes.length === 0 ? (
-                  <div className="text-center text-sm opacity-40 py-12">
-                    Add primitives to build your component
-                  </div>
-                ) : (
-                  <div
-                    style={{
-                      display: "flex",
-                      flexDirection: "column",
-                      gap: "var(--sandy-spacing-md, 16px)",
-                    }}
-                  >
-                    {nodes.map((node) => (
-                      <NodeRenderer key={node.id} node={node} />
-                    ))}
-                  </div>
-                )}
+          {/* Center: Live Preview */}
+          <div className="overflow-auto p-6 dot-grid flex justify-center">
+            <div className="w-full max-w-lg h-fit">
+              <div className="rounded-lg overflow-hidden shadow-2xl shadow-black/20 border border-white/[0.04]">
+                <div className="h-7 bg-[#171717] border-b border-white/[0.04] flex items-center px-3 gap-1.5">
+                  <span className="size-2.5 rounded-full bg-white/10" />
+                  <span className="size-2.5 rounded-full bg-white/10" />
+                  <span className="size-2.5 rounded-full bg-white/10" />
+                </div>
+                <div
+                  ref={previewRef}
+                  style={{
+                    backgroundColor: "var(--sandy-color-background, #fff)",
+                    color: "var(--sandy-color-foreground, #111)",
+                    padding: "var(--sandy-spacing-lg, 24px)",
+                  }}
+                >
+                  {nodes.length === 0 ? (
+                    <div className="text-center text-sm opacity-40 py-12">
+                      Add primitives to build your component
+                    </div>
+                  ) : (
+                    <div
+                      style={{
+                        display: "flex",
+                        flexDirection: "column",
+                        gap: "var(--sandy-spacing-md, 16px)",
+                      }}
+                    >
+                      {nodes.map((node) => (
+                        <NodeRenderer key={node.id} node={node} />
+                      ))}
+                    </div>
+                  )}
+                </div>
               </div>
             </div>
           </div>
-        </div>
 
-        {/* Right: Bindings */}
-        <div className="border-l border-border/50 overflow-y-auto p-3">
-          <BuilderBindings bindings={bindings} nodes={nodes} onChange={setBindings} />
+          {/* Right: Bindings */}
+          <div className="border-l border-border/50 overflow-y-auto p-3">
+            <BuilderBindings bindings={bindings} nodes={nodes} onChange={setBindings} />
+          </div>
         </div>
-      </div>
-    </ModalOverlay>
+      </ModalOverlay>
+
+      {confirmDiscard && (
+        <ConfirmDialog
+          title="Discard unsaved changes?"
+          body="This component has edits that have not been saved. Closing now loses them."
+          confirmLabel="Discard"
+          destructive
+          onConfirm={() => {
+            setConfirmDiscard(false);
+            onClose();
+          }}
+          onCancel={() => setConfirmDiscard(false)}
+        />
+      )}
+    </>
   );
 }

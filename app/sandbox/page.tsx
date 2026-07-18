@@ -211,6 +211,15 @@ function SandboxContent() {
   }, [parsedSections, parseFailed]);
   const sectionsForUsage = parseFailed ? lastGoodSections.current : parsedSections;
 
+  // Per-component usage on the current page, so deleting one can say what it will break.
+  const compositeUsage = useMemo(() => {
+    const counts: Record<string, number> = {};
+    for (const section of sectionsForUsage) {
+      counts[section.component] = (counts[section.component] ?? 0) + 1;
+    }
+    return counts;
+  }, [sectionsForUsage]);
+
   const knownCategories = useMemo(
     () => [...new Set(composites.map((d) => d.category).filter((c): c is string => !!c))].sort(),
     [composites],
@@ -739,6 +748,7 @@ function SandboxContent() {
           onDelete={handleDeleteComposite}
           onExportOne={handleExportOneComposite}
           onExportAll={handleExportAllComposites}
+          usageById={compositeUsage}
           onCreate={() => {
             setLibraryOpen(false);
             handleOpenBuilder();

@@ -64,14 +64,11 @@ in, the stored login is used and no token is needed.)
 
 Composite library A–C done. Open threads, in rough priority order:
 
-1. **Delete confirmation** in the library. Deletion is immediate and irreversible, matching
-   the old toolbar pills, but the library makes deleting far easier to reach. Needs a dialog
-   primitive - `components/ui/` has none, and `ModalOverlay` is now a reasonable base for one.
-2. **Dragging nodes between parents** in the builder. Reordering currently stays within a
+1. **Dragging nodes between parents** in the builder. Reordering currently stays within a
    node's own sibling list.
-3. **Wrapping existing nodes in a container**, so structure can be introduced after the fact
+2. **Wrapping existing nodes in a container**, so structure can be introduced after the fact
    instead of only planned up front.
-4. Gen-UI: candidate follow-ups (from `docs/generative-ui.md` §6): quality evals + telemetry
+3. Gen-UI: candidate follow-ups (from `docs/generative-ui.md` §6): quality evals + telemetry
    on validation-failure rate (Phase 2), streaming preview via `streamObject`/SpecStream (Phase 3),
    theming-aware generation (Phase 4). Smaller polish: wire an `AbortController`/cancel so a slow
    generation can be cancelled instead of waiting out the 120s timeout (noted in review).
@@ -124,6 +121,15 @@ limitation. Tree manipulation moved into pure helpers in `lib/composite/tree.ts`
   modality is asserted in Playwright.
 - **Notices are not validation errors.** A new `notice` type carries "N saved components
   could not be loaded" without suppressing the "Valid" indicator.
+
+**Found by dogfooding, then fixed (#30):** driving the app by hand rather than by test
+exposed two destructive paths with no guard. Deleting a component that was placed on the
+page silently broke the page ("Unknown component", one click, no confirmation) - inconsistent
+with the elaborate warning built for _editing_ a component in use. And Escape, newly wired
+when the overlays became real modals, discarded unsaved builder work in a single reflexive
+keystroke - a regression introduced by the accessibility fix itself. Both now go through a
+`ConfirmDialog` built on `ModalOverlay`; the delete prompt names how many sections it will
+break, and the discard prompt only appears when the builder is actually dirty.
 
 **Worth remembering:** a subagent dispatched **read-only** for review edited source anyway -
 it injected `id: def.id` into `duplicateComposite` (which would make duplicating overwrite

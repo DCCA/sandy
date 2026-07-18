@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { CompositeRenderer } from "@/components/composite/composite-renderer";
 import { applyTheme } from "@/lib/theme/css-vars";
 import { ModalOverlay } from "./modal-overlay";
+import { ConfirmDialog } from "./confirm-dialog";
 import type { CompositeDefinition } from "@/lib/composite/types";
 import type { ThemeTokens } from "@/lib/theme/types";
 
@@ -20,6 +21,8 @@ type ComponentLibraryProps = {
   onExportAll: () => void;
   onCreate: () => void;
   onClose: () => void;
+  /** How many sections on the current page use each component, keyed by id. */
+  usageById?: Record<string, number>;
 };
 
 const UNCATEGORIZED = "Uncategorized";
@@ -77,7 +80,7 @@ function LibraryCard({
   themeTokens: ThemeTokens;
   onEdit: (def: CompositeDefinition) => void;
   onDuplicate: (def: CompositeDefinition) => void;
-  onDelete: (id: string) => void;
+  onDelete: (def: CompositeDefinition) => void;
   onExportOne: (def: CompositeDefinition) => void;
 }) {
   // One ref per card: the --sandy-* vars are scoped to this card's preview element,
@@ -153,7 +156,7 @@ function LibraryCard({
             variant="ghost"
             size="sm"
             className="h-6 w-6 p-0 text-red-400 hover:text-red-300"
-            onClick={() => onDelete(def.id)}
+            onClick={() => onDelete(def)}
             title={`Delete ${def.name}`}
           >
             <Trash2 className="size-3" />
@@ -174,8 +177,10 @@ export function ComponentLibrary({
   onExportAll,
   onCreate,
   onClose,
+  usageById = {},
 }: ComponentLibraryProps) {
   const [search, setSearch] = useState("");
+  const [pendingDelete, setPendingDelete] = useState<CompositeDefinition | null>(null);
   const [category, setCategory] = useState<string>("All");
 
   const categories = useMemo(() => {
@@ -205,136 +210,164 @@ export function ComponentLibrary({
   const isEmptyLibrary = composites.length === 0;
 
   return (
-    <ModalOverlay label="Component library" onClose={onClose}>
-      {/* Header */}
-      <div className="flex shrink-0 items-center gap-3 border-b border-border/50 px-4 py-2.5">
-        <h2 className="text-sm font-semibold">Component Library</h2>
-        {/* Live so that typing in the search field announces the result count, instead
+    <>
+      <ModalOverlay label="Component library" onClose={onClose}>
+        {/* Header */}
+        <div className="flex shrink-0 items-center gap-3 border-b border-border/50 px-4 py-2.5">
+          <h2 className="text-sm font-semibold">Component Library</h2>
+          {/* Live so that typing in the search field announces the result count, instead
             of the user having to leave the input and browse the grid to find out. */}
-        <span className="text-xs text-muted-foreground" role="status" aria-live="polite">
-          {visible.length === composites.length
-            ? `${composites.length} ${composites.length === 1 ? "component" : "components"}`
-            : `${visible.length} of ${composites.length} components`}
-        </span>
-        <div className="flex-1" />
-        <Button
-          variant="ghost"
-          size="sm"
-          className="h-7 gap-1.5 px-2 text-xs"
-          onClick={onExportAll}
-          disabled={isEmptyLibrary}
-          title="Export all components"
-        >
-          <Download className="size-3.5" />
-          Export all
-        </Button>
-        <Button
-          variant="secondary"
-          size="sm"
-          className="h-7 gap-1.5 px-3 text-xs"
-          onClick={onCreate}
-          title="New component"
-        >
-          <Plus className="size-3.5" />
-          New component
-        </Button>
-        <Button
-          variant="ghost"
-          size="sm"
-          className="h-7 w-7 p-0"
-          onClick={onClose}
-          title="Close component library"
-        >
-          <X className="size-4" />
-        </Button>
-      </div>
-
-      {/* Search + category filters */}
-      {!isEmptyLibrary && (
-        <div className="flex shrink-0 flex-wrap items-center gap-3 border-b border-border/50 px-4 py-2">
-          <div className="flex items-center gap-2">
-            <label htmlFor="component-library-search" className="text-xs text-muted-foreground">
-              Search
-            </label>
-            <input
-              id="component-library-search"
-              type="search"
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              placeholder="Name, description or category"
-              className="h-7 w-56 rounded border border-border/50 bg-muted/30 px-2 text-xs text-foreground outline-none focus:border-accent/50"
-            />
-          </div>
-          <div className="flex flex-wrap items-center gap-1">
-            {categories.map((cat) => (
-              <button
-                key={cat}
-                type="button"
-                aria-pressed={activeCategory === cat}
-                onClick={() => setCategory(cat)}
-                className={`rounded-full px-2.5 py-1 text-[11px] transition-colors ${
-                  category === cat
-                    ? "bg-secondary text-secondary-foreground"
-                    : "bg-muted/30 text-muted-foreground hover:bg-muted/60"
-                }`}
-              >
-                {cat}
-              </button>
-            ))}
-          </div>
+          <span className="text-xs text-muted-foreground" role="status" aria-live="polite">
+            {visible.length === composites.length
+              ? `${composites.length} ${composites.length === 1 ? "component" : "components"}`
+              : `${visible.length} of ${composites.length} components`}
+          </span>
+          <div className="flex-1" />
+          <Button
+            variant="ghost"
+            size="sm"
+            className="h-7 gap-1.5 px-2 text-xs"
+            onClick={onExportAll}
+            disabled={isEmptyLibrary}
+            title="Export all components"
+          >
+            <Download className="size-3.5" />
+            Export all
+          </Button>
+          <Button
+            variant="secondary"
+            size="sm"
+            className="h-7 gap-1.5 px-3 text-xs"
+            onClick={onCreate}
+            title="New component"
+          >
+            <Plus className="size-3.5" />
+            New component
+          </Button>
+          <Button
+            variant="ghost"
+            size="sm"
+            className="h-7 w-7 p-0"
+            onClick={onClose}
+            title="Close component library"
+          >
+            <X className="size-4" />
+          </Button>
         </div>
-      )}
 
-      {/* Grid */}
-      <div className="flex-1 overflow-y-auto p-4">
-        {isEmptyLibrary ? (
-          <div className="flex h-full flex-col items-center justify-center gap-3 text-muted-foreground">
-            <Puzzle className="size-10 opacity-20" />
-            <div className="text-center">
-              <p className="text-sm font-medium">No components yet</p>
-              <p className="mt-1 text-xs opacity-60">
-                Build a component out of primitives and it shows up here.
-              </p>
-            </div>
-            <Button variant="secondary" size="sm" className="h-7 px-3 text-xs" onClick={onCreate}>
-              Create your first component
-            </Button>
-          </div>
-        ) : visible.length === 0 ? (
-          <div className="flex h-full flex-col items-center justify-center gap-3 text-muted-foreground">
-            <Puzzle className="size-10 opacity-20" />
-            <div className="text-center">
-              <p className="text-sm font-medium">No components match this search</p>
-              <p className="mt-1 text-xs opacity-60">Try a different term or clear the search.</p>
-            </div>
-            <Button
-              variant="secondary"
-              size="sm"
-              className="h-7 px-3 text-xs"
-              onClick={() => {
-                setSearch("");
-                setCategory("All");
-              }}
-            >
-              Clear search
-            </Button>
-          </div>
-        ) : (
-          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-            {visible.map((def) => (
-              <LibraryCard
-                key={def.id}
-                def={def}
-                themeTokens={themeTokens}
-                onEdit={onEdit}
-                onDuplicate={onDuplicate}
-                onDelete={onDelete}
-                onExportOne={onExportOne}
+        {/* Search + category filters */}
+        {!isEmptyLibrary && (
+          <div className="flex shrink-0 flex-wrap items-center gap-3 border-b border-border/50 px-4 py-2">
+            <div className="flex items-center gap-2">
+              <label htmlFor="component-library-search" className="text-xs text-muted-foreground">
+                Search
+              </label>
+              <input
+                id="component-library-search"
+                type="search"
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                placeholder="Name, description or category"
+                className="h-7 w-56 rounded border border-border/50 bg-muted/30 px-2 text-xs text-foreground outline-none focus:border-accent/50"
               />
-            ))}
+            </div>
+            <div className="flex flex-wrap items-center gap-1">
+              {categories.map((cat) => (
+                <button
+                  key={cat}
+                  type="button"
+                  aria-pressed={activeCategory === cat}
+                  onClick={() => setCategory(cat)}
+                  className={`rounded-full px-2.5 py-1 text-[11px] transition-colors ${
+                    category === cat
+                      ? "bg-secondary text-secondary-foreground"
+                      : "bg-muted/30 text-muted-foreground hover:bg-muted/60"
+                  }`}
+                >
+                  {cat}
+                </button>
+              ))}
+            </div>
           </div>
         )}
-      </div>
-    </ModalOverlay>
+
+        {/* Grid */}
+        <div className="flex-1 overflow-y-auto p-4">
+          {isEmptyLibrary ? (
+            <div className="flex h-full flex-col items-center justify-center gap-3 text-muted-foreground">
+              <Puzzle className="size-10 opacity-20" />
+              <div className="text-center">
+                <p className="text-sm font-medium">No components yet</p>
+                <p className="mt-1 text-xs opacity-60">
+                  Build a component out of primitives and it shows up here.
+                </p>
+              </div>
+              <Button variant="secondary" size="sm" className="h-7 px-3 text-xs" onClick={onCreate}>
+                Create your first component
+              </Button>
+            </div>
+          ) : visible.length === 0 ? (
+            <div className="flex h-full flex-col items-center justify-center gap-3 text-muted-foreground">
+              <Puzzle className="size-10 opacity-20" />
+              <div className="text-center">
+                <p className="text-sm font-medium">No components match this search</p>
+                <p className="mt-1 text-xs opacity-60">Try a different term or clear the search.</p>
+              </div>
+              <Button
+                variant="secondary"
+                size="sm"
+                className="h-7 px-3 text-xs"
+                onClick={() => {
+                  setSearch("");
+                  setCategory("All");
+                }}
+              >
+                Clear search
+              </Button>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+              {visible.map((def) => (
+                <LibraryCard
+                  key={def.id}
+                  def={def}
+                  themeTokens={themeTokens}
+                  onEdit={onEdit}
+                  onDuplicate={onDuplicate}
+                  onDelete={setPendingDelete}
+                  onExportOne={onExportOne}
+                />
+              ))}
+            </div>
+          )}
+        </div>
+      </ModalOverlay>
+
+      {pendingDelete && (
+        <ConfirmDialog
+          title={`Delete "${pendingDelete.name}"?`}
+          body={
+            (usageById[pendingDelete.id] ?? 0) > 0 ? (
+              <>
+                {usageById[pendingDelete.id]} section
+                {usageById[pendingDelete.id] === 1 ? "" : "s"} on the current page use
+                {usageById[pendingDelete.id] === 1 ? "s" : ""} this component. Deleting it will
+                leave {usageById[pendingDelete.id] === 1 ? "that section" : "those sections"} unable
+                to render. This cannot be undone.
+              </>
+            ) : (
+              <>This cannot be undone. Export it first if you want to keep a copy.</>
+            )
+          }
+          confirmLabel="Delete"
+          destructive
+          onConfirm={() => {
+            onDelete(pendingDelete.id);
+            setPendingDelete(null);
+          }}
+          onCancel={() => setPendingDelete(null)}
+        />
+      )}
+    </>
   );
 }
