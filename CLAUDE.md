@@ -37,9 +37,14 @@ npx vitest run -t "merges tokens"             # Run tests matching a name
 npm run e2e          # Playwright e2e (auto-starts dev server)
 npm run e2e:report   # Open the last Playwright HTML report
 npm run format       # Prettier write
+npm run format:check # Prettier check (CI gate - fails the build on drift)
+npm run analyze      # Production build with the bundle analyzer
 ```
 
-`npm run validate` is the fast gate. The full Definition-of-Done gate is `npm test && npm run build && npm run lint` (e2e is the slow extra layer for runtime/race-sensitive work).
+`npm run validate` is the fast gate. The full Definition-of-Done gate is
+`npm run format:check && npm test && npm run build && npm run lint` (e2e is the slow
+extra layer for runtime/race-sensitive work). CI runs `format:check` **before** lint, so
+skipping it locally can turn a green local run into a red CI run on formatting alone.
 
 ## Development Workflow
 
@@ -71,12 +76,17 @@ Do NOT accumulate multiple units into one commit.
 - **Run `npm run build && npm run lint` before committing.** Hooks enforce lint + typecheck, but run build manually too.
 - **Do not bypass hooks** with `--no-verify`.
 
-### Pre-commit Hooks
+### Git Hooks
 
-These run automatically on `git commit`:
-- **lint-staged**: ESLint `--fix` on staged `.ts`/`.tsx`/`.js`/`.mjs` files
+On `git commit`:
+- **lint-staged**: `eslint --fix` then `prettier --write` on staged `.ts`/`.tsx`/`.js`/`.mjs`
+  files, and `prettier --write` on staged `.json`/`.md`/`.yml`/`.yaml`/`.css` files
 - **tsc --noEmit**: Full project type check
 - **commitlint**: Validates conventional commit format
+
+On `git push`:
+- **pre-push**: `npm run test && npm run build`. This takes minutes - expect it, do not
+  interrupt it, and do not reach for `--no-verify` to dodge it.
 
 ### Commit Message Format
 
@@ -93,7 +103,12 @@ JSON input → parse → validate **Page** (Zod) → for each section: resolve c
 2. `schema.parse(props)` — validation
 3. `<RegisteredComponent {...validatedProps} />` — render
 
-This gate is enforced once in `lib/sandbox/validate.ts` (`validatePage`) and reused everywhere: the editor, the URL deserializer, AND the AI generator all route through it. Never add a second render path that skips it.
+This gate is enforced once in `lib/sandbox/validate.ts` (`validatePage`). There are exactly
+two call sites: the editor's live-validation `useMemo` in `app/sandbox/page.tsx`, and
+`generateEnvelope()` in `lib/ai/generate-envelope.ts`. URL-restored state reaches the gate
+indirectly - `deserializeState()` only decodes and migrates the payload, then feeds it into
+the editor's `jsonText`, which flows through that same `useMemo`. Never add a second render
+path that skips it.
 
 ### Data Model — Canonical Page (`version "2.0"`)
 
@@ -140,7 +155,8 @@ Token-based theming via `--sandy-*` CSS variables scoped to the preview containe
 Beyond presets, users can author **custom themes** in the token editor
 (`components/sandbox/token-editor.tsx`), and tokens import/export as **DTCG**
 (Design Tokens Community Group) JSON via `lib/theme/dtcg.ts`. `lib/theme/merge-tokens.ts`
-deep-merges a partial custom theme over a base preset, and `lib/theme/css-vars.ts`
+merges a partial custom theme over a base preset (2 levels deep - enough for the
+`typography.*` sub-objects; deeper nesting is not supported), and `lib/theme/css-vars.ts`
 flattens the resolved token tree into the `--sandy-*` variables.
 
 ### Composite Component Builder
@@ -196,6 +212,13 @@ Dark mode permanently on (`<html className="dark">`). The app shell (toolbar, ed
 - `lib/ai/` — prompt-to-Page generation (Claude CLI driver)
 - `lib/export/` — JSON / HTML / React exporters
 - `__tests__/`, `e2e/` — Vitest unit/a11y tests and Playwright specs
+- `docs/` — longer-form notes; `docs/generative-ui.md` is the reference for the AI generator
+
+Shared helpers live as loose files at the root of `lib/` — check these before writing your own:
+
+- `lib/utils.ts` — `cn()` (class merge) and `slugify()`
+- `lib/icons.tsx` — the icon name → component map; `iconNames` gates which icons the AI generator may emit
+- `lib/schema-introspect.ts` — `schemaToFields()`, turns a Zod schema into form field descriptors
 
 ## Adding a New Component
 
