@@ -12,6 +12,15 @@ import { applyTheme } from "@/lib/theme/css-vars";
 import { newCompositeId } from "@/lib/composite/identity";
 import { ModalOverlay } from "./modal-overlay";
 import {
+  findNode,
+  insertNode,
+  removeNode,
+  moveNode,
+  updateNodeProps,
+  depthOf,
+  MAX_NEST_DEPTH,
+} from "@/lib/composite/tree";
+import {
   Select,
   SelectContent,
   SelectItem,
@@ -171,37 +180,38 @@ export function ComponentBuilder({
   }, [themeTokens]);
 
   const selectedNode = useMemo(
-    () => nodes.find((n) => n.id === selectedNodeId) ?? null,
+    () => (selectedNodeId ? findNode(nodes, selectedNodeId) : null),
     [nodes, selectedNodeId],
   );
 
-  const handleAddPrimitive = useCallback((type: PrimitiveType) => {
-    const defaultProps = getDefaultProps(type);
-    const newNode: PrimitiveNode = {
-      id: nextNodeId(),
-      type,
-      props: defaultProps,
-      ...(type === "container" ? { children: [] } : {}),
-    };
-    setNodes((prev) => [...prev, newNode]);
-    setSelectedNodeId(newNode.id);
-  }, []);
+  // New primitives land inside the selected container when there is room, otherwise at
+  // the top level. The palette says which, so it is never a guess.
+  const insertParent = useMemo(() => {
+    if (!selectedNode || selectedNode.type !== "container") return null;
+    return depthOf(nodes, selectedNode.id) < MAX_NEST_DEPTH ? selectedNode : null;
+  }, [nodes, selectedNode]);
+
+  const handleAddPrimitive = useCallback(
+    (type: PrimitiveType) => {
+      const newNode: PrimitiveNode = {
+        id: nextNodeId(),
+        type,
+        props: getDefaultProps(type),
+        ...(type === "container" ? { children: [] } : {}),
+      };
+      setNodes((prev) => insertNode(prev, insertParent?.id ?? null, newNode));
+      setSelectedNodeId(newNode.id);
+    },
+    [insertParent],
+  );
 
   const handleMoveNode = useCallback((id: string, direction: "up" | "down") => {
-    setNodes((prev) => {
-      const idx = prev.findIndex((n) => n.id === id);
-      if (idx < 0) return prev;
-      const swapIdx = direction === "up" ? idx - 1 : idx + 1;
-      if (swapIdx < 0 || swapIdx >= prev.length) return prev;
-      const next = [...prev];
-      [next[idx], next[swapIdx]] = [next[swapIdx], next[idx]];
-      return next;
-    });
+    setNodes((prev) => moveNode(prev, id, direction));
   }, []);
 
   const handleDeleteNode = useCallback(
     (id: string) => {
-      setNodes((prev) => prev.filter((n) => n.id !== id));
+      setNodes((prev) => removeNode(prev, id));
       if (selectedNodeId === id) setSelectedNodeId(null);
     },
     [selectedNodeId],
@@ -210,7 +220,7 @@ export function ComponentBuilder({
   const handleNodePropsChange = useCallback(
     (props: Record<string, unknown>) => {
       if (!selectedNodeId) return;
-      setNodes((prev) => prev.map((n) => (n.id === selectedNodeId ? { ...n, props } : n)));
+      setNodes((prev) => updateNodeProps(prev, selectedNodeId, props));
     },
     [selectedNodeId],
   );
@@ -344,7 +354,7 @@ export function ComponentBuilder({
       <div className="flex-1 grid grid-cols-[300px_1fr_280px] overflow-hidden">
         {/* Left: Palette + Node Tree + Node Props */}
         <div className="border-r border-border/50 overflow-y-auto p-3 space-y-4">
-          <BuilderPalette onAdd={handleAddPrimitive} />
+          <BuilderPalette onAdd={handleAddPrimitive} insertingInto={insertParent?.id ?? null} />
           <BuilderNodeTree
             nodes={nodes}
             selectedNodeId={selectedNodeId}

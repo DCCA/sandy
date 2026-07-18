@@ -76,7 +76,6 @@ function NodeRow({
       ? String(node.props.text ?? node.props.label ?? "")
       : "";
   const isSelected = selectedNodeId === node.id;
-  const isNested = depth > 0;
 
   return (
     <>
@@ -96,50 +95,48 @@ function NodeRow({
             {preview.length > 20 ? preview.slice(0, 20) + "..." : preview}
           </span>
         )}
-        {!isNested && (
-          <div className="ml-auto flex items-center gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity">
-            <Button
-              variant="ghost"
-              size="sm"
-              className="h-5 w-5 p-0"
-              onClick={(e) => {
-                e.stopPropagation();
-                onMove(node.id, "up");
-              }}
-              disabled={index === 0}
-              title="Move up"
-            >
-              <ChevronUp className="size-3" />
-            </Button>
-            <Button
-              variant="ghost"
-              size="sm"
-              className="h-5 w-5 p-0"
-              onClick={(e) => {
-                e.stopPropagation();
-                onMove(node.id, "down");
-              }}
-              disabled={index === total - 1}
-              title="Move down"
-            >
-              <ChevronDown className="size-3" />
-            </Button>
-            <Button
-              variant="ghost"
-              size="sm"
-              className="h-5 w-5 p-0 text-red-400 hover:text-red-300"
-              onClick={(e) => {
-                e.stopPropagation();
-                onDelete(node.id);
-              }}
-              title="Delete"
-            >
-              <Trash2 className="size-3" />
-            </Button>
-          </div>
-        )}
+        <div className="ml-auto flex items-center gap-0.5 opacity-0 transition-opacity group-hover:opacity-100">
+          <Button
+            variant="ghost"
+            size="sm"
+            className="h-5 w-5 p-0"
+            onClick={(e) => {
+              e.stopPropagation();
+              onMove(node.id, "up");
+            }}
+            disabled={index === 0}
+            title="Move up"
+          >
+            <ChevronUp className="size-3" />
+          </Button>
+          <Button
+            variant="ghost"
+            size="sm"
+            className="h-5 w-5 p-0"
+            onClick={(e) => {
+              e.stopPropagation();
+              onMove(node.id, "down");
+            }}
+            disabled={index === total - 1}
+            title="Move down"
+          >
+            <ChevronDown className="size-3" />
+          </Button>
+          <Button
+            variant="ghost"
+            size="sm"
+            className="h-5 w-5 p-0 text-red-400 hover:text-red-300"
+            onClick={(e) => {
+              e.stopPropagation();
+              onDelete(node.id);
+            }}
+            title="Delete"
+          >
+            <Trash2 className="size-3" />
+          </Button>
+        </div>
       </div>
-      {/* Render children for containers (display only — nested operations not supported) */}
+      {/* Children are fully operable: select, reorder within their parent, delete */}
       {node.type === "container" &&
         node.children?.map((child, ci) => (
           <NodeRow
